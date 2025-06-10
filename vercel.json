@@ -1,64 +1,72 @@
 {
   "rewrites": [
     {
-      "source": "/login.html",
+      "source": "/api/(.*)",
+      "destination": "/api"
+    },
+    {
+      "source": "/login",
       "destination": "/public/login.html"
     },
     {
-      "source": "/signup.html",
+      "source": "/admin",
+      "destination": "/public/admin-portal.html"
+    },
+    {
+      "source": "/signup",
       "destination": "/public/signup.html"
     },
     {
-      "source": "/unauthorized.html",
+      "source": "/unauthorized",
       "destination": "/public/unauthorized.html"
     },
     {
-      "source": "/quick-view.html",
+      "source": "/quick-view",
       "destination": "/public/quick-view.html"
     },
     {
-      "source": "/licensing.html",
+      "source": "/licensing",
       "destination": "/public/licensing.html"
     },
     {
-      "source": "/clause-index.html",
+      "source": "/clause-index",
       "destination": "/public/clause-index.html"
     },
     {
-      "source": "/scrollmap.html",
+      "source": "/scrollmap",
       "destination": "/public/scrollmap.html"
     },
     {
-      "source": "/node-status.html",
+      "source": "/node-status",
       "destination": "/public/node-status.html"
     },
     {
-      "source": "/pulse-monitor.html",
+      "source": "/pulse-monitor",
       "destination": "/public/pulse-monitor.html"
     },
     {
-      "source": "/sector-grid.html",
+      "source": "/sector-grid",
       "destination": "/public/sector-grid.html"
     },
     {
-      "source": "/ecosystem-dashboard.html",
+      "source": "/ecosystem-dashboard",
       "destination": "/public/ecosystem-dashboard.html"
     },
     {
-      "source": "/access-portal.html",
+      "source": "/access-portal",
       "destination": "/public/access-portal.html"
     },
     {
-      "source": "/sector-:slug.html",
+      "source": "/sector-:slug",
       "destination": "/public/sector-:slug.html"
     },
     {
       "source": "/",
-      "destination": "/public/admin-portal.html"
+      "destination": "/public/login.html"  // Changed: Typically, root goes to login/index
     },
     {
-      "source": "/api/(.*)",
-      "destination": "/api"
+      "source": "/(.*)",
+      "destination": "/public/$1" // Serve any other static files (like CSS/JS)
     }
   ],
   "headers": [
@@ -66,10 +74,8 @@
       "source": "/api/(.*)",
       "headers": [
         { "key": "Access-Control-Allow-Origin", "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": 
-"GET,POST,PUT,DELETE,OPTIONS" },
-        { "key": "Access-Control-Allow-Headers", "value": 
-"X-Requested-With, Content-Type, Accept" }
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,PUT,DELETE,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "X-Requested-With, Content-Type, Accept" }
       ]
     }
   ]

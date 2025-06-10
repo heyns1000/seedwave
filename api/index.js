@@ -1,4 +1,4 @@
-const express = require('express');
+cconst express = require('express');
 const path = require('path');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
@@ -38,8 +38,7 @@ app.get('/api/auth/check-session', (req, res) => {
             }
         });
     } else {
-        res.status(401).json({ isAuthenticated: false, message: 'Not 
-authenticated.' });
+        res.status(401).json({ isAuthenticated: false, message: 'Not authenticated.' });
     }
 });
 

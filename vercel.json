@@ -1,0 +1,76 @@
+{
+  "rewrites": [
+    {
+      "source": "/login.html",
+      "destination": "/public/login.html"
+    },
+    {
+      "source": "/signup.html",
+      "destination": "/public/signup.html"
+    },
+    {
+      "source": "/unauthorized.html",
+      "destination": "/public/unauthorized.html"
+    },
+    {
+      "source": "/quick-view.html",
+      "destination": "/public/quick-view.html"
+    },
+    {
+      "source": "/licensing.html",
+      "destination": "/public/licensing.html"
+    },
+    {
+      "source": "/clause-index.html",
+      "destination": "/public/clause-index.html"
+    },
+    {
+      "source": "/scrollmap.html",
+      "destination": "/public/scrollmap.html"
+    },
+    {
+      "source": "/node-status.html",
+      "destination": "/public/node-status.html"
+    },
+    {
+      "source": "/pulse-monitor.html",
+      "destination": "/public/pulse-monitor.html"
+    },
+    {
+      "source": "/sector-grid.html",
+      "destination": "/public/sector-grid.html"
+    },
+    {
+      "source": "/ecosystem-dashboard.html",
+      "destination": "/public/ecosystem-dashboard.html"
+    },
+    {
+      "source": "/access-portal.html",
+      "destination": "/public/access-portal.html"
+    },
+    {
+      "source": "/sector-:slug.html",
+      "destination": "/public/sector-:slug.html"
+    },
+    {
+      "source": "/",
+      "destination": "/public/admin-portal.html"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": 
+"GET,POST,PUT,DELETE,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": 
+"X-Requested-With, Content-Type, Accept" }
+      ]
+    }
+  ]
+}

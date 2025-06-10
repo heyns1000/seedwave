@@ -1,24 +1,24 @@
-{
-  "name": "seedwave",
-  "version": "1.0.0",
-  "description": "Central admin portal and backend functions for FAA™ 
-Global Ecosystem.",
-  "main": "api/index.js",
-  "scripts": {
-    "start": "vercel dev",
-    "deploy": "vercel --prod"
-  },
-  "keywords": ["faa", "seedwave", "admin", "portal", "serverless", "zoho", 
-"vercel"],
-  "author": "Heyns Schoeman",
-  "license": "Apache-2.0",
-  "dependencies": {
-    "axios": "^1.6.8",
-    "cookie-parser": "^1.4.6",
-    "express": "^4.19.2",
-    "express-session": "^1.18.0"
-  },
-  "devDependencies": {
-    "vercel": "^34.2.0"
-  }
-}
+printf "{\n" > package.json
+printf "  \"name\": \"seedwave\",\n" >> package.json
+printf "  \"version\": \"1.0.0\",\n" >> package.json
+printf "  \"description\": \"Central admin portal and backend functions 
+for FAA™ Global Ecosystem.\",\n" >> package.json
+printf "  \"main\": \"api/index.js\",\n" >> package.json
+printf "  \"scripts\": {\n" >> package.json
+printf "    \"start\": \"vercel dev\",\n" >> package.json
+printf "    \"deploy\": \"vercel --prod\"\n" >> package.json
+printf "  },\n" >> package.json
+printf "  \"keywords\": [\"faa\", \"seedwave\", \"admin\", \"portal\", 
+\"serverless\", \"zoho\", \"vercel\"],\n" >> package.json
+printf "  \"author\": \"Heyns Schoeman\",\n" >> package.json
+printf "  \"license\": \"Apache-2.0\",\n" >> package.json
+printf "  \"dependencies\": {\n" >> package.json
+printf "    \"axios\": \"^1.6.8\",\n" >> package.json
+printf "    \"cookie-parser\": \"^1.4.6\",\n" >> package.json
+printf "    \"express\": \"^4.19.2\",\n" >> package.json
+printf "    \"express-session\": \"^1.18.0\"\n" >> package.json
+printf "  },\n" >> package.json
+printf "  \"devDependencies\": {\n" >> package.json
+printf "    \"vercel\": \"^34.2.0\"\n" >> package.json
+printf "  }\n" >> package.json
+printf "}\n" >> package.json

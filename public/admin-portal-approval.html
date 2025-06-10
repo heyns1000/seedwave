@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🦁 Seedwave™ Access Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* Base Styles - Consistent with Apple-inspired theme */
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f5f5f7; /* Very light gray, almost white */
+      color: #1d1d1f; /* Near black for primary text */
+      line-height: 1.4;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start; /* Align to top to make space for header */
+    }
+
+    /* Standardized Header Layout */
+    header {
+      background-color: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #e8e8ed;
+      padding: 1rem 2rem;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+      width: 100%;
+      position: fixed; /* Fixed header */
+      top: 0;
+      left: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      color: #1d1d1f;
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    header nav a {
+      color: #424245;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 0.5rem 0.8rem;
+      border-radius: 6px;
+      transition: all 0.2s ease-in-out;
+      text-decoration: none;
+    }
+    header nav a:hover {
+      color: #0071e3;
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    /* Access Grid */
+    .access-grid {
+      margin-top: 8rem; /* Space from fixed header */
+      margin-bottom: 2rem;
+      max-width: 4xl;
+      width: 100%;
+    }
+
+    /* Dynamic Form Container */
+    #form-section {
+      margin-top: 2rem;
+      max-width: 5xl;
+      width: 100%;
+      padding-bottom: 2rem;
+    }
+    #form-wrapper {
+        background-color: white;
+        padding: 2.5rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        text-align: left; /* Align form content left */
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-label {
+      display: block;
+      font-weight: 600;
+      color: #424245;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+    .form-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid #e8e8ed;
+      border-radius: 0.5rem;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      font-size: 1rem;
+      color: #1d1d1f;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: #0071e3;
+      box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
+    }
+    .submit-button {
+      background-color: #0071e3;
+      color: white;
+      padding: 0.8rem 2rem;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all 0.2s ease-in-out;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: none;
+      cursor: pointer;
+    }
+    .submit-button:hover {
+      background-color: #0077ed;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    }
+    .message {
+      margin-top: 1.5rem;
+      padding: 0.8rem;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+      display: none;
+      text-align: center;
+    }
+    .message.error {
+      background-color: #ffe0e0;
+      color: #cc0000;
+      border: 1px solid #ffb3b3;
+    }
+    .message.success {
+      background-color: #e0ffe0;
+      color: #008000;
+      border: 1px solid #b3ffb3;
+    }
+
+    /* Footer */
+    footer {
+      background-color: #f5f5f7;
+      color: #6e6e73;
+      padding: 1.5rem;
+      font-size: 0.85rem;
+      border-top: 1px solid #e8e8ed;
+      width: 100%;
+      text-align: center;
+      margin-top: auto;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 480px) {
+      .access-grid {
+        margin-top: 6rem;
+        padding: 0 1rem;
+      }
+      #form-wrapper {
+        padding: 1.5rem;
+      }
+      .signup-card h2 {
+        font-size: 1.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Authentication & Authorization Script (IMPORTANT: Add this to all sensitive pages) -->
+  <script>
+    const API_BASE_URL = window.location.origin;
+
+    async function checkUserSessionAndAccess(requiredRole = 'client', redirectUnauthorizedTo = '/login.html', requiredProduct = null) {
+        let data;
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/auth/check-session`);
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                const errorText = await response.text();
+                console.error('Authentication/Authorization check failed: Expected JSON, but received:', errorText.substring(0, 200) + '...');
+                window.location.href = `${API_BASE_URL}${redirectUnauthorizedTo}?returnTo=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+                return;
+            }
+            data = await response.json();
+
+            if (!data.isAuthenticated) {
+                window.location.href = `${API_BASE_URL}${redirectUnauthorizedTo}?returnTo=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+                return;
+            }
+
+            const user = data.user;
+            let authorized = false;
+
+            if (user.role === 'admin') {
+                authorized = true;
+            } else if (requiredRole === 'client' && ['client', 'shareholder', 'service-provider', 'loyalty', 'family'].includes(user.role)) {
+                authorized = true;
+            } else if (user.role === requiredRole) {
+                authorized = true;
+            }
+
+            if (authorized && requiredProduct && user.access && !user.access[requiredProduct]) {
+                authorized = false;
+                console.warn(`User ${user.email} (Role: ${user.role}) lacks required product access: ${requiredProduct}.`);
+            }
+            
+            if (!authorized) {
+                console.warn(`User ${user.email} (Role: ${user.role}) is not authorized for this page (Requires Role: ${requiredRole}, Product: ${requiredProduct || 'N/A'}).`);
+                window.location.href = `${API_BASE_URL}/unauthorized.html`;
+                return;
+            }
+
+            document.body.style.display = 'flex'; // Use flex because body is flex column
+            console.log(`User ${user.email} (Role: ${user.role}) authorized for this page.`);
+            window.currentUser = user; 
+
+        } catch (error) {
+            console.error('Authentication/Authorization check failed:', error);
+            window.location.href = `${API_BASE_URL}${redirectUnauthorizedTo}?returnTo=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+        }
+    }
+
+    document.body.style.display = 'none';
+
+    // This page (access-portal.html) should be accessible to anyone trying to sign up,
+    // so we don't apply strict access control here. Users will be redirected to Zoho to sign up.
+    // The Zoho login for actual portal access will happen after this.
+    // However, if you want this page itself to be behind an auth check, uncomment and adjust the call below.
+    // document.addEventListener('DOMContentLoaded', () => {
+    //     checkUserSessionAndAccess('public', '/login.html', null); // 'public' means anyone can view if authenticated.
+    // });
+
+    // If no initial auth check is needed for this page itself, just display it.
+    document.addEventListener('DOMContentLoaded', () => {
+        document.body.style.display = 'flex'; // Ensure it's visible if no auth check
+    });
+
+  </script>
+
+  <!-- Header -->
+  <header>
+    <h1 class="text-2xl font-extrabold tracking-tight">🦍 FAA.ZONE™</h1>
+    <nav class="flex items-center space-x-4">
+      <a href="/">Home</a>
+      <a href="/ecosystem-dashboard.html">Ecosystem Dashboard</a>
+      <a href="/login.html">Login</a>
+    </nav>
+  </header>
+
+  <main class="flex-grow flex items-center justify-center w-full px-4">
+    <div class="access-grid grid grid-cols-1 sm:grid-cols-2 gap-6 mx-auto">
+      <button onclick="showForm('loyalty')" class="bg-blue-100 hover:bg-blue-200 text-blue-800 p-6 rounded shadow text-center transition">
+        <div class="text-3xl mb-2">🪙</div>
+        <div class="text-xl font-semibold">Loyalty Access</div>
+        <p class="text-sm mt-1">Brand partners, rewards & alliance view</p>
+      </button>
+      <button onclick="showForm('shareholder')" class="bg-gray-100 hover:bg-gray-200 text-gray-800 p-6 rounded shadow text-center transition">
+        <div class="text-3xl mb-2">📊</div>
+        <div class="text-xl font-semibold">Shareholder Access</div>
+        <p class="text-sm mt-1">Governance & ecosystem metrics dashboard</p>
+      </button>
+      <button onclick="showForm('service')" class="bg-green-100 hover:bg-green-200 text-green-800 p-6 rounded shadow text-center transition">
+        <div class="text-3xl mb-2">🤝</div>
+        <div class="text-xl font-semibold">Service Provider</div>
+        <p class="text-sm mt-1">Integration & deployment tools</p>
+      </button>
+      <button onclick="showForm('family')" class="bg-purple-100 hover:bg-purple-200 text-purple-800 p-6 rounded shadow text-center transition">
+        <div class="text-3xl mb-2">👨‍👩‍👧‍👦</div>
+        <div class="text-xl font-semibold">Family Access</div>
+        <p class="text-sm mt-1">Personal vaults, archive access & memory mesh</p>
+      </button>
+    </div>
+  </main>
+
+  <!-- Dynamic Form Container -->
+  <section id="form-section" class="max-w-5xl mx-auto hidden px-4">
+    <div id="form-wrapper" class="bg-white p-8 rounded shadow"></div>
+
+    <div class="mt-6 text-center">
+      <button id="submitRegBtn"
+        class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-2 rounded shadow submit-button"
+      >
+        ✅ Submit Registration
+      </button>
+    </div>
+
+    <div id="submissionMessage" class="message hidden"></div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2025 FAA.ZONE™. All Rights Reserved.</p>
+  </footer>
+
+<script>
+const formTemplates = {
+  loyalty: `
+    <h2 class="text-2xl font-bold mb-4 text-blue-700">🪙 Loyalty Access Registration</h2>
+    <p class="text-slate-600 mb-6">Join our loyalty program for exclusive brand partnerships and rewards.</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="form-group col-span-2 md:col-span-1">
+        <label for="loyalty_fullName" class="form-label">Full Name</label>
+        <input type="text" id="loyalty_fullName" name="fullName" placeholder="John Doe" class="form-input" required />
+      </div>
+      <div class="form-group col-span-2 md:col-span-1">
+        <label for="loyalty_email" class="form-label">Email Address</label>
+        <input type="email" id="loyalty_email" name="email" placeholder="email@example.com" class="form-input" required />
+      </div>
+      <div class="form-group col-span-2 md:col-span-1">
+        <label for="loyalty_phone" class="form-label">Phone Number (Optional)</label>
+        <input type="tel" id="loyalty_phone" name="phone" placeholder="+27 123 456 7890" class="form-input" />
+      </div>
+      <div class="form-group col-span-2 md:col-span-1">
+        <label for="loyalty_country" class="form-label">Country of Residence</label>
+        <input type="text" id="loyalty_country" name="country" placeholder="South Africa" class="form-input" required />
+      </div>
+      <div class="form-group col-span-2">
+        <label for="loyalty_whyJoin" class="form-label">Why do you want to join our Loyalty program?</label>
+        <textarea id="loyalty_whyJoin" name="whyJoin" placeholder="I am interested in..." class="form-input h-24 resize-y"></textarea>
+      </div>
+      <label class="col-span-2 flex items-center">
+        <input type="checkbox" name="termsAgree" class="mr-2" required /> I agree to the <a href="/terms.html" class="text-indigo-600 hover:underline ml-1">Loyalty Program Terms</a>.
+      </label>
+    </div>
+  `,
+  service: `
+    <h2 class="text-2xl font-bold mb-4 text-green-700">🤝 Service Provider Onboarding</h2>
+    <p class="text-slate-600 mb-6">Provide your company details for integration and deployment tools access.</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="form-group col-span-2 md:col-span-1">
+        <label for="service_companyName" class="form-label">Company Name</label>
+        <input type="text" id="service_companyName" name="companyName" placeholder="Global Logistics Corp" class="form-input" required />
+      </div>
+      <div class="form-group col-span-2 md:col-span-1">
+        <label for="service_regNumber" class="form-label">Company Registration Number (FICA/Legal ID)</label>
+        <input type="text" id="service_regNumber" name="regNumber" placeholder="e.g., 2021/123456/07" class="form-input" required />
+      </div>
+      <div class="form-group col-span-2 md:col-span-1">
+        <label for="service_countryOp" class="form-label">Primary Country of Operation</label>
+        <input type="text" id="service_countryOp" name="countryOp" placeholder="United States" class="form-input" required />
+      </div>
+      <div class="form-group col-span-2 md:col-span-1">
+        <label for="service_email" class="form-label">Official Company Email Address</label>
+        <input type="email" id="service_email" name="email" placeholder="contact@company.com" class="form-input" required />
+      </div>
+      <div class="form-group col-span-2 md:col-span-1">
+        <label for="service_contactPhone" class="form-label">Primary Contact Number</label>
+        <input type="tel" id="service_contactPhone" name="contactPhone" placeholder="+1 555 123 4567" class="form-input" required />
+      </div>
+      <div class="form-group col-span-2 md:col-span-1">
+        <label for="service_directorName" class="form-label">Company Director Full Name</label>
+        <input type="text" id="service_directorName" name="directorName" placeholder="Jane Doe" class="form-input" required />
+      </div>
+      <div class="form-group col-span-2">
+        <label for="service_services" class="form-label">Describe your core services and how they align with FAA™</label>
+        <textarea id="service_services" name="services" placeholder="We provide AI-driven logistics solutions for..." class="form-input h-28 resize-y" required></textarea>
+      </div>
+      <label class="col-span-2 flex items-center">
+        <input type="checkbox" name="serviceTermsAgree" class="mr-2" required /> I confirm this company offers 24/7 service and support and agree to the <a href="/terms.html" class="text-indigo-600 hover:underline ml-1">Service Provider Agreement</a>.
+      </label>
+    </div>
+  `,
+  family: `
+    <h2 class="text-2xl font-bold mb-4 text-purple-700">👨‍👩‍👧‍👦 Family Access Registration</h2>
+    <p class="text-slate-600 mb-6">Create a shared family vault for personal archives and memory mesh access.</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="form-group col-span-2 md:col-span-1">
+        <label for="family_repName" class="form-label">Family Representative Name</label>
+        <input type="text" id="family_repName" name="repName" placeholder="John Smith" class="form-input" required />
+      </div>
+      <div class="form-group col-span-2 md:col-span-1">
+        <label for="family_familyName" class="form-label">Family Name</label>
+        <input type="text" id="family_familyName" name="familyName" placeholder="Smith" class="form-input" required />
+      </div>
+      <div class="form-group col-span-2 md:col-span-1">
+        <label for="family_email" class="form-label">Primary Email Address</label>
+        <input type="email" id="family_email" name="email" placeholder="family@example.com" class="form-input" required />
+      </div>
+      <div class="form-group col-span-2 md:col-span-1">
+        <label for="family_country" class="form-label">Country of Residence</label>
+        <input type="text" id="family_country" name="country" placeholder="United Kingdom" class="form-input" required />
+      </div>
+      <div class="form-group col-span-2">
+        <label for="family_members" class="form-label">Number of Family Members (incl. yourself)</label>
+        <input type="number" id="family_members" name="members" placeholder="4" min="1" class="form-input" required />
+      </div>
+      <label class="col-span-2 flex items-center">
+        <input type="checkbox" name="vaultAgree" class="mr-2" required /> Generate my vault at: faa.zone/public/<span id="dynamicVaultPath" class="font-mono text-xs text-indigo-700">FamilyName/RepName-Vault.html</span>
+      </label>
+      <div class="form-group col-span-2 mt-4">
+        <h4 class="font-semibold text-slate-600 mb-2">Primary Access Credentials (for initial vault access)</h4>
+      </div>
+       <div class="form-group col-span-2 md:col-span-1">
+        <label for="family_username" class="form-label">Desired Username</label>
+        <input type="text" id="family_username" name="username" placeholder="familyusername" class="form-input" required />
+      </div>
+      <div class="form-group col-span-2 md:col-span-1">
+        <label for="family_password" class="form-label">Create Password</label>
+        <input type="password" id="family_password" name="password" class="form-input" required />
+      </div>
+       <div class="form-group col-span-2 md:col-span-1">
+        <label for="family_confirmPassword" class="form-label">Confirm Password</label>
+        <input type="password" id="family_confirmPassword" name="confirmPassword" class="form-input" required />
+      </div>
+    </div>
+  `,
+  shareholder: `
+    <h2 class="text-2xl font-bold mb-4 text-gray-800">📊 Welcome Shareholder</h2>
+    <p class="text-slate-600 mb-6">Access to governance tools and ecosystem metrics will be enabled during onboarding after verification.</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="form-group col-span-2 md:col-span-1">
+        <label for="share_fullName" class="form-label">Full Name</label>
+        <input type="text" id="share_fullName" name="fullName" placeholder="Alice Wonderland" class="form-input" required />
+      </div>
+      <div class="form-group col-span-2 md:col-span-1">
+        <label for="share_email" class="form-label">Official Email Address</label>
+        <input type="email" id="share_email" name="email" placeholder="alice@example.com" class="form-input" required />
+      </div>
+       <div class="form-group col-span-2 md:col-span-1">
+        <label for="share_shareholderID" class="form-label">Shareholder ID / Investor Code</label>
+        <input type="text" id="share_shareholderID" name="shareholderID" placeholder="INV-FAAZ-XYZ123" class="form-input" required />
+      </div>
+       <div class="form-group col-span-2 md:col-span-1">
+        <label for="share_country" class="form-label">Country of Residence</label>
+        <input type="text" id="share_country" name="country" placeholder="Canada" class="form-input" required />
+      </div>
+       <div class="form-group col-span-2">
+        <label for="share_investmentInterest" class="form-label">Primary Investment Interest (Optional)</label>
+        <textarea id="share_investmentInterest" name="investmentInterest" placeholder="e.g., AI Logic, Sustainable AgriTech" class="form-input h-24 resize-y"></textarea>
+      </div>
+       <label class="col-span-2 flex items-center">
+        <input type="checkbox" name="shareTermsAgree" class="mr-2" required /> I confirm my status as a shareholder and agree to the <a href="/terms.html" class="text-indigo-600 hover:underline ml-1">Shareholder Access Policy</a>.
+      </label>
+    </div>
+  `
+};
+
+let currentAccessType = ''; // To keep track of the currently active form type
+
+function showForm(type) {
+  currentAccessType = type;
+  const formWrapper = document.getElementById('form-wrapper');
+  formWrapper.innerHTML = formTemplates[type] || 'Form not found.';
+  
+  const formSection = document.getElementById('form-section');
+  formSection.classList.remove('hidden');
+  document.getElementById('submissionMessage').classList.add('hidden');
+  formSection.scrollIntoView({ behavior: 'smooth' });
+
+  // Add dynamic vault path for family access form
+  if (type === 'family') {
+    const familyNameInput = document.getElementById('family_familyName');
+    const repNameInput = document.getElementById('family_repName');
+    const dynamicVaultPath = document.getElementById('dynamicVaultPath');
+    
+    const updateVaultPath = () => {
+      const familyName = familyNameInput.value.replace(/[^a-zA-Z0-9]/g, '');
+      const repName = repNameInput.value.split(' ')[0].replace(/[^a-zA-Z0-9]/g, '');
+      dynamicVaultPath.textContent = `faa.zone/public/${familyName || 'FamilyName'}/${repName || 'RepName'}-Vault.html`;
+    };
+
+    familyNameInput.addEventListener('input', updateVaultPath);
+    repNameInput.addEventListener('input', updateVaultPath);
+    updateVaultPath(); // Initialize on form show
+  }
+}
+
+document.getElementById('submitRegBtn').addEventListener('click', async function(e) {
+  e.preventDefault();
+  const form = document.querySelector('#form-wrapper form');
+  const submissionMessage = document.getElementById('submissionMessage');
+  submissionMessage.style.display = 'none';
+  submissionMessage.className = 'message';
+
+  if (!form) {
+    submissionMessage.textContent = 'No form selected to submit.';
+    submissionMessage.className = 'message error';
+    submissionMessage.style.display = 'block';
+    return;
+  }
+
+  // Basic client-side validation
+  let allRequiredFilled = true;
+  form.querySelectorAll('[required]').forEach(input => {
+    if (!input.value.trim() || (input.type === 'checkbox' && !input.checked)) {
+      allRequiredFilled = false;
+      input.classList.add('border-red-500'); // Highlight missing fields
+    } else {
+      input.classList.remove('border-red-500');
+    }
+  });
+
+  if (!allRequiredFilled) {
+    submissionMessage.textContent = 'Please fill in all required fields and agree to terms.';
+    submissionMessage.className = 'message error';
+    submissionMessage.style.display = 'block';
+    return;
+  }
+
+  // Specific validation for Family access passwords
+  if (currentAccessType === 'family') {
+    const password = document.getElementById('family_password').value;
+    const confirmPassword = document.getElementById('family_confirmPassword').value;
+    if (password !== confirmPassword) {
+      submissionMessage.textContent = 'Passwords do not match.';
+      submissionMessage.className = 'message error';
+      submissionMessage.style.display = 'block';
+      return;
+    }
+    if (password.length < 8) {
+        submissionMessage.textContent = 'Password must be at least 8 characters long.';
+        submissionMessage.className = 'message error';
+        submissionMessage.style.display = 'block';
+        return;
+    }
+  }
+
+
+  const formData = new FormData(form); // Use FormData for easier handling of all form fields, including files
+  const data = {};
+  for (let [key, value] of formData.entries()) {
+    if (key.includes('[]')) { // Handle multiple select or array inputs if any
+      data[key.replace('[]', '')] = formData.getAll(key);
+    } else {
+      data[key] = value;
+    }
+  }
+  
+  // Explicitly add the access type to the data payload
+  data.accessType = currentAccessType;
+
+  // Simulate API call to your backend
+  try {
+    submissionMessage.textContent = 'Submitting request...';
+    submissionMessage.className = 'message success'; // Show a loading indicator
+    submissionMessage.style.display = 'block';
+
+    const response = await fetch(`${API_BASE_URL}/api/register-access-request`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', // Assuming JSON body for non-file data
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Server error.');
+    }
+
+    const result = await response.json();
+    submissionMessage.textContent = `🎉 ${result.message || 'Your access request has been received. You will get an activation email from vault@faa.zone shortly.'}`;
+    submissionMessage.className = 'message success';
+    submissionMessage.style.display = 'block';
+    form.reset(); // Clear form after success
+
+  } catch (error) {
+    console.error('Registration submission failed:', error);
+    submissionMessage.textContent = `❌ Submission failed: ${error.message}. Please try again.`;
+    submissionMessage.className = 'message error';
+    submissionMessage.style.display = 'block';
+  }
+});
+</script>
+</body>
+</html>

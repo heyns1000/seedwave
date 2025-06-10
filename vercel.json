@@ -3,10 +3,6 @@
   "outputDirectory": "public",
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api"
-    },
-    {
       "source": "/login",
       "destination": "/public/login.html"
     },
@@ -68,7 +64,11 @@
     },
     {
       "source": "/(.*)",
-      "destination": "/public/$1"
+      "destination": "/public/$1" // Catch-all for all other static assets (CSS, JS, images, etc.)
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api" // API routes should come last to prevent them from catching static file requests
     }
   ],
   "headers": [

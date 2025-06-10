@@ -233,13 +233,6 @@
 
     // This page (access-portal.html) should be accessible to anyone trying to sign up,
     // so we don't apply strict access control here. Users will be redirected to Zoho to sign up.
-    // The Zoho login for actual portal access will happen after this.
-    // However, if you want this page itself to be behind an auth check, uncomment and adjust the call below.
-    // document.addEventListener('DOMContentLoaded', () => {
-    //     checkUserSessionAndAccess('public', '/login.html', null); // 'public' means anyone can view if authenticated.
-    // });
-
-    // If no initial auth check is needed for this page itself, just display it.
     document.addEventListener('DOMContentLoaded', () => {
         document.body.style.display = 'flex'; // Ensure it's visible if no auth check
     });
@@ -392,7 +385,7 @@ const formTemplates = {
       <div class="form-group col-span-2">
         <label for="family_members" class="form-label">Number of Family Members (incl. yourself)</label>
         <input type="number" id="family_members" name="members" placeholder="4" min="1" class="form-input" required />
-      </div>
+      </div
       <label class="col-span-2 flex items-center">
         <input type="checkbox" name="vaultAgree" class="mr-2" required /> Generate my vault at: faa.zone/public/<span id="dynamicVaultPath" class="font-mono text-xs text-indigo-700">FamilyName/RepName-Vault.html</span>
       </label>

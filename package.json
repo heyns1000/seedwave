@@ -1,8 +1,7 @@
 {
   "name": "seedwave",
   "version": "1.0.0",
-  "description": "Central admin portal and backend functions for FAA™ 
-Global Ecosystem.",
+  "description": "Central admin portal and backend functions for FAA Global Ecosystem.",
   "main": "api/index.js",
   "scripts": {
     "start": "vercel dev",

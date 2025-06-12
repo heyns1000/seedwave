@@ -3,4 +3,4 @@
 
 "Central admin portal and backend functions for FAA™ Global Ecosystem."
 
-seedwave.png
+![Your Seedwave Image](assets/seedwave.png)

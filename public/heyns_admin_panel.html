@@ -451,7 +451,7 @@
         #adminStatus.text-green-500 {
             color: #6EE7B7; /* Lighter green for success */
         }
-        
+       
         /* Clear data button */
         button.text-sm.text-red-600 {
             color: #EF4444; /* Brighter red for action */
@@ -701,7 +701,7 @@
                     <select id="sectorViewSelect" class="w-full border rounded p-2"></select>
                 </div>
             </div>
-            
+           
             <div id="dynamicSectorDashboard" class="space-y-10">
                 <p class="text-gray-400 col-span-full text-center mt-10">Select a sector to view its detailed dashboard.</p>
             </div>
@@ -749,7 +749,7 @@
                 "micromesh": "☰ Micro-Mesh Logistics",
                 "media": "🎬 Motion, Media & Sonic",
                 "nutrition": "✿ Nutrition & Food Chain",
-                "ai-logic": "🧠 AI, Logic & Grid", 
+                "ai-logic": "🧠 AI, Logic & Grid",
                 "packaging": "📦 Packaging & Materials",
                 "quantum": "✴️ Quantum Protocols",
                 "ritual": "☯ Ritual & Culture",
@@ -763,9 +763,9 @@
                 "zerowaste": "♻️ Zero Waste",
                 "professional": "🧾 Professional Services",
                 "payroll-mining": "🪙 Payroll Mining & Accounting",
-                "mining": "⛏️ Mining & Resources", 
+                "mining": "⛏️ Mining & Resources",
                 "wildlife": "🦁 Wildlife & Habitat",
-                "admin-panel": "⚙️ Admin Panel" 
+                "admin-panel": "⚙️ Admin Panel"
             };
 
             // Unified source of truth for all brand details including subnodes and explicit data
@@ -863,8 +863,8 @@
                     { name: 'NutriScore', subNodes: ['FoodPrint'], details: {} }
                 ],
                 "banking": [
-                    { 
-                        name: 'FinGrid', 
+                    {
+                        name: 'FinGrid',
                         subNodes: ['Ledger Mesh','Arbitrage Core','Token Router','Tax Engine','Vault Lock','Compliance Matrix','Logistics Fin','Currency Glyph','Forecast Engine','Signal Tracker'],
                         details: {
                             intro: "FinGrid™ is the premier FAA.ZONE platform, revolutionizing Banking & Finance operations. Leveraging the global PulseGrid, it offers robust data synchronization and superior efficiency.",
@@ -902,8 +902,8 @@
                             ]
                         }
                     },
-                    { 
-                        name: 'TradeAmp', 
+                    {
+                        name: 'TradeAmp',
                         subNodes: ['Zeno Mesh','Crux Bridge','Hive Monitor','Wire Reconciler','Bit Locker','Credit Splice','Score Vector','Zentry Core','Drift Trace','Alpha Ledger'],
                         details: {
                             intro: "TradeAmp™ optimizes global trade finance with AI-driven liquidity and secure ledger-based transaction management. Integrated with PulseTrade, it ensures high-speed, compliant, and transparent financial flows.",
@@ -1355,8 +1355,8 @@
                     { name: 'EdgeLink', subNodes: ['LocalHub'], details: {} }
                 ],
                 "media": [
-                    { 
-                        name: 'FrameCast', 
+                    {
+                        name: 'FrameCast',
                         subNodes: ['VideoNode', 'AudioSync', 'StreamPulse'],
                         details: {
                             intro: "FrameCast™ is a protocol for secure, verifiable media streaming. It leverages FAA.ZONE's ScrollGrid for robust content delivery and integrated VaultVision for digital rights management.",
@@ -1506,7 +1506,7 @@
                 "trade": { glyph: "🧺", monthlyFee: "900.00", annualFee: "9200.00", payoutTier: "A+", region: "Div A-F" },
                 "utilities": { glyph: "🔋", monthlyFee: "750.00", annualFee: "7800.00", payoutTier: "B+", region: "Div A-Z" },
                 "voice": { glyph: "🎙️", monthlyFee: "630.00", annualFee: "6600.00", payoutTier: "B", region: "Global" },
-                "webless": { glyph: "📡", monthlyFee: "800.00", annualFee: "8200.00", payoutTier: "A", region: "Div D-G" },
+                "webless": { glyph: "�", monthlyFee: "800.00", annualFee: "8200.00", payoutTier: "A", region: "Div D-G" },
                 "nft": { glyph: "🔁", monthlyFee: "1250.00", annualFee: "12800.00", payoutTier: "A", region: "FAA IP" },
                 "education-youth": { glyph: "🎓", monthlyFee: "420.00", annualFee: "4500.00", payoutTier: "A", region: "Global Youth" },
                 "zerowaste": { glyph: "♻️", monthlyFee: "450.00", annualFee: "4800.00", payoutTier: "B", region: "Global" },
@@ -1571,14 +1571,14 @@
             window.showAdminSection = showAdminSection;
             window.addBrandToSector = addBrandToSector;
             window.clearAdminAddedData = clearAdminAddedData;
-            window.displaySectorSpecificProducts = displaySectorSpecificProducts; 
+            window.displaySectorSpecificProducts = displaySectorSpecificProducts;
             window.deploySectorPlanToPayPal = deploySectorPlanToPayPal;
             window.initiatePayPalSubscription = initiatePayPalSubscription;
             window.getCurrencySymbol = getCurrencySymbol;
             window.exchangeRates = exchangeRates;
             window.BASE_CURRENCY = BASE_CURRENCY;
-            window.toggleSubscriptionType = toggleSubscriptionType; 
-            window.displayBrandDetails = displayBrandDetails; 
+            window.toggleSubscriptionType = toggleSubscriptionType;
+            window.displayBrandDetails = displayBrandDetails;
 
 
             // --- Admin Panel Core Functions ---
@@ -1637,7 +1637,7 @@
                     }
                 });
             }
-            
+           
             function populateSectorViewSelect() {
                 const select = document.getElementById('sectorViewSelect');
                 if (!select) return;
@@ -1705,18 +1705,18 @@
 
                 // Simulate backend call
                 console.log(`Attempting to add brand "${brandName}" with subnodes [${subnodesArray.join(', ')}] to sector "${sectorKey}"`);
-                
+               
                 return new Promise(resolve => {
                     setTimeout(() => { // Simulate network delay
                         if (!clientAdminData[sectorKey]) {
                             clientAdminData[sectorKey] = { brands: [] };
                         }
                         // Add new brand as an object with name, subNodes, and empty details
-                        clientAdminData[sectorKey].brands.push({ 
-                            name: brandName, 
-                            subNodes: subnodesArray, 
+                        clientAdminData[sectorKey].brands.push({
+                            name: brandName,
+                            subNodes: subnodesArray,
                             details: {} // Start with empty details, will be filled by mock generator when displayed
-                        }); 
+                        });
                         localStorage.setItem("clientAdminData", JSON.stringify(clientAdminData));
 
                         console.log("💾 Data saved to client-side localStorage and simulated backend success.");
@@ -1726,7 +1726,7 @@
                         addBrandBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
                         addBrandBtn.classList.add('bg-green-500', 'hover:bg-green-600');
                         addBrandBtn.innerHTML = '✔️ Added!';
-                        
+                       
                         // Re-render relevant sections after adding data
                         renderFaaZoneIndexTable();
                         calculateGlobalMetrics();
@@ -1758,7 +1758,7 @@
                     }, 3000);
                 });
             }
-            
+           
             function clearAdminAddedData() {
                 localStorage.removeItem("clientAdminData");
                 clientAdminData = {};
@@ -1775,12 +1775,12 @@
                 adminStatus.textContent = "🗑️ Client-side admin data cleared.";
                 adminStatus.classList.remove('text-red-500');
                 adminStatus.classList.add('text-green-500');
-                setTimeout(() => { 
+                setTimeout(() => {
                     adminStatus.textContent = "Ready to receive input.";
                     adminStatus.classList.remove('text-green-500');
                 }, 3000);
             }
-            
+           
             // Function to toggle between monthly and annual prices
             function toggleSubscriptionType(cardElement, isAnnualChecked) {
                 const priceSpan = cardElement.querySelector('.price-display');
@@ -1807,7 +1807,7 @@
                 if (currentCurrency !== BASE_CURRENCY && exchangeRates[currentCurrency]) {
                     convertedPrice = originalPriceValue * exchangeRates[currentCurrency];
                 }
-                
+               
                 priceSpan.innerHTML = `${window.getCurrencySymbol(currentCurrency)}${convertedPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span class="text-xl text-gray-400">${suffix}</span>`;
 
                 // Update the PayPal button's data attributes
@@ -1832,7 +1832,7 @@
                         subnodes = [`MockNode ${brandName.slice(0,3).toUpperCase()}A™`, `MockNode ${brandName.slice(0,3).toUpperCase()}B™`];
                     }
                 }
-                
+               
                 const sectorInfo = FAA_ZONE_INDEX_SUMMARY_DATA[sectorKey] || {};
                 const sectorDisplayName = sectorList[sectorKey] || sectorKey.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
@@ -1843,7 +1843,7 @@
                 const randomLatency = () => (Math.random() * 50 + 10).toFixed(2); // 10-60 ms
                 const randomActiveNodes = () => Math.floor(Math.random() * 1000) + 50;
                 const randomAuditDate = () => `2025-${(Math.floor(Math.random() * 12) + 1).toString().padStart(2, '0')}-${(Math.floor(Math.random() * 28) + 1).toString().padStart(2, '0')}`;
-                
+               
                 const introVariations = [
                     `a cutting-edge FAA.ZONE solution designed for the ${sectorDisplayName} sector. It seamlessly integrates with the global PulseGrid to deliver unparalleled performance and data integrity.`,
                     `the premier FAA.ZONE platform, revolutionizing ${sectorDisplayName} operations. Leveraging the global PulseGrid, it offers robust data synchronization and superior efficiency.`,
@@ -1873,7 +1873,7 @@
                         selectedAdditionalFeatures.push(tempAdditionalFeatures.splice(randomIndex, 1)[0]);
                     }
                 }
-                
+               
                 const allFeatures = [...coreFeatures, ...selectedAdditionalFeatures];
 
                 // Pricing tiers for snapshot, based on sector's base fee
@@ -1881,26 +1881,26 @@
                 const annualDiscountRate = 0.15;
 
                 const pricingTiers = [
-                    { 
-                        name: "Starter Node", 
-                        monthlyAmount: baseMonthlyFee * 0.8, 
+                    {
+                        name: "Starter Node",
+                        monthlyAmount: baseMonthlyFee * 0.8,
                         annualAmount: baseMonthlyFee * 0.8 * 12 * (1 - annualDiscountRate),
-                        description: "Ideal for small teams and pilot projects. Access essential features and secure basic data synchronization.", 
-                        benefits: ["Essential features", "Basic data sync", "Community support"] 
+                        description: "Ideal for small teams and pilot projects. Access essential features and secure basic data synchronization.",
+                        benefits: ["Essential features", "Basic data sync", "Community support"]
                     },
-                    { 
-                        name: "Pro Grid", 
-                        monthlyAmount: baseMonthlyFee * 2.0, 
+                    {
+                        name: "Pro Grid",
+                        monthlyAmount: baseMonthlyFee * 2.0,
                         annualAmount: baseMonthlyFee * 2.0 * 12 * (1 - annualDiscountRate),
-                        description: `Designed for growing firms needing advanced capabilities. Includes ${Math.ceil(Math.random() * 5 + 3)} core features and enhanced performance.`, 
-                        benefits: ["Advanced features", "High-volume data processing", "Priority support", "Expanded analytics"] 
+                        description: `Designed for growing firms needing advanced capabilities. Includes ${Math.ceil(Math.random() * 5 + 3)} core features and enhanced performance.`,
+                        benefits: ["Advanced features", "High-volume data processing", "Priority support", "Expanded analytics"]
                     },
-                    { 
-                        name: "Enterprise Omni-Sync", 
-                        monthlyAmount: baseMonthlyFee * 5.0, 
+                    {
+                        name: "Enterprise Omni-Sync",
+                        monthlyAmount: baseMonthlyFee * 5.0,
                         annualAmount: baseMonthlyFee * 5.0 * 12 * (1 - annualDiscountRate),
-                        description: "For large organizations requiring full VaultMesh access, custom integrations, and dedicated resources.", 
-                        benefits: ["Full VaultMesh access", "Dedicated account management", "24/7 Phone Support", "Enhanced Custom Integrations", "On-site Training & Setup"] 
+                        description: "For large organizations requiring full VaultMesh access, custom integrations, and dedicated resources.",
+                        benefits: ["Full VaultMesh access", "Dedicated account management", "24/7 Phone Support", "Enhanced Custom Integrations", "On-site Training & Setup"]
                     }
                 ];
 
@@ -1973,8 +1973,8 @@
                 let brandSnapshotData = generateMockBrandSnapshotData(sectorKey, brandName, selectedBrand?.subNodes || []);
                 if (selectedBrand && selectedBrand.details) {
                     // Deep merge details object
-                    brandSnapshotData = { 
-                        ...brandSnapshotData, 
+                    brandSnapshotData = {
+                        ...brandSnapshotData,
                         ...selectedBrand.details,
                         metadata: { ...brandSnapshotData.metadata, ...selectedBrand.details.metadata },
                         realTimeMetrics: { ...brandSnapshotData.realTimeMetrics, ...selectedBrand.details.realTimeMetrics },
@@ -2002,7 +2002,7 @@
                                 <p class="text-gray-400 mb-4">
                                     ${brandSnapshotData.brandName}™ is ${brandSnapshotData.intro}
                                 </p>
-                                
+                               
                                 <h5 class="text-lg font-semibold mb-2 mt-4">🎛️ Key Features</h5>
                                 <ul class="list-disc list-inside text-gray-300 ml-4 mb-6">
                                     ${brandSnapshotData.keyFeatures.map(f => `<li>${f}</li>`).join('')}
@@ -2113,7 +2113,7 @@
 
                 const sectorDispName = sectorList[sectorKey] || sectorKey.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                 const sectorDataForPricing = FAA_ZONE_INDEX_SUMMARY_DATA[sectorKey];
-                
+               
                 // Get brands from the new ALL_BRANDS_DETAILS_BY_SECTOR
                 let brandsInSector = ALL_BRANDS_DETAILS_BY_SECTOR[sectorKey] || [];
                 // Add client-added brands
@@ -2163,7 +2163,7 @@
                                 <div>
                                     <h3 class="text-2xl font-bold mb-4">${product.name}</h3>
                                     <p class="text-gray-400 mb-6">Unlock powerful features for ${product.tier} success.</p>
-                                    
+                                   
                                     <!-- Toggle Switch for Monthly/Annual -->
                                     <label class="toggle-switch">
                                         <input type="checkbox" onchange="window.toggleSubscriptionType(this.closest('.product-card'), this.checked)">
@@ -2209,7 +2209,7 @@
                 let tierMetricsHtml = `<div class="admin-panel-card mt-20">
                     <h3 class="text-2xl font-bold mb-4">Tier-Specific Metrics for ${sectorDispName}</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">`;
-                
+               
                 products.forEach(product => {
                     const tierMetrics = SECTOR_TIER_PRICING[product.tier].monthlyMetrics;
                     if (!tierMetrics) return;
@@ -2289,11 +2289,11 @@
                     const staticBrandsInSector = ALL_BRANDS_DETAILS_BY_SECTOR[sectorKey] || [];
                     const staticBrandsCount = staticBrandsInSector.length;
                     const staticNodesCount = staticBrandsInSector.flatMap(brand => brand.subNodes || []).length; // Flatten subNodes for count
-                    
+                   
                     const clientAddedBrandsInSector = clientAdminData[sectorKey]?.brands || [];
                     const adminBrandsCount = clientAddedBrandsInSector.length;
-                    const adminNodesCount = clientAddedBrandsInSector.flatMap(brand => brand.subNodes || []).length; 
-                    
+                    const adminNodesCount = clientAddedBrandsInSector.flatMap(brand => brand.subNodes || []).length;
+                   
                     const totalCoreBrands = staticBrandsCount + adminBrandsCount;
                     const totalNodes = staticNodesCount + adminNodesCount;
 
@@ -2305,7 +2305,7 @@
                     tempSignalZones += Math.floor(totalCoreBrands / 3);
                     tempScrollGridIndex += (totalCoreBrands + totalNodes);
                 }
-                
+               
                 currentGlobalMetrics.activeNodes = tempActiveNodes;
                 currentGlobalMetrics.licensesActive = tempLicensesActive;
                 currentGlobalMetrics.vaultDeployments = Math.round(tempVaultDeployments);
@@ -2330,7 +2330,7 @@
                 const ctx = ctxEl.getContext("2d");
 
                 if (pulseChartInstance) { pulseChartInstance.destroy(); }
-                
+               
                 calculateGlobalMetrics();
                 chartDataPoints.activeNodes = Array(10).fill(currentGlobalMetrics.activeNodes);
                 chartDataPoints.licensesActive = Array(10).fill(currentGlobalMetrics.licensesActive);
@@ -2360,7 +2360,7 @@
 
             function updateDynamicPulseChart() {
                 if (!pulseChartInstance) return;
-                
+               
                 calculateGlobalMetrics();
 
                 chartDataPoints.activeNodes.shift();
@@ -2370,11 +2370,11 @@
                 chartDataPoints.activeNodes.push(currentGlobalMetrics.activeNodes);
                 chartDataPoints.licensesActive.push(currentGlobalMetrics.licensesActive);
                 chartDataPoints.vaultDeployments.push(currentGlobalMetrics.vaultDeployments);
-                
+               
                 pulseChartInstance.data.datasets[0].data = [...chartDataPoints.activeNodes];
                 pulseChartInstance.data.datasets[1].data = [...chartDataPoints.licensesActive];
                 pulseChartInstance.data.datasets[2].data = [...chartDataPoints.vaultDeployments];
-                
+               
                 pulseChartInstance.update();
             }
 
@@ -2388,7 +2388,7 @@
                 tableBody.innerHTML = ''; // Clear existing content
 
                 const sectorsToDisplay = Object.keys(FAA_ZONE_INDEX_SUMMARY_DATA);
-                
+               
                 sectorsToDisplay.sort((a, b) => {
                     const nameA = sectorList[a] || a;
                     const nameB = sectorList[b] || b;
@@ -2407,7 +2407,7 @@
                     const staticBrandsInSector = ALL_BRANDS_DETAILS_BY_SECTOR[sectorKey] || [];
                     const staticBrandsCount = staticBrandsInSector.length;
                     const staticNodesCount = staticBrandsInSector.flatMap(brand => brand.subNodes || []).length;
-                    
+                   
                     const clientAddedBrandsInSector = clientAdminData[sectorKey]?.brands || [];
                     const adminBrandsCount = clientAddedBrandsInSector.length;
                     const adminNodesCount = clientAddedBrandsInSector.flatMap(brand => brand.subNodes || []).length;
@@ -2418,7 +2418,7 @@
 
                     const row = tableBody.insertRow();
                     row.className = 'table-row-style'; // Apply the defined row style
-                    
+                   
                     row.innerHTML = `
                         <td class="table-cell-padding text-xl">${summary.glyph}</td>
                         <td class="table-cell-padding font-semibold">${displayName}</td>
@@ -2517,7 +2517,7 @@
                     default: return currencyCode;
                 }
             }
-            
+           
             // Function to update prices in the Sector View dynamically
             function updatePricesInSectorView(priceSpans, selectedCurrency) {
                 const selectedSymbol = getCurrencySymbol(selectedCurrency);
@@ -2543,12 +2543,12 @@
             // --- PayPal Related Functions for Admin Portal (Deploy Plan) ---
             const YOUR_PAYPAL_PRODUCT_ID = 'YOUR_STATIC_PAYPAL_PRODUCT_ID_HERE';
             const PAYPAL_PLAN_IDS = {
-                "Agriculture & Biotech Starter Package_MONTHLY": "P-YOUR_AGRI_STARTER_MONTHLY_LIVE_PLAN_ID", 
-                "Agriculture & Biotech Starter Package_ANNUAL": "P-YOUR_AGRI_STARTER_ANNUAL_LIVE_PLAN_ID", 
-                "Agriculture & Biotech Pro Package_MONTHLY": "P-YOUR_AGRI_PRO_MONTHLY_LIVE_PLAN_ID", 
-                "Agriculture & Biotech Pro Package_ANNUAL": "P-YOUR_AGRI_PRO_ANNUAL_LIVE_PLAN_ID", 
-                "Agriculture & Biotech Enterprise Package_MONTHLY": "P-YOUR_AGRI_ENTERPRISE_MONTHLY_LIVE_PLAN_ID", 
-                "Agriculture & Biotech Enterprise Package_ANNUAL": "P-YOUR_AGRI_ENTERPRISE_ANNUAL_LIVE_PLAN_ID", 
+                "Agriculture & Biotech Starter Package_MONTHLY": "P-YOUR_AGRI_STARTER_MONTHLY_LIVE_PLAN_ID",
+                "Agriculture & Biotech Starter Package_ANNUAL": "P-YOUR_AGRI_STARTER_ANNUAL_LIVE_PLAN_ID",
+                "Agriculture & Biotech Pro Package_MONTHLY": "P-YOUR_AGRI_PRO_MONTHLY_LIVE_PLAN_ID",
+                "Agriculture & Biotech Pro Package_ANNUAL": "P-YOUR_AGRI_PRO_ANNUAL_LIVE_PLAN_ID",
+                "Agriculture & Biotech Enterprise Package_MONTHLY": "P-YOUR_AGRI_ENTERPRISE_MONTHLY_LIVE_PLAN_ID",
+                "Agriculture & Biotech Enterprise Package_ANNUAL": "P-YOUR_AGRI_ENTERPRISE_ANNUAL_LIVE_PLAN_ID",
             };
 
             const CURRENT_USER_ID = 'CURRENT_LOGGED_IN_USER_ID';
@@ -2609,8 +2609,8 @@
                             sectorKey: sectorKey,
                             sectorDisplayName: sectorDisplayName,
                             monthlyPrices: monthlyPrices,
-                            annualPrices: annualPrices, 
-                            currencyCode: 'ZAR', 
+                            annualPrices: annualPrices,
+                            currencyCode: 'ZAR',
                             tierPricingInfo: SECTOR_TIER_PRICING
                         })
                     });
@@ -2753,4 +2753,3 @@
     </script>
 </body>
 </html>
-

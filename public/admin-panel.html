@@ -794,262 +794,263 @@
             }
         }
     
-            // --- Admin Panel Core Functions ---
-            async function loadInitialBackendData() {
-                try {
-                    // Fetch static brand data from your local Express server (server/server.js)
-                    const response = await fetch(`${BACKEND_LOCAL_SERVER_URL}/api/sectors`);
-                    if (!response.ok) {
-                        throw new Error(`Failed to fetch sectors from local backend: ${response.status} ${response.statusText}`);
-                    }
-                    const backendData = await response.json();
-                    
-                    // Merge backend data into clientAdminData (or a new unified data structure)
-                    // This ensures local changes and backend data are combined for display.
-                    for (const sectorKey in backendData) {
-                        if (sectorList[sectorKey]) { // Only process known sectors
-                            if (!clientAdminData[sectorKey]) {
-                                clientAdminData[sectorKey] = { brands: [] };
-                            }
-                            // Merge backend brands into clientAdminData, avoiding duplicates
-                            backendData[sectorKey].brands.forEach((bName, index) => {
-                                if (!clientAdminData[sectorKey].brands.some(cb => cb.name === bName)) {
-                                    clientAdminData[sectorKey].brands.push({ name: bName, subNodes: backendData[sectorKey].nodes[index] || [], details: {} });
-                                }
-                            });
-                        }
-                    try {
-                        // Add the code that should be inside the try block here
-                    } catch (err) {
-                        console.error("❌ Could not load initial backend data:", err);
-                        window.showTemporaryMessage(`🚨 Local Backend Error: ${err.message}. Ensure your 'server/server.js' is running on ${BACKEND_LOCAL_SERVER_URL}.`, 'error');
-                    }
-            try {
-                console.log("Initial backend data loaded and merged:", clientAdminData);
-            } catch (err) {
-                console.error("❌ Could not load initial backend data:", err);
-                window.showTemporaryMessage(`🚨 Local Backend Error: ${err.message}. Ensure your 'server/server.js' is running on ${BACKEND_LOCAL_SERVER_URL}.`, 'error');
-            }
-                                console.error("❌ Could not load initial backend data:", err);
-                                window.showTemporaryMessage(`🚨 Local Backend Error: ${err.message}. Ensure your 'server/server.js' is running on ${BACKEND_LOCAL_SERVER_URL}.`, 'error');
-                            }
-                        
-            
-            function populateSectorSelect() {
-                const select = document.getElementById('sectorSelect');
-                if (!select) return;
-                select.innerHTML = ''; 
-                Object.entries(sectorList).forEach(([key, label]) => {
-                    if (key !== 'admin-panel') { 
-                        const option = document.createElement('option');
-                        option.value = key;
-                        option.textContent = label;
-                        select.appendChild(option);
+// --- Admin Panel Core Functions ---
+async function loadInitialBackendData() {
+    try {
+        // Fetch static brand data from your local Express server (server/server.js)
+        const response = await fetch(`${BACKEND_LOCAL_SERVER_URL}/api/sectors`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch sectors from local backend: ${response.status} ${response.statusText}`);
+        }
+        const backendData = await response.json();
+        
+        // Merge backend data into clientAdminData (or a new unified data structure)
+        // This ensures local changes and backend data are combined for display.
+        for (const sectorKey in backendData) {
+            if (sectorList[sectorKey]) { // Only process known sectors
+                if (!clientAdminData[sectorKey]) {
+                    clientAdminData[sectorKey] = { brands: [] };
+                }
+                // Merge backend brands into clientAdminData, avoiding duplicates
+                backendData[sectorKey].brands.forEach((bName, index) => {
+                    if (!clientAdminData[sectorKey].brands.some(cb => cb.name === bName)) {
+                        clientAdminData[sectorKey].brands.push({ name: bName, subNodes: backendData[sectorKey].nodes[index] || [], details: {} });
                     }
                 });
             }
-            
-            function populateSectorViewSelect() {
-                const select = document.getElementById('sectorViewSelect');
-                if (!select) return;
-                select.innerHTML = '';
+        }
+        try {
+            // Add the code that should be inside the try block here
+        } catch (err) {
+            console.error("❌ Could not load initial backend data:", err);
+            window.showTemporaryMessage(`🚨 Local Backend Error: ${err.message}. Ensure your 'server/server.js' is running on ${BACKEND_LOCAL_SERVER_URL}.`, 'error');
+        }
+        try {
+            console.log("Initial backend data loaded and merged:", clientAdminData);
+        } catch (err) {
+            console.error("❌ Could not load initial backend data:", err);
+            window.showTemporaryMessage(`🚨 Local Backend Error: ${err.message}. Ensure your 'server/server.js' is running on ${BACKEND_LOCAL_SERVER_URL}.`, 'error');
+        }
+        console.error("❌ Could not load initial backend data:", err);
+        window.showTemporaryMessage(`🚨 Local Backend Error: ${err.message}. Ensure your 'server/server.js' is running on ${BACKEND_LOCAL_SERVER_URL}.`, 'error');
+    }
+}
 
-                const defaultOption = document.createElement('option');
-                defaultOption.value = '';
-                defaultOption.textContent = '--- Select a Sector ---';
-                select.appendChild(defaultOption);
+function populateSectorSelect() {
+    const select = document.getElementById('sectorSelect');
+    if (!select) return;
+    select.innerHTML = ''; 
+    Object.entries(sectorList).forEach(([key, label]) => {
+        if (key !== 'admin-panel') { 
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = label;
+            select.appendChild(option);
+        }
+    });
+}
 
-                Object.entries(sectorList).forEach(([key, label]) => {
-                    if (key !== 'admin-panel') {
-                        const option = document.createElement('option');
-                        option.value = key;
-                        option.textContent = label;
-                        select.appendChild(option);
-                    }
-                });
+function populateSectorViewSelect() {
+    const select = document.getElementById('sectorViewSelect');
+    if (!select) return;
+    select.innerHTML = '';
 
-                select.removeEventListener('change', handleSectorViewChange); 
-                select.addEventListener('change', handleSectorViewChange);
-            }
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = '--- Select a Sector ---';
+    select.appendChild(defaultOption);
 
-            function handleSectorViewChange(event) {
-                const selectedSectorKey = event.target.value;
-                if (activeBrandButton) {
-                    activeBrandButton.classList.remove('active');
-                    activeBrandButton = null;
-                }
-                document.getElementById('brandDetailsContainer').innerHTML = '';
+    Object.entries(sectorList).forEach(([key, label]) => {
+        if (key !== 'admin-panel') {
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = label;
+            select.appendChild(option);
+        }
+    });
 
-                if (selectedSectorKey) {
-                    displaySectorSpecificProducts(selectedSectorKey);
-                } else {
-                    document.getElementById('dynamicSectorDashboard').innerHTML = '<p class="text-gray-400 col-span-full text-center mt-8">Select a sector to view its detailed dashboard.</p>';
-                }
-            }
+    select.removeEventListener('change', handleSectorViewChange); 
+    select.addEventListener('change', handleSectorViewChange);
+}
 
-            async function addBrandToSector() {
-                const sectorSelect = document.getElementById("sectorSelect");
-                const brandInput = document.getElementById("brandInput");
-                const subnodesInput = document.getElementById("subnodesInput");
-                const adminStatus = document.getElementById("adminStatus");
-                const addBrandBtn = document.getElementById("addBrandBtn");
+function handleSectorViewChange(event) {
+    const selectedSectorKey = event.target.value;
+    if (activeBrandButton) {
+        activeBrandButton.classList.remove('active');
+        activeBrandButton = null;
+    }
+    document.getElementById('brandDetailsContainer').innerHTML = '';
 
-                const sectorKey = sectorSelect.value;
-                const brandName = brandInput.value.trim();
-                const subnodesArray = subnodesInput.value.split(",").map(n => n.trim()).filter(Boolean);
+    if (selectedSectorKey) {
+        displaySectorSpecificProducts(selectedSectorKey);
+    } else {
+        document.getElementById('dynamicSectorDashboard').innerHTML = '<p class="text-gray-400 col-span-full text-center mt-8">Select a sector to view its detailed dashboard.</p>';
+    }
+}
 
-                if (!brandName || subnodesArray.length === 0) {
-                    adminStatus.textContent = "⚠️ Please fill in both brand name and at least one subnode.";
-                    adminStatus.classList.remove('text-green-500', 'text-blue-500');
-                    adminStatus.classList.add('text-red-500');
-                    addBrandBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
-                    addBrandBtn.classList.add('bg-red-500', 'hover:bg-red-600');
-                    setTimeout(() => {
-                        adminStatus.textContent = "Ready to receive input.";
-                        adminStatus.classList.remove('text-red-500');
-                        addBrandBtn.classList.remove('bg-red-500', 'hover:bg-red-600');
-                        addBrandBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
-                    }, 3000);
-                    return;
-                }
+async function addBrandToSector() {
+    const sectorSelect = document.getElementById("sectorSelect");
+    const brandInput = document.getElementById("brandInput");
+    const subnodesInput = document.getElementById("subnodesInput");
+    const adminStatus = document.getElementById("adminStatus");
+    const addBrandBtn = document.getElementById("addBrandBtn");
 
-                adminStatus.textContent = `Attempting to add "${brandName}" to ${sectorList[sectorKey]} (via Backend)...`;
-                adminStatus.classList.remove('text-green-500', 'text-red-500');
-                adminStatus.classList.add('text-blue-500'); // Info color
+    const sectorKey = sectorSelect.value;
+    const brandName = brandInput.value.trim();
+    const subnodesArray = subnodesInput.value.split(",").map(n => n.trim()).filter(Boolean);
 
-                try {
-                    // Send data to your local Express backend
-                    const response = await fetch(`${BACKEND_LOCAL_SERVER_URL}/api/sectors`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ sector: sectorKey, brand: brandName, subnodes: subnodesArray })
-                    });
+    if (!brandName || subnodesArray.length === 0) {
+        adminStatus.textContent = "⚠️ Please fill in both brand name and at least one subnode.";
+        adminStatus.classList.remove('text-green-500', 'text-blue-500');
+        adminStatus.classList.add('text-red-500');
+        addBrandBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+        addBrandBtn.classList.add('bg-red-500', 'hover:bg-red-600');
+        setTimeout(() => {
+            adminStatus.textContent = "Ready to receive input.";
+            adminStatus.classList.remove('text-red-500');
+            addBrandBtn.classList.remove('bg-red-500', 'hover:bg-red-600');
+            addBrandBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+        }, 3000);
+        return;
+    }
 
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.message || `Backend error: ${response.status} ${response.statusText}`);
-                    }
+    adminStatus.textContent = `Attempting to add "${brandName}" to ${sectorList[sectorKey]} (via Backend)...`;
+    adminStatus.classList.remove('text-green-500', 'text-red-500');
+    adminStatus.classList.add('text-blue-500'); // Info color
 
-                    const data = await response.json();
-                    
-                    if (data.success) {
-                        // Only add to clientAdminData if backend reports success (e.g., not a duplicate)
-                        if (!clientAdminData[sectorKey]) clientAdminData[sectorKey] = { brands: [] };
-                        clientAdminData[sectorKey].brands.push({ name: brandName, subNodes: subnodesArray, details: {} });
-                        localStorage.setItem("clientAdminData", JSON.stringify(clientAdminData));
+    try {
+        // Send data to your local Express backend
+        const response = await fetch(`${BACKEND_LOCAL_SERVER_URL}/api/sectors`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sector: sectorKey, brand: brandName, subnodes: subnodesArray })
+        });
 
-                        adminStatus.textContent = `✅ Added ${brandName} to ${sectorList[sectorKey]} (Backend & Client-Side).`;
-                        adminStatus.classList.remove('text-blue-500', 'text-red-500');
-                        adminStatus.classList.add('text-green-500');
-                        addBrandBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
-                        addBrandBtn.classList.add('bg-green-500', 'hover:bg-green-600');
-                        addBrandBtn.innerHTML = '✔️ Added!';
-                    } else {
-                         adminStatus.textContent = `ℹ️ ${data.message}`; // E.g., "Brand already exists"
-                         adminStatus.classList.remove('text-green-500', 'text-red-500');
-                         adminStatus.classList.add('text-blue-500');
-                    }
-                    
-                    renderFaaZoneIndexTable(); // Re-render FAA Zone Index table
-                    calculateGlobalMetrics(); // Recalculate metrics
-                    if (currentActivePanelId === 'sector-view-section' && document.getElementById('sectorViewSelect').value === sectorKey) {
-                        displaySectorSpecificProducts(sectorKey); // Re-render sector view
-                    }
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || `Backend error: ${response.status} ${response.statusText}`);
+        }
 
-                    brandInput.value = "";
-                    subnodesInput.value = "";
+        const data = await response.json();
+        
+        if (data.success) {
+            // Only add to clientAdminData if backend reports success (e.g., not a duplicate)
+            if (!clientAdminData[sectorKey]) clientAdminData[sectorKey] = { brands: [] };
+            clientAdminData[sectorKey].brands.push({ name: brandName, subNodes: subnodesArray, details: {} });
+            localStorage.setItem("clientAdminData", JSON.stringify(clientAdminData));
 
-                } catch (err) {
-                    console.error("❌ Error adding brand to backend:", err);
-                    adminStatus.textContent = `❌ Failed to add brand: ${err.message}. Is local server running?`;
-                    adminStatus.classList.remove('text-green-500', 'text-blue-500');
-                    adminStatus.classList.add('text-red-500');
-                    addBrandBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
-                    addBrandBtn.classList.add('bg-red-500', 'hover:bg-red-600');
-                    addBrandBtn.innerHTML = 'Failed!';
-                } finally {
-                    setTimeout(() => {
-                        adminStatus.textContent = "Ready to receive input.";
-                        adminStatus.classList.remove('text-green-500', 'text-red-500', 'text-blue-500');
-                        addBrandBtn.classList.remove('bg-green-500', 'hover:bg-green-600', 'bg-red-500', 'hover:bg-red-600');
-                        addBrandBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
-                        addBrandBtn.innerHTML = '➕ Add Brand';
-                    }, 3000);
-                }
-            }
-            
-            function clearAdminAddedData() {
-                localStorage.removeItem("clientAdminData");
-                clientAdminData = {};
-                for (const sectorKey in sectorList) {
-                    clientAdminData[sectorKey] = { brands: [] }; 
-                }
-                renderFaaZoneIndexTable();
-                calculateGlobalMetrics();
-                document.getElementById('dynamicSectorDashboard').innerHTML = '<p class="text-gray-400 col-span-full text-center mt-8">Select a sector to view its detailed dashboard.</p>';
-                document.getElementById('brandDetailsContainer').innerHTML = '';
+            adminStatus.textContent = `✅ Added ${brandName} to ${sectorList[sectorKey]} (Backend & Client-Side).`;
+            adminStatus.classList.remove('text-blue-500', 'text-red-500');
+            adminStatus.classList.add('text-green-500');
+            addBrandBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+            addBrandBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+            addBrandBtn.innerHTML = '✔️ Added!';
+        } else {
+             adminStatus.textContent = `ℹ️ ${data.message}`; // E.g., "Brand already exists"
+             adminStatus.classList.remove('text-green-500', 'text-red-500');
+             adminStatus.classList.add('text-blue-500');
+        }
+        
+        renderFaaZoneIndexTable(); // Re-render FAA Zone Index table
+        calculateGlobalMetrics(); // Recalculate metrics
+        if (currentActivePanelId === 'sector-view-section' && document.getElementById('sectorViewSelect').value === sectorKey) {
+            displaySectorSpecificProducts(sectorKey); // Re-render sector view
+        }
 
-                const adminStatus = document.getElementById("adminStatus");
-                adminStatus.textContent = "🗑️ Client-side admin data cleared.";
-                adminStatus.classList.remove('text-red-500');
-                adminStatus.classList.add('text-green-500');
-                setTimeout(() => { 
-                    adminStatus.textContent = "Ready to receive input.";
-                    adminStatus.classList.remove('text-green-500');
-                }, 3000);
-            }
-            
-            function toggleSubscriptionType(cardElement, isAnnualChecked) {
-                const priceSpan = cardElement.querySelector('.price-display');
-                const originalMonthlyPrice = parseFloat(priceSpan.dataset.originalMonthlyPrice);
-                const originalAnnualPrice = parseFloat(priceSpan.dataset.originalAnnualPrice);
-                const currentCurrency = priceSpan.dataset.currencyCode || BASE_CURRENCY; 
+        brandInput.value = "";
+        subnodesInput.value = "";
 
-                let newPrice;
-                let newBillingCycle;
-                let suffix;
+    } catch (err) {
+        console.error("❌ Error adding brand to backend:", err);
+        adminStatus.textContent = `❌ Failed to add brand: ${err.message}. Is local server running?`;
+        adminStatus.classList.remove('text-green-500', 'text-blue-500');
+        adminStatus.classList.add('text-red-500');
+        addBrandBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+        addBrandBtn.classList.add('bg-red-500', 'hover:bg-red-600');
+        addBrandBtn.innerHTML = 'Failed!';
+    } finally {
+        setTimeout(() => {
+            adminStatus.textContent = "Ready to receive input.";
+            adminStatus.classList.remove('text-green-500', 'text-red-500', 'text-blue-500');
+            addBrandBtn.classList.remove('bg-green-500', 'hover:bg-green-600', 'bg-red-500', 'hover:bg-red-600');
+            addBrandBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+            addBrandBtn.innerHTML = '➕ Add Brand';
+        }, 3000);
+    }
+}
 
-                if (isAnnualChecked) { 
-                    newPrice = originalAnnualPrice;
-                    newBillingCycle = "ANNUAL";
-                    suffix = "/ year";
-                } else { 
-                    newPrice = originalMonthlyPrice;
-                    newBillingCycle = "MONTHLY";
-                    suffix = "/ month";
-                }
+function clearAdminAddedData() {
+    localStorage.removeItem("clientAdminData");
+    clientAdminData = {};
+    for (const sectorKey in sectorList) {
+        clientAdminData[sectorKey] = { brands: [] }; 
+    }
+    renderFaaZoneIndexTable();
+    calculateGlobalMetrics();
+    document.getElementById('dynamicSectorDashboard').innerHTML = '<p class="text-gray-400 col-span-full text-center mt-8">Select a sector to view its detailed dashboard.</p>';
+    document.getElementById('brandDetailsContainer').innerHTML = '';
 
-                let convertedPrice = newPrice;
-                if (currentCurrency !== BASE_CURRENCY && exchangeRates[currentCurrency]) {
-                    convertedPrice = newPrice * exchangeRates[currentCurrency];
-                }
-                
-                priceSpan.innerHTML = `${window.getCurrencySymbol(currentCurrency)}${convertedPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span class="text-xl text-gray-400">${suffix}</span>`;
+    const adminStatus = document.getElementById("adminStatus");
+    adminStatus.textContent = "🗑️ Client-side admin data cleared.";
+    adminStatus.classList.remove('text-red-500');
+    adminStatus.classList.add('text-green-500');
+    setTimeout(() => { 
+        adminStatus.textContent = "Ready to receive input.";
+        adminStatus.classList.remove('text-green-500');
+    }, 3000);
+}
 
-                const paypalButtonContainer = cardElement.querySelector('.paypal-button-container-dynamic');
-                if (paypalButtonContainer) {
-                    // Update the data attributes on the container
-                    paypalButtonContainer.dataset.amount = newPrice.toFixed(2); // Store original ZAR amount
-                    paypalButtonContainer.dataset.billingCycle = newBillingCycle;
-                    const basePlanName = paypalButtonContainer.dataset.itemName.replace(/<.*?>/g, '').trim();
-                    paypalButtonContainer.dataset.planKey = `${basePlanName}_${newBillingCycle}`;
+function toggleSubscriptionType(cardElement, isAnnualChecked) {
+    const priceSpan = cardElement.querySelector('.price-display');
+    const originalMonthlyPrice = parseFloat(priceSpan.dataset.originalMonthlyPrice);
+    const originalAnnualPrice = parseFloat(priceSpan.dataset.originalAnnualPrice);
+    const currentCurrency = priceSpan.dataset.currencyCode || BASE_CURRENCY; 
 
-                    // Re-render the PayPal button for this specific card
-                    renderPayPalButtonsForContainer(paypalButtonContainer.id);
-                }
-            }
+    let newPrice;
+    let newBillingCycle;
+    let suffix;
 
-            function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = []) {
-                let subnodes = explicitSubnodes;
-                if (subnodes.length === 0) {
-                    const staticSectorBrands = ALL_BRANDS_DETAILS_BY_SECTOR[sectorKey] || [];
-                    const staticBrandEntry = staticSectorBrands.find(b => b.name === brandName);
-                    if (staticBrandEntry && staticBrandEntry.subNodes && staticBrandEntry.subNodes.length > 0) {
-                        subnodes = staticBrandEntry.subNodes;
-                    } else {
-                        subnodes = [`MockNode ${brandName.slice(0,3).toUpperCase()}A™`, `MockNode ${brandName.slice(0,3).toUpperCase()}B™`];
-                    }
-                }
+    if (isAnnualChecked) { 
+        newPrice = originalAnnualPrice;
+        newBillingCycle = "ANNUAL";
+        suffix = "/ year";
+    } else { 
+        newPrice = originalMonthlyPrice;
+        newBillingCycle = "MONTHLY";
+        suffix = "/ month";
+    }
+
+    let convertedPrice = newPrice;
+    if (currentCurrency !== BASE_CURRENCY && exchangeRates[currentCurrency]) {
+        convertedPrice = newPrice * exchangeRates[currentCurrency];
+    }
+    
+    priceSpan.innerHTML = `${window.getCurrencySymbol(currentCurrency)}${convertedPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span class="text-xl text-gray-400">${suffix}</span>`;
+
+    const paypalButtonContainer = cardElement.querySelector('.paypal-button-container-dynamic');
+    if (paypalButtonContainer) {
+        // Update the data attributes on the container
+        paypalButtonContainer.dataset.amount = newPrice.toFixed(2); // Store original ZAR amount
+        paypalButtonContainer.dataset.billingCycle = newBillingCycle;
+        const basePlanName = paypalButtonContainer.dataset.itemName.replace(/<.*?>/g, '').trim();
+        paypalButtonContainer.dataset.planKey = `${basePlanName}_${newBillingCycle}`;
+
+        // Re-render the PayPal button for this specific card
+        renderPayPalButtonsForContainer(paypalButtonContainer.id);
+    }
+}
+
+function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = []) {
+    let subnodes = explicitSubnodes;
+    if (subnodes.length === 0) {
+        const staticSectorBrands = ALL_BRANDS_DETAILS_BY_SECTOR[sectorKey] || [];
+        const staticBrandEntry = staticSectorBrands.find(b => b.name === brandName);
+        if (staticBrandEntry && staticBrandEntry.subNodes && staticBrandEntry.subNodes.length > 0) {
+            subnodes = staticBrandEntry.subNodes;
+        } else {
+            subnodes = [`MockNode ${brandName.slice(0,3).toUpperCase()}A™`, `MockNode ${brandName.slice(0,3).toUpperCase()}B™`];
+        }
+    }
                 
                 const sectorInfo = FAA_ZONE_INDEX_SUMMARY_DATA[sectorKey] || {};
                 const sectorDisplayName = sectorList[sectorKey] || sectorKey.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());

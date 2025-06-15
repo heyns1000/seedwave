@@ -1961,18 +1961,7 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
             window._pulseChartInterval = setInterval(updateDynamicPulseChart, 3000); 
         });
 
-        function showAdminSection(sectionId, clickedLink) {
-            document.querySelectorAll('section[id$="-section"]').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.admin-nav-scroll a').forEach(link => link.classList.remove('active'));
 
-            const section = document.getElementById(sectionId);
-            if (section) {
-                section.classList.remove('hidden');
-                if (clickedLink) {
-                    clickedLink.classList.add('active');
-                }
-            }
-        }
 
         function addBrandToSector() {
             // Add brand logic here

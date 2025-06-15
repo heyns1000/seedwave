@@ -803,7 +803,7 @@ async function loadInitialBackendData() {
             throw new Error(`Failed to fetch sectors from local backend: ${response.status} ${response.statusText}`);
         }
         const backendData = await response.json();
-        
+
         // Merge backend data into clientAdminData (or a new unified data structure)
         // This ensures local changes and backend data are combined for display.
         for (const sectorKey in backendData) {
@@ -819,18 +819,10 @@ async function loadInitialBackendData() {
                 });
             }
         }
-        try {
-            // Add the code that should be inside the try block here
-        } catch (err) {
-            console.error("❌ Could not load initial backend data:", err);
-            window.showTemporaryMessage(`🚨 Local Backend Error: ${err.message}. Ensure your 'server/server.js' is running on ${BACKEND_LOCAL_SERVER_URL}.`, 'error');
-        }
-        try {
-            console.log("Initial backend data loaded and merged:", clientAdminData);
-        } catch (err) {
-            console.error("❌ Could not load initial backend data:", err);
-            window.showTemporaryMessage(`🚨 Local Backend Error: ${err.message}. Ensure your 'server/server.js' is running on ${BACKEND_LOCAL_SERVER_URL}.`, 'error');
-        }
+
+        console.log("Initial backend data loaded and merged:", clientAdminData);
+
+    } catch (err) {
         console.error("❌ Could not load initial backend data:", err);
         window.showTemporaryMessage(`🚨 Local Backend Error: ${err.message}. Ensure your 'server/server.js' is running on ${BACKEND_LOCAL_SERVER_URL}.`, 'error');
     }

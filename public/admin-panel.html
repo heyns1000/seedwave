@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚙️ Admin Portal - FAA.ZONE™</title> <script src="https://cdn.tailwindcss.com"></script>
+    <title>⚙️ Heyns Admin Portal - FAA.ZONE™</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
@@ -50,8 +51,6 @@
         }
 
         /* Call-to-action Button (cta-button) */
-        /* Note: PayPal buttons will render within a div, not on this directly. */
-        /* This styling is more for other generic CTA buttons now. */
         .cta-button {
             background: linear-gradient(45deg, #6B46C1, #8B5CF6); /* Purple gradient */
             color: white;
@@ -466,12 +465,10 @@
             background-color: transparent !important; /* Ensure canvas background is transparent */
         }
         /* Added for PayPal Error Message Display */
-        .paypal-error-message {
+        .paypal-message { /* Unified class for both error and success */
             position: fixed;
             top: 20px;
             right: 20px;
-            background-color: #ffdddd;
-            color: #d8000c;
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
@@ -481,11 +478,22 @@
             text-align: center;
             animation: fadeInOut 5s forwards;
         }
-        /* Success message styling, extends paypal-error-message */
-        .paypal-success-message {
+        /* Specific styling for error messages */
+        .paypal-message.error {
+            background-color: #ffdddd;
+            color: #d8000c;
+        }
+        /* Specific styling for success messages */
+        .paypal-message.success {
             background-color: #d4edda;
             color: #155724;
         }
+        /* Specific styling for info messages */
+        .paypal-message.info {
+            background-color: #d1ecf1; /* Light blue */
+            color: #0c5460; /* Darker blue */
+        }
+
 
         @keyframes fadeInOut {
             0% { opacity: 0; transform: translateY(-20px); }
@@ -570,6 +578,15 @@
         .snapshot-box .close-button:hover {
             color: #EF4444;
         }
+
+        /* Specific styling for the PayPal button container */
+        .paypal-button-container {
+            min-height: 50px; /* Ensure space for the button */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1rem; /* Space from features */
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -589,7 +606,8 @@
 
     <main class="main-content p-6 md:p-12 flex-grow">
         <header class="admin-main-header">
-            <h1 class="text-3xl font-extrabold">⚙️ Admin Portal</h1> <p class="text-sm mt-1">Corebrands management & AI logic deployment center.</p>
+            <h1 class="text-3xl font-extrabold">⚙️ Heyns Admin Portal</h1>
+            <p class="text-sm mt-1">Corebrands management & AI logic deployment center.</p>
         </header>
 
         <nav class="admin-nav-scroll flex flex-wrap gap-x-4 gap-y-2 mb-8">
@@ -740,318 +758,912 @@
     <script src="https://www.paypal.com/sdk/js?client-id=P-07F980334R518562XNBHLNJY&currency=ZAR&vault=true&intent=subscription"></script>
 
     <script type="module">
-        document.addEventListener('DOMContentLoaded', async () => {
-            // First, load brands and other data from your local Express backend
-            await loadInitialBackendData(); 
-            // Then, fetch real (mock) PayPal Plan IDs from your Vercel PayPal API
-            await fetchPayPalPlanIDs(); 
-            // Fetch exchange rates
-            await fetchExchangeRates(); 
-    
-            populateSectorSelect();
-            populateSectorViewSelect();
+        // --- Global Utility Function: showTemporaryMessage ---
+        // Moved outside IIFE or explicitly attached to window for global access
+        window.showTemporaryMessage = function(message, type = 'info') {
+            let messageDiv = document.getElementById('paypalGlobalMessage');
+            if (!messageDiv) {
+                messageDiv = document.createElement('div');
+                messageDiv.id = 'paypalGlobalMessage';
+                messageDiv.className = 'paypal-message opacity-0 transition-opacity duration-300 ease-in-out'; // Use unified class
+                document.body.appendChild(messageDiv);
+            }
+            messageDiv.textContent = message;
+            messageDiv.classList.remove('error', 'success', 'info'); // Clear previous type classes
             
-            document.querySelectorAll('.admin-nav-link').forEach(link => {
-                link.addEventListener('click', (event) => {
-                    event.preventDefault(); 
-                    const sectionId = event.target.dataset.section;
-                    showAdminSection(sectionId, event.target);
-                });
-            });
-    
-            const initialNavLink = document.querySelector('.admin-nav-link[data-section="add-brand-section"]');
-            if (initialNavLink) {
-                showAdminSection('add-brand-section', initialNavLink);
+            switch (type) {
+                case 'success':
+                    messageDiv.classList.add('success');
+                    break;
+                case 'error':
+                    messageDiv.classList.add('error');
+                    break;
+                case 'info':
+                default:
+                    messageDiv.classList.add('info');
+                    break;
             }
-    
-            document.getElementById('addBrandBtn').addEventListener('click', addBrandToSector);
-            document.getElementById('clearAdminDataBtn').addEventListener('click', clearAdminAddedData);
-    
-            const sectorCurrencySelect = document.getElementById('sector-currency-select');
-            if (sectorCurrencySelect) {
-                sectorCurrencySelect.addEventListener('change', (event) => {
-                    const selectedCurrency = event.target.value;
-                    const sectorPriceDisplays = document.querySelectorAll('#dynamicSectorDashboard .price-display');
-                    updatePricesInSectorView(sectorPriceDisplays, selectedCurrency);
-                });
-            }
-    
-            calculateGlobalMetrics();
-            renderDynamicPulseChart();
-            window._pulseChartInterval = setInterval(updateDynamicPulseChart, 3000); 
-        });
-    
-        function showAdminSection(sectionId, clickedLink) {
-            document.querySelectorAll('section[id$="-section"]').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.admin-nav-scroll a').forEach(link => link.classList.remove('active'));
-    
-            const section = document.getElementById(sectionId);
-            if (section) {
-                section.classList.remove('hidden');
-                if (clickedLink) {
-                    clickedLink.classList.add('active');
-                }
-            }
-        }
-    
-// --- Admin Panel Core Functions ---
-async function loadInitialBackendData() {
-    try {
-        // Fetch static brand data from your local Express server (server/server.js)
-        const response = await fetch(`${BACKEND_LOCAL_SERVER_URL}/api/sectors`);
-        if (!response.ok) {
-            throw new Error(`Failed to fetch sectors from local backend: ${response.status} ${response.statusText}`);
-        }
-        const backendData = await response.json();
+            
+            // Remove any existing fade-out animation to restart it
+            messageDiv.style.animation = 'none';
+            messageDiv.offsetHeight; /* trigger reflow */
+            messageDiv.style.animation = null;
 
-        // Merge backend data into clientAdminData (or a new unified data structure)
-        // This ensures local changes and backend data are combined for display.
-        for (const sectorKey in backendData) {
-            if (sectorList[sectorKey]) { // Only process known sectors
-                if (!clientAdminData[sectorKey]) {
-                    clientAdminData[sectorKey] = { brands: [] };
+            messageDiv.classList.add('opacity-100');
+            setTimeout(() => {
+                messageDiv.classList.remove('opacity-100');
+                setTimeout(() => { messageDiv.remove(); }, 300); // Remove after fade out
+            }, 5000); // Message visible for 5 seconds
+        };
+
+        // --- GLOBAL DATA DEFINITIONS (MOVED OUTSIDE IIFE) ---
+        // These variables need to be globally accessible for all functions.
+
+        const API_KEY = "YOUR_EXCHANGE_RATE_API_KEY"; // IMPORTANT: Replace with your actual ExchangeRate-API Key
+        const BASE_CURRENCY = "ZAR"; // Base currency for calculations
+        let exchangeRates = {}; // To store fetched exchange rates
+
+        // This flag helps prevent repeated warnings for the API key.
+        let apiKeyWarningShown = false;
+
+        // This object will store PayPal Plan IDs.
+        // As per the user's request for a streamlined approach:
+        // You should configure *ONE* generic PayPal Subscription Plan ID here that will be used as a base.
+        // In a real backend, this single plan ID would be associated with logic to determine the specific
+        // tier (Starter, Pro, Enterprise) and billing cycle (Monthly, Annual) based on the custom_id passed.
+        // REPLACE "P-YOURGLOBALBASEPLANID" with a real, active PayPal Plan ID from your PayPal Developer Account.
+        // For demonstration, all subscription attempts will use this single ID.
+        let paypalPlanIDs = {
+            "fruitful-global-base": "P-YOURGLOBALBASEPLANID",
+            // The following specific plan IDs are kept as comments for reference,
+            // but the system will primarily use "fruitful-global-base" for dynamic subscriptions.
+            // If you had unique plans for each combination, you would uncomment and populate these.
+            /*
+            "agriculture-starter-monthly": "P-XXXXXXXXXXXXXXXX",
+            "agriculture-starter-annual": "P-XXXXXXXXXXXXXXXX",
+            "agriculture-pro-monthly": "P-XXXXXXXXXXXXXXXX",
+            "agriculture-pro-annual": "P-XXXXXXXXXXXXXXXX",
+            "agriculture-enterprise-monthly": "P-XXXXXXXXXXXXXXXX",
+            "agriculture-enterprise-annual": "P-XXXXXXXXXXXXXXXX",
+            "banking-starter-monthly": "P-XXXXXXXXXXXXXXXX",
+            "banking-starter-annual": "P-XXXXXXXXXXXXXXXX",
+            "banking-pro-monthly": "P-XXXXXXXXXXXXXXXX",
+            "banking-pro-annual": "P-XXXXXXXXXXXXXXXX",
+            "banking-enterprise-monthly": "P-XXXXXXXXXXXXXXXX",
+            "banking-enterprise-annual": "P-XXXXXXXXXXXXXXXX",
+            "logistics-starter-monthly": "P-XXXXXXXXXXXXXXXX",
+            "logistics-starter-annual": "P-XXXXXXXXXXXXXXXX",
+            "logistics-pro-monthly": "P-XXXXXXXXXXXXXXXX",
+            "logistics-pro-annual": "P-XXXXXXXXXXXXXXXX",
+            "logistics-enterprise-monthly": "P-XXXXXXXXXXXXXXXX",
+            "logistics-enterprise-annual": "P-XXXXXXXXXXXXXXXX",
+            "education-ip-starter-monthly": "P-XXXXXXXXXXXXXXXX",
+            "education-ip-starter-annual": "P-XXXXXXXXXXXXXXXX",
+            "education-ip-pro-monthly": "P-XXXXXXXXXXXXXXXX",
+            "education-ip-pro-annual": "P-XXXXXXXXXXXXXXXX",
+            "education-ip-enterprise-monthly": "P-XXXXXXXXXXXXXXXX",
+            "education-ip-enterprise-annual": "P-XXXXXXXXXXXXXXXX"
+            */
+        };
+
+        const sectorList = {
+            "agriculture": "🌱 Agriculture & Biotech", "fsf": "🥦 Food, Soil & Farming",
+            "banking": "🏦 Banking & Finance", "creative": "🖋️ Creative Tech",
+            "logistics": "📦 Logistics & Packaging", "education-ip": "📚 Education & IP",
+            "fashion": "✂ Fashion & Identity", "gaming": "🎮 Gaming & Simulation",
+            "health": "🧠 Health & Hygiene", "housing": "🏗️ Housing & Infrastructure",
+            "justice": "⚖ Justice & Ethics", "knowledge": "📖 Knowledge & Archives",
+            "micromesh": "☰ Micro-Mesh Logistics", "media": "🎬 Motion, Media & Sonic",
+            "nutrition": "✿ Nutrition & Food Chain", "ai-logic": "🧠 AI, Logic & Grid", 
+            "packaging": "📦 Packaging & Materials", "quantum": "✴️ Quantum Protocols",
+            "ritual": "☯ Ritual & Culture", "saas": "🔑 SaaS & Licensing",
+            "trade": "🧺 Trade Systems", "utilities": "🔋 Utilities & Energy",
+            "voice": "🎙️ Voice & Audio", "webless": "📡 Webless Tech & Nodes",
+            "nft": "🔁 NFT & Ownership", "education-youth": "🎓 Education & Youth",
+            "zerowaste": "♻️ Zero Waste", "professional": "🧾 Professional Services",
+            "payroll-mining": "🪙 Payroll Mining & Accounting", "mining": "⛏️ Mining & Resources", 
+            "wildlife": "🦁 Wildlife & Habitat",
+            "admin-panel": "⚙️ Admin Panel" 
+        };
+
+        // Static data for FAA Zone Index, mimicking backend data structure for sectors
+        // This is simplified; your backend would likely provide more granular data
+        const FAA_ZONE_INDEX_SUMMARY_DATA = {
+            "agriculture": {
+                glyph: "🌱", monthlyFee: 1000, annualFee: 10200, payoutTier: "Tier 1", region: "Global"
+            },
+            "fsf": {
+                glyph: "🥦", monthlyFee: 1100, annualFee: 11220, payoutTier: "Tier 1", region: "Global"
+            },
+            "banking": {
+                glyph: "🏦", monthlyFee: 5000, annualFee: 51000, payoutTier: "Tier 3", region: "Global"
+            },
+            "creative": {
+                glyph: "🖋️", monthlyFee: 800, annualFee: 8160, payoutTier: "Tier 1", region: "Global"
+            },
+            "logistics": {
+                glyph: "📦", monthlyFee: 1500, annualFee: 15300, payoutTier: "Tier 2", region: "Global"
+            },
+            "education-ip": {
+                glyph: "📚", monthlyFee: 1200, annualFee: 12240, payoutTier: "Tier 2", region: "Global"
+            },
+            // Add more sectors with their summary data as needed for your index table
+            "fashion": { glyph: "✂", monthlyFee: 900, annualFee: 9180, payoutTier: "Tier 1", region: "Global" },
+            "gaming": { glyph: "🎮", monthlyFee: 1800, annualFee: 18360, payoutTier: "Tier 2", region: "Global" },
+            "health": { glyph: "🧠", monthlyFee: 2000, annualFee: 20400, payoutTier: "Tier 2", region: "Global" },
+            "housing": { glyph: "🏗️", monthlyFee: 1700, annualFee: 17340, payoutTier: "Tier 2", region: "Global" },
+            "justice": { glyph: "⚖", monthlyFee: 1300, annualFee: 13260, payoutTier: "Tier 1", region: "Global" },
+            "knowledge": { glyph: "📖", monthlyFee: 1000, annualFee: 10200, payoutTier: "Tier 1", region: "Global" },
+            "micromesh": { glyph: "☰", monthlyFee: 1400, annualFee: 14280, payoutTier: "Tier 2", region: "Global" },
+            "media": { glyph: "🎬", monthlyFee: 1600, annualFee: 16320, payoutTier: "Tier 2", region: "Global" },
+            "nutrition": { glyph: "✿", monthlyFee: 950, annualFee: 9690, payoutTier: "Tier 1", region: "Global" },
+            "ai-logic": { glyph: "�", monthlyFee: 2500, annualFee: 25500, payoutTier: "Tier 3", region: "Global" },
+            "packaging": { glyph: "📦", monthlyFee: 1150, annualFee: 11730, payoutTier: "Tier 1", region: "Global" },
+            "quantum": { glyph: "✴️", monthlyFee: 3000, annualFee: 30600, payoutTier: "Tier 3", region: "Global" },
+            "ritual": { glyph: "☯", monthlyFee: 700, annualFee: 7140, payoutTier: "Tier 1", region: "Global" },
+            "saas": { glyph: "🔑", monthlyFee: 1900, annualFee: 19380, payoutTier: "Tier 2", region: "Global" },
+            "trade": { glyph: "🧺", monthlyFee: 2200, annualFee: 22440, payoutTier: "Tier 3", region: "Global" },
+            "utilities": { glyph: "🔋", monthlyFee: 1750, annualFee: 17850, payoutTier: "Tier 2", region: "Global" },
+            "voice": { glyph: "🎙️", monthlyFee: 1350, annualFee: 13770, payoutTier: "Tier 1", region: "Global" },
+            "webless": { glyph: "📡", monthlyFee: 2100, annualFee: 21420, payoutTier: "Tier 3", region: "Global" },
+            "nft": { glyph: "🔁", monthlyFee: 1650, annualFee: 16830, payoutTier: "Tier 2", region: "Global" },
+            "education-youth": { glyph: "🎓", monthlyFee: 1250, annualFee: 12750, payoutTier: "Tier 1", region: "Global" },
+            "zerowaste": { glyph: "♻️", monthlyFee: 1050, annualFee: 10710, payoutTier: "Tier 1", region: "Global" },
+            "professional": { glyph: "🧾", monthlyFee: 2800, annualFee: 28560, payoutTier: "Tier 3", region: "Global" },
+            "payroll-mining": { glyph: "🪙", monthlyFee: 2300, annualFee: 23460, payoutTier: "Tier 3", region: "Global" },
+            "mining": { glyph: "⛏️", monthlyFee: 2400, annualFee: 24480, payoutTier: "Tier 3", region: "Global" },
+            "wildlife": { glyph: "🦁", monthlyFee: 750, annualFee: 7650, payoutTier: "Tier 1", region: "Global" }
+        };
+
+        // Unified source of truth for all brand details including subnodes and explicit data
+        // This now serves as the 'static' or 'pre-defined' brand data.
+        const ALL_BRANDS_DETAILS_BY_SECTOR = {
+            "agriculture": [
+                { name: 'AgroChain', subNodes: ['YieldNode™', 'SoilScan™', 'PestDetect™', 'CropTrace™'], details: {} },
+                { name: 'CropSense', subNodes: ['BioTrack™', 'FoodPrint™', 'FarmFresh™'], details: {} },
+                { name: 'FarmFresh', subNodes: ['NutriScore™', 'BioTrack™'], details: {} },
+                { name: 'NutriScore', subNodes: ['FoodPrint™', 'FarmFresh™'], details: {} },
+                { name: 'AgriCore', subNodes: ['SoilSync™', 'CropTrack™', 'FarmLink™'], details: {} },
+                { name: 'SoilHealth', subNodes: ['BioBoost™', 'NutrientFlow™', 'EarthGuard™'], details: {} },
+                { name: 'CropCircle', subNodes: ['YieldMap™', 'PlantPulse™'], details: {} },
+                { name: 'HarvestHub', subNodes: ['GrainGate','ProducePath','MarketLink','FarmFlow'], details: {} },
+                { name: 'TerraNova', subNodes: ['LandRevive','SoilBalance','EcoTill','AgroRenew'], details: {} },
+                { name: 'GreenSprout', subNodes: ['SeedStart','PlantBoost','GrowTrack','EcoRoot'], details: {} },
+                { name: 'AgroLife', subNodes: ['FarmVital','CropCare','SoilSense','HarvestEase'], details: {} },
+                { name: 'BioFarm', subNodes: ['EcoGrow','NaturalYield','SoilPure','PlantHealth'], details: {} },
+                { name: 'EcoHarvest', subNodes: ['GreenField','CropCycle','SoilNurture','FarmSustain'], details: {} },
+                { name: 'SeedLink', subNodes: ['GerminatePro','PlantConnect','GrowNet','RootLink'], details: {} },
+                { name: 'SoilSmart', subNodes: ['NutrientTrack','EarthMonitor','SoilScan','FertilEase'], details: {} },
+                { name: 'FarmWise', subNodes: ['AgriPlan','CropManage','FieldGuide','HarvestLogic'], details: {} },
+                { name: 'CropGuard', subNodes: ['PestShield','DiseaseControl','PlantProtect','YieldSecure'], details: {} },
+                { name: 'HarvestEase', subNodes: ['GrainFlow','ProduceEase','MarketAccess','FarmSimplify'], details: {} },
+                { name: 'TerraGrow', subNodes: ['LandEnrich','SoilEnhance','EcoFert','AgroBoost'], details: {} },
+                { name: 'GreenField', subNodes: ['SeedSelect','PlantOptimize','GrowManage','EcoCultivate'], details: {} },
+                { name: 'AgroTech', subNodes: ['FarmInnovate','CropTech','SoilAdvance','HarvestTech'], details: {} },
+                { name: 'BioYield', subNodes: ['EcoProduce','NaturalHarvest','SoilRich','PlantGain'], details: {} },
+                { name: 'EcoFarm', subNodes: ['GreenCultivate','CropSustain','SoilCare','FarmEco'], details: {} },
+                { name: 'AgriPulse', subNodes: ['SoilMonitor','CropSensor','FieldData','HarvestAlert'], details: {} },
+                { name: 'BioCrop', subNodes: ['OrganicSeed','PlantHealth','GrowthTrack','EcoYield'], details: {} },
+                { name: 'FarmLink', subNodes: ['AgriConnect','FieldNet','CropShare','HarvestSync'], details: {} },
+                { name: 'SoilGuard', subNodes: ['NutrientShield','ErosionControl','pHBalance','RootProtect'], details: {} },
+                { name: 'GreenHarvest', subNodes: ['EcoCrop','SustainableYield','BioFertilizer','FarmSustain'], details: {} },
+                { name: 'TerraFarm', subNodes: ['LandOptimize','SoilEnhance','CropBoost','AgroManage'], details: {} },
+                { name: 'SeedSmart', subNodes: ['GerminationTrack','PlantMap','GrowthPredict','YieldForecast'], details: {} },
+                { name: 'CropCare', subNodes: ['PestMonitor','DiseaseAlert','PlantHealthCheck','YieldSecure'], details: {} },
+                { name: 'HarvestPro', subNodes: ['GrainQuality','ProduceSorting','MarketAccess','FarmLogistics'], details: {} },
+                { name: 'SoilSense', subNodes: ['MoistureDetect','NutrientMap','SoilProfile','FertilityIndex'], details: {} },
+                { name: 'FarmVision', subNodes: ['SatelliteImagery','CropAnalysis','FieldMapping','YieldEstimation'], details: {} },
+                { name: 'AgroTech', subNodes: ['PrecisionFarming','SmartIrrigation','DroneSurvey','DataAnalytics'], details: {} },
+                { name: 'BioSoil', subNodes: ['MicrobeEnhance','OrganicMatter','SoilRegen','EcoBalance'], details: {} },
+                { name: 'CropTrack', subNodes: ['PlantGrowthMonitor','FieldProgress','HarvestTimeline','YieldReport'], details: {} },
+                { name: 'HarvestLink', subNodes: ['SupplyChainConnect','ProduceTrace','MarketIntegration','FarmNetwork'], details: {} },
+                { name: 'SoilLab', subNodes: ['pHTesting','NutrientAnalysis','SoilSampling','FertilityReport'], details: {} },
+                { name: 'FarmManage', subNodes: ['TaskScheduler','ResourceAllocation','LaborTracking','EquipmentMonitor'], details: {} },
+                { name: 'AgriData', subNodes: ['CropRecords','FieldHistory','YieldAnalytics','FarmReports'], details: {} },
+                { name: 'BioGrow', subNodes: ['OrganicInputs','PlantNutrition','GrowthEnhancer','EcoSolutions'], details: {} },
+                { name: 'EcoFarm', subNodes: ['SustainablePractices','RenewableEnergy','WasteManagement','Biodiversity'], details: {} },
+                { name: 'CropMesh', subNodes: ['FieldNet','SoilGrid','YieldLink','NodeTrace'], details: {} },
+                { name: 'SeedRoot', subNodes: ['GermCode','SeedID','RootLink','GrowthStart'], details: {} },
+                { name: 'SoilVault', subNodes: ['VaultSoil','SampleSecure','LabLink','ResultSync'], details: {} },
+                { name: 'PlantCast', subNodes: ['GrowthSignal','WeatherFeed','PlantAlert','FieldNotify'], details: {} },
+                { name: 'YieldNode', subNodes: ['NodePath','HarvestTrace','ScrollYield','CropGrid'], details: {} },
+                { name: 'FarmBeacon', subNodes: ['ZonePing','CropAlert','SignalYield','TraceLight'], details: {} },
+                { name: 'BioSprout', subNodes: ['EcoSeed','VitalTrace','GreenMap','GrowStream'], details: {} },
+                { name: 'SoilTrace', subNodes: ['SampleLink','DataStream','FertilMap','FieldTest'], details: {} },
+                { name: 'HarvestCore', subNodes: ['HarvestPing','VendorClaim','YieldPoint','CrateDrop'], details: {} },
+                { name: 'PlantLink', subNodes: ['PlantID','CrossNode','ZoneSync','QRRoot'], details: {} },
+                { name: 'TerraLoop', subNodes: ['AgriCycle','SoilWave','CropSync','EcoChain'], details: {} },
+                { name: 'SoilPulse', subNodes: ['PulseCheck','GrowthWave','DepthTrace','FieldFlow'], details: {} },
+                { name: 'GreenPatch', subNodes: ['ZoneGrid','OrganicNode','FarmSquare','PlantDrop'], details: {} },
+                { name: 'FarmSync', subNodes: ['SyncPoint','CropMerge','LandSplit','VendorMesh'], details: {} },
+                { name: 'RootMesh', subNodes: ['NodeSeed','GridSprout','PathFert','MicroPulse'], details: {} },
+                { name: 'BioCluster', subNodes: ['CropGroup','FieldChain','VendorLoop','YieldRing'], details: {} },
+                { name: 'SproutIndex', subNodes: ['ZoneScan','PlantGrid','GrowthMeter','SeedSync'], details: {} },
+                { name: 'MoistureMap', subNodes: ['AquaNode','RootHumidity','DepthScan','FieldAqua'], details: {} },
+                { name: 'EcoZone', subNodes: ['GreenClaim','NaturalPath','FarmMesh','ZoneCert'], details: {} },
+                { name: 'CropRelay', subNodes: ['YieldSync','VendorCast','CrateSend','RouteField'], details: {} },
+                { name: 'FarmCloud', subNodes: ['ScrollFarm','VendorPanel','YieldDash','FieldUpload'], details: {} },
+                { name: 'SoilFrame', subNodes: ['FrameID','EarthLine','GridSoil','TestPath'], details: {} },
+                { name: 'HarvestPing', subNodes: ['PingGrid','DropYield','ClaimNode','AlertField'], details: {} },
+                { name: 'CropCode', subNodes: ['BarcodeRoot','GrowthTag','ScrollField','LabelGrow'], details: {} },
+                { name: 'AgroNode', subNodes: ['LandID','CropNode','FieldLink','SoilRoute'], details: {} },
+                { name: 'SeedNest', subNodes: ['NestCode','SproutDrop','GrowthLog','FarmBase'], details: {} },
+                { name: 'TraceFarm', subNodes: ['FarmScan','VendorLink','HarvestLedger','ScrollProof'], details: {} },
+                { name: 'SproutChain', subNodes: ['ChainGrow','YieldLink','NodeDrop','EcoSprout'], details: {} },
+                { name: 'SoilStack', subNodes: ['StackClaim','DepthScan','FertilRow','SoilVault'], details: {} },
+                { name: 'AgriPanel', subNodes: ['PanelSync','ScrollDash','CropView','VendorControl'], details: {} },
+                { name: 'RootClaim', subNodes: ['ClaimTrace','RootID','VendorStamp','FieldLock'], details: {} },
+                { name: 'MoistureNode', subNodes: ['HydrateLink','DepthSync','MoistPulse','NodeRain'], details: {} },
+                { name: 'CrateFarm', subNodes: ['CrateLedger','DropPanel','MarketNode','VendorCrate'], details: {} },
+                { name: 'PlantPing', subNodes: ['AlertRoot','ScanGrow','PlantTrace','PingField'], details: {} },
+                { name: 'AgroLoop', subNodes: ['LoopClaim','SoilCycle','FarmMesh','GrowthPath'], details: {} },
+                { name: 'CropGrid', subNodes: ['GridYield','MapTrack','HarvestView','CropLink'], details: {} },
+                { name: 'VendorSprout', subNodes: ['VendorID','FarmStart','ClaimMap','SproutVault'], details: {} },
+                { name: 'BioPing', subNodes: ['MicroScan','HealthAlert','GrowthWatch','RootPath'], details: {} },
+                { name: 'EcoFarmGrid', subNodes: ['EcoPlot','FarmJoin','GreenPanel','ZoneMesh'], details: {} },
+                { name: 'TerraCode', subNodes: ['SoilDNA','SeedLog','CropCodeX','ScanTag'], details: {} },
+                { name: 'HarvestVault', subNodes: ['VaultDrop','CrateClaim','PayoutLock','FieldSecure'], details: {} },
+                { name: 'CropBinder', subNodes: ['BinderLoop','VendorTrace','ScrollTag','FarmCode'], details: {} },
+                { name: 'SoilCertify', subNodes: ['TestLog','ResultPath','QRProof','SoilPass'] }
+            ],
+            "fsf": [
+                { name: 'FarmFresh', subNodes: ['BioTrack'], details: {} },
+                { name: 'NutriScore', subNodes: ['FoodPrint'], details: {} }
+            ],
+            "banking": [
+                {   
+                    name: 'FinGrid',   
+                    subNodes: ['Ledger Mesh','Arbitrage Core','Token Router','Tax Engine','Vault Lock','Compliance Matrix','Logistics Fin','Currency Glyph','Forecast Engine','Signal Tracker'],
+                    details: {
+                        intro: "FinGrid™ is the premier FAA.ZONE platform, revolutionizing Banking & Finance operations. Leveraging the global PulseGrid, it offers robust data synchronization and superior efficiency.",
+                        keyFeatures: [
+                            "Direct Integration with FAA™ Professional Services Mesh.",
+                            "Advanced data sync with Ledger Mesh.",
+                            "Real-time compliance validation via VaultLink™ (banking specific).",
+                            "Scalable architecture for x10 power expansion.",
+                            "Predictive analytics module for FinGrid performance.",
+                            "API access for seamless interoperability.",
+                            "Self-optimizing node distribution for peak efficiency.",
+                            "Customizable dashboard and alert systems.",
+                            "Cross-sector data interoperability."
+                        ],
+                        metadata: {
+                            productId: "FIN-BAN-5369",
+                            vaultId: "VAULT-212U",
+                            signalEchoLayer: "Layer Beta v2.5",
+                            deploymentZone: "Zone C 4",
+                            securityRating: "FAA-SEC B+",
+                            activeNodes: "11,810",
+                            lastSync: "2025-06-13 18:00 SAST",
+                            complianceStatus: "Active & Certified"
+                        },
+                        realTimeMetrics: {
+                            currentPulseActivity: "90,109 pulses/sec",
+                            dataVolumeProcessed: "89.66 TB",
+                            latencyAverage: "34 ms"
+                        },
+                        vaultTraceEntries: [
+                            "#3514 - FINGA Pulse Tx - Confirmed",
+                            "#9619 - BANKI Data Sync - Completed",
+                            "#7880 - Node Activation Confirm - Offline",
+                            "#128 - VaultTrace Audit - Passed"
+                        ]
+                    }
+                },
+                {   
+                    name: 'TradeAmp',   
+                    subNodes: ['Zeno Mesh','Crux Bridge','Hive Monitor','Wire Reconciler','Bit Locker','Credit Splice','Score Vector','Zentry Core','Drift Trace','Alpha Ledger'],
+                    details: {
+                        intro: "TradeAmp™ optimizes global trade finance with AI-driven liquidity and secure ledger-based transaction management. Integrated with PulseTrade, it ensures high-speed, compliant, and transparent financial flows.",
+                        keyFeatures: [
+                            "AI-driven liquidity optimization.",
+                            "Immutable transaction ledgering.",
+                            "Real-time fraud detection.",
+                            "Automated compliance reporting.",
+                            "Multi-currency support.",
+                            "Smart contract integration for trade agreements."
+                        ],
+                        metadata: {
+                            productId: "TRA-AMP-7001",
+                            vaultId: "VAULT-220V",
+                            signalEchoLayer: "Layer Gamma v3.0",
+                            deploymentZone: "Zone A 1",
+                            securityRating: "FAA-SEC A+",
+                            activeNodes: "8,500",
+                            lastSync: "2025-06-13 17:45 SAST",
+                            complianceStatus: "Active & Certified"
+                        },
+                        realTimeMetrics: {
+                            currentPulseActivity: "75,200 pulses/sec",
+                            dataVolumeProcessed: "65.12 TB",
+                            latencyAverage: "40 ms"
+                        },
+                        vaultTraceEntries: [
+                            "#4122 - TRADEAMP Flow - Confirmed",
+                            "#7789 - Payment Sync - Completed",
+                            "#9901 - Trade Agreement Hash - Verified",
+                            "#203 - Policy Audit - Passed"
+                        ]
+                    }
+                },
+                { name: 'LoopPay', subNodes: ['Lumen Pulse','Delta Secure','Fractal Trace','Torus Signal','Mint Bridge','Tally Stream','Bank Depth','Kite Path','Bond Engine','Echo Stack'], details: {} },
+                { name: 'TaxNova', subNodes: ['Ark Model','Node Gate','Veritas Sync','Cage Mapper','Core Trace','Sky Sweep','Mint Grid','Orbit Channel','Hash Clear','Micro Chain'], details: {} },
+                { name: 'VaultMaster', subNodes: ['Anchor Lock','Fleet Sync','Zoom Channel','Beacon Path','Crate Vault','Numen Index','Spark Flow','Meta Signal','Aether Drift','Custody Map'], details: {} },
+                { name: 'Gridwise', subNodes: ['Neutron Signal','Cash Stream','Jet Grid','Pulse Map','Sync Grid','Tangent Vector','Nova Route','Glide Core','Trace Engine','Root Node'], details: {} },
+                { name: 'CrateDance', subNodes: ['Bank Shift','Pillar Core','Axon Thread','Monet Route','Layer Core','Verge Node','Stack Tally','Crown Core','Prism Gate','Halo Grid'], details: {} },
+                { name: 'CashGlyph', subNodes: ['Clearance Vector','Forge Sync','Bank Mesh','Nano Token','Lattice Path','Noble Curve','Chain Vector','Mint Grid','Bridge Path','Chrono Index'], details: {} },
+                { name: 'Foresync', subNodes: ['Unity Sync','Trust Matrix','Vault Score','Lucid Gate','Mint Route','Flight Signal','Teller Index','Custody Trace','Flare Lock','Dark Stream'], details: {} },
+                { name: 'OmniRank', subNodes: ['Origin Pulse','Shard Bank','Pay Score','Altimeter Path','Clearing Core','Frame Lock','Zenith Route','Score Helix','Meta Stack','Crux Trace'], details: {} },
+                { name: 'ZenoBank', subNodes: ['Pulse Engine','Balance Tally','Gold Trace','Stack Mesh','Quantum Sync','Script Pulse','Vault Stack','Trust Model','Hyper Lock','Tone Gate'], details: {} },
+                { name: 'CruxSpend', subNodes: ['Grid Index','Line Mesh','Alpha Signal','Logic Gate','Yield Route','Ratio Core','Ledger Path','Prime Helix','Amp Signal','Lattice Node'], details: {} },
+                { name: 'PulseHive', subNodes: ['Credit Curve','Vault Pulse','Data Mesh','Ring Gate','Glyph Stack','Bank Channel','Zen Gate','Loop Vault','Axial Index','Loop Stack'], details: {} },
+                { name: 'WireVault', subNodes: ['Pulse Vector','Bank Curve','Helix Gate','Teller Pulse','Tally Signal','Mint Vault'], details: {} }
+            ],
+            "creative": [
+                { name: 'ArtStream', subNodes: ['PixelNode'], details: {} },
+                { name: 'DesignHub', subNodes: ['IdeaGrid'], details: {} }
+            ],
+            "logistics": [
+                { name: 'CrateLogic', subNodes: ['BoxNode™', 'CrateMap™', 'PackSync™', 'CrateSync™'], details: {} },
+                { name: 'PackChain', subNodes: ['VendorPack™', 'LabelTrace™', 'ShipGrid™', 'ScrollWrap™'], details: {} },
+                { name: 'SortFleet', subNodes: ['SortPulse™', 'BinLogic™', 'FleetTrack™', 'ScrollSort™'], details: {} },
+                { name: 'RouteMesh', subNodes: ['NodeMap™', 'GeoSignal™', 'DropLink™', 'RouteFlow™'], details: {} },
+                { name: 'LogiStack', subNodes: ['ScrollStack™', 'YieldSync™', 'PayoutRoute™', 'StackNode™'], details: {} },
+                { name: 'DeliveryX', subNodes: ['LastMile™', 'ScanDrop™', 'AgentTrack™', 'QuickChain™'], details: {} },
+                { name: 'CargoVault', subNodes: ['VaultLink™', 'WeightTag™', 'CargoScan™', 'CargoClaim™'], details: {} },
+                { name: 'PalletPath', subNodes: ['PathFinder™', 'RackTrace™', 'GridStore™', 'LoadMark™'], details: {} },
+                { name: 'LabelFlow', subNodes: ['PrintNode™', 'ScrollCode™', 'InkRoute™', 'LabelSync™'], details: {} },
+                { name: 'DropLoop', subNodes: ['LoopID™', 'VendorDrop™', 'TimeGate™', 'LoopConfirm™'], details: {} },
+                { name: 'ScrollRoute', subNodes: ['ChainStep™', 'ScanRoute™', 'RouteTrace™', 'FinalMile™'], details: {} },
+                { name: 'ShipLedger', subNodes: ['ManifestScroll™', 'LogiProof™', 'ShipCert™', 'DockNode™'], details: {} },
+                { name: 'FreightCore', subNodes: ['FreightID™', 'CrateStamp™', 'CargoPulse™', 'StackSync™'], details: {} },
+                { name: 'PackSphere', subNodes: ['SphereNode™', 'PackLoop™', 'SupplyCircle™', 'HubRelay™'], details: {} },
+                { name: 'GridDrop', subNodes: ['DropTrace™', 'DropID™', 'GridYield™', 'NodeFlow™'], details: {} },
+                { name: 'AutoTrack', subNodes: ['GPSClaim™', 'RouteLog™', 'TrackPulse™', 'AutoLink™'], details: {} },
+                { name: 'ChainWrap', subNodes: ['WrapNode™', 'TieGlyph™', 'SealMark™', 'ScanProof™'], details: {} },
+                { name: 'BinLogicX', subNodes: ['LogicChip™', 'BinSync™', 'ScrollSnap™', 'BinWave™'], details: {} },
+                { name: 'PouchNode', subNodes: ['PouchTag™', 'ScrollStick™', 'PackPush™', 'MicroWrap™'], details: {} },
+                { name: 'ColdFleet', subNodes: ['ChillRoute™', 'IceLedger™', 'ColdDrop™', 'VaultIce™'], details: {} },
+                { name: 'TrackStack', subNodes: ['SignalTag', 'ScrollFleet', 'DockSync', 'TrackMap'], details: {} },
+                { name: 'NodeRoute', subNodes: ['HopLink', 'NodeShift', 'MeshGrid', 'RouteCert'], details: {} },
+                { name: 'PackOS', subNodes: ['ScrollOS', 'RouteWrap', 'ForkNode', 'PalletLogic'], details: {} },
+                { name: 'ZipCrate', subNodes: ['AutoFold', 'SpeedTag', 'CrateDrop', 'ZipSeal'], details: {} },
+                { name: 'TagLogic', subNodes: ['ScrollTag', 'GeoTrack', 'TagFrame', 'AutoCert'], details: {} },
+                { name: 'ScrollTruck', subNodes: ['ScrollDriver', 'YieldScan', 'CargoBoard', 'DockLink'], details: {} },
+                { name: 'FlowVault', subNodes: ['VaultID', 'ScrollStream', 'BoxYield', 'FlowMap'], details: {} },
+                { name: 'SortStack', subNodes: ['BinRank', 'BinPulse', 'FastCrate', 'LogicDrop'], details: {} },
+                { name: 'DockGrid', subNodes: ['DockFrame', 'PermitTrack', 'ScrollAccess', 'GateID'], details: {} },
+                { name: 'RollFleet', subNodes: ['WheelNode', 'PalletSync', 'LoadProof', 'ScrollAxle'], details: {} },
+                { name: 'VendSort', subNodes: ['VendorSort', 'BoxPush', 'AutoTray', 'YieldLoop'], details: {} },
+                { name: 'GridCrate', subNodes: ['CrateNode', 'GridWrap', 'VaultStack', 'ScrollRoute'], details: {} },
+                { name: 'LogiLift', subNodes: ['LiftID', 'FreightPulse', 'ForkSync', 'LogiTag'], details: {} },
+                { name: 'CrateX', subNodes: ['CrateTrack', 'SmartLock', 'LabelLink', 'ScrollMap'], details: {} },
+                { name: 'QuickLabel', subNodes: ['ScanCode', 'SmartPrint', 'RouteLabel', 'LabelCast'], details: {} },
+                { name: 'DropLedger', subNodes: ['LedgerPath', 'DropFlow', 'VaultDrop', 'QuickClaim'], details: {} },
+                { name: 'FleetTrace', subNodes: ['TruckPulse', 'ScrollRide', 'AutoPath', 'CrateEcho'], details: {} },
+                { name: 'BoxSync', subNodes: ['ScrollSync', 'BoxFrame', 'ClaimID', 'TagSnap'], details: {} },
+                { name: 'ChainGate', subNodes: ['GateLog', 'DockPush', 'YieldGate', 'EntryPulse'], details: {} },
+                { name: 'ColdRoute', subNodes: ['FreezePoint', 'ScanChill', 'ColdMesh', 'ChillPath'], details: {} },
+                { name: 'PalletCore', subNodes: ['CoreLift', 'PalletID', 'PackForce', 'VaultRack'], details: {} },
+                { name: 'FreightLine', subNodes: ['LineTrack', 'StackChain', 'DockGrid', 'RouteNode'], details: {} },
+                { name: 'PackSignal', subNodes: ['SignalDrop', 'YieldBeacon', 'PackNode', 'PathSync'], details: {} },
+                { name: 'ChainVault', subNodes: ['ClaimLink', 'ScrollCert', 'LockDrop', 'AssetTag'], details: {} },
+                { name: 'CrateThread', subNodes: ['CrateLink', 'ThreadMark', 'GridLoop', 'FastTag'], details: {} },
+                { name: 'ForkYield', subNodes: ['ForkView', 'YieldNode', 'RouteTrek', 'PalletWave'], details: {} },
+                { name: 'DockLogic', subNodes: ['DockTag', 'GridScan', 'ZonePath', 'DockAccess'], details: {} },
+                { name: 'LoadCast', subNodes: ['LoadSync', 'CrateWatch', 'NodePing', 'AutoConfirm'], details: {} },
+                { name: 'TrayTrack', subNodes: ['TrayID', 'PulseLift', 'VendorCrate', 'SyncScan'], details: {} },
+                { name: 'ScrollDrop', subNodes: ['AutoYield', 'ScrollLift', 'DropFlag', 'TagNode'], details: {} },
+                { name: 'LoopXpress', subNodes: ['LoopSync', 'VendorPush', 'ScrollLoop', 'DropNext'], details: {} },
+                { name: 'PackSyncPro', subNodes: ['ProTrack', 'QuickCrate', 'YieldStamp', 'CoreLoop'], details: {} },
+                { name: 'VendorWrap', subNodes: ['WrapID', 'VendorPath', 'SecureDrop', 'LabelGate'], details: {} },
+                { name: 'CrateLedger', subNodes: ['CrateLock', 'LedgerPath', 'PackTrace', 'AutoCert'], details: {} },
+                { name: 'BoxNodeX', subNodes: ['NodeFlow', 'ClaimLock', 'ScanYield', 'FrameTag'], details: {} },
+                { name: 'AutoRoute', subNodes: ['AutoJump', 'PathCalc', 'GridRelay', 'VendorMap'], details: {} },
+                { name: 'VaultBin', subNodes: ['BinTag', 'SecureBin', 'VaultSignal', 'TraceStore'], details: {} },
+                { name: 'LabelTrack', subNodes: ['TrackMark', 'LabelPath', 'QRDrop', 'LabelFlow'], details: {} },
+                { name: 'PathLock', subNodes: ['SecurePath', 'ScrollFence', 'LockGate', 'PathProof'], details: {} },
+                { name: 'DispatchLoop', subNodes: ['LoopID', 'DispatchSync', 'TagRelease', 'VendorTrack'], details: {} },
+                { name: 'ChainPulse', subNodes: ['PulseLink', 'FlowTrack', 'CrateAlert', 'LockSync'], details: {} },
+                { name: 'FastTag', subNodes: ['TagFire', 'IDScan', 'QRClaim', 'RouteAlert'], details: {} },
+                { name: 'VendorFleet', subNodes: ['FleetMap', 'ScanRoute', 'YieldClaim', 'ChainAccess'], details: {} },
+                { name: 'ParcelSync', subNodes: ['SyncBox', 'DropScan', 'AutoLabel', 'ParcelID'], details: {} },
+                { name: 'SmartCrate', subNodes: ['SmartClaim', 'CrateGrid', 'LockTrack', 'RFIDNode'], details: {} },
+                { name: 'AutoLabel', subNodes: ['LabelSnap', 'PrintFlow', 'AutoScan', 'ConfirmPrint'], details: {} },
+                { name: 'FreightGrid', subNodes: ['GridPath', 'LoadBoard', 'VaultTag', 'ShipClaim'], details: {} },
+                { name: 'DockFlow', subNodes: ['DockSignal', 'AccessNode', 'LabelCheck', 'LoadLink'], details: {} },
+                { name: 'CrateBox', subNodes: ['BoxSync', 'SmartTag', 'FrameDrop', 'PalletLink'], details: {} },
+                { name: 'ColdTrack', subNodes: ['ChillLoop', 'IceNode', 'VaultChill', 'ScrollCold'], details: {} },
+                { name: 'SecureMesh', subNodes: ['MeshID', 'PathSecure', 'GateTrace', 'NodeFence'], details: {} },
+                { name: 'LoopDispatch', subNodes: ['VendorLoop', 'DropTick', 'AutoYield', 'QRConfirm'], details: {} },
+                { name: 'AutoLift', subNodes: ['LiftSync', 'TrayPush', 'ForkLoop', 'WeightGate'], details: {} },
+                { name: 'ClaimBoard', subNodes: ['BoardCert', 'VendorPush', 'ScrollAttach', 'ProofLine'], details: {} },
+                { name: 'ParcelChain', subNodes: ['ChainTrack', 'QuickDrop', 'VendorClaim', 'FastLock'], details: {} },
+                { name: 'LabelMesh', subNodes: ['MeshLink', 'TagGrid', 'LabelView', 'ClaimLink'], details: {} },
+                { name: 'BoxSignal', subNodes: ['BoxAlert', 'SignalPulse', 'FrameCheck', 'DropYield'], details: {} },
+                { name: 'LoadFrame', subNodes: ['LoadDetect', 'CrateSignal', 'DropCheck', 'ScanLine'], details: {} },
+                { name: 'VaultRoute', subNodes: ['RouteClaim', 'SignalSync', 'LockMap', 'PathMark'], details: {} },
+                { name: 'DockYield', subNodes: ['DockCrate', 'YieldNode', 'SignalTrack', 'ClaimPulse'], details: {} },
+                { name: 'CrateSecure', subNodes: ['SecureTag', 'LockCrate', 'VaultProof', 'ChainLock'], details: {} },
+                { name: 'LabelFlowX', subNodes: ['FlowTag', 'LabelSync', 'ScanRoute', 'PrintID'], details: {} },
+                { name: 'DockMaster', subNodes: ['MasterDock', 'DockTrack', 'LoadSync', 'AccessNode'], details: {} },
+                { name: 'PackNet', subNodes: ['NetCrate', 'PackSync', 'NodeLink', 'ChainFlow'], details: {} },
+                { name: 'RouteGuard', subNodes: ['GuardRoute', 'PathSecure', 'SignalLock', 'TrackID'], details: {} },
+                { name: 'BinLogicPro', subNodes: ['ProBin', 'LogicSync', 'BinTrack', 'NodeProof'], details: {} },
+                { name: 'ColdChainX', subNodes: ['ChillTrack', 'ColdSync', 'FreezeNode', 'IceFlow'], details: {} },
+                { name: 'AutoPack', subNodes: ['PackAuto', 'SyncLabel', 'AutoCrate', 'FlowNode'], details: {} },
+                { name: 'ShipTrack', subNodes: ['TrackShip', 'ShipSync', 'RouteNode', 'DockFlow'], details: {} },
+                { name: 'LoadManager', subNodes: ['ManageLoad', 'LoadTrack', 'SyncCrate', 'NodeLink'], details: {} },
+                { name: 'CrateManager', subNodes: ['ManageCrate', 'CrateSync', 'VaultTrack', 'LockNode'] }
+            ],
+            "education-ip": [
+                { name: 'EduNest', subNodes: ['LearnNode', 'ScrollSeed', 'CampusID', 'MentorLink', 'PathClaim'], details: {} },
+                { name: 'FormFlex', subNodes: ['SkillWrap', 'GradeSync', 'CourseMap', 'IDTrack', 'PupilMesh'], details: {} },
+                { name: 'ScrollBooks', subNodes: ['ChapterFlow', 'StoryTag', 'QuizLink', 'YieldRead', 'TextClaim'], details: {} },
+                { name: 'MindLift', subNodes: ['BoostTrack', 'LearnSignal', 'LevelUp', 'FocusPath', 'VaultPace'], details: {} },
+                { name: 'GridClass', subNodes: ['ClassNode', 'TeachSync', 'VaultBoard', 'EduAlert', 'NodeAttend'], details: {} },
+                { name: 'YouthSignal', subNodes: ['SignalDrop', 'SkillPing', 'PeerMesh', 'RoleAssign', 'TrackEcho'], details: {} },
+                { name: 'TalentNest', subNodes: ['TalentVault', 'ClaimCoach', 'RoleTree', 'PayoutPath', 'CertifyNode'], details: {} },
+                { name: 'PeerPath', subNodes: ['PeerMap', 'ConnectNode', 'SkillVote', 'PathSync', 'LearnOrbit'], details: {} },
+                { name: 'ScrollGrade', subNodes: ['GradeID', 'TestVault', 'YieldCredit', 'ExamSync', 'ResultNode'], details: {} },
+                { name: 'LearnMesh', subNodes: ['MeshID', 'ModuleLink', 'ClassSync', 'ProgressTag', 'LoopNode'], details: {} },
+                { name: 'EduChain', subNodes: ['CourseLink', 'CreditVault', 'CertDrop', 'LearnKey', 'ScrollLedger'], details: {} },
+                { name: 'SkillCast', subNodes: ['CastNode', 'MentorPing', 'PeerEcho', 'PayoutRank', 'TalentDrop'], details: {} },
+                { name: 'YouthForge', subNodes: ['ForgePath', 'BuildMesh', 'IdeaClaim', 'LearnFoundry', 'PeerLoop'], details: {} },
+                { name: 'QuizNet', subNodes: ['QuizTrigger', 'TestField', 'GradeWave', 'RecallGrid', 'PassSync'], details: {} },
+                { name: 'ScrollLabs', subNodes: ['LabNode', 'ProjectClaim', 'IdeaTrace', 'SkillXP', 'ModuleYield'], details: {} },
+                { name: 'LearnFlag', subNodes: ['FlagRaise', 'SchoolLink', 'RegionTrack', 'PupilEcho', 'ClaimNode'], details: {} },
+                { name: 'ScholarMesh', subNodes: ['MeshTrack', 'GradeRelay', 'ScrollDegree', 'LearnVault', 'StudyPulse'], details: {} },
+                { name: 'VaultEdu', subNodes: ['IDVault', 'CertChain', 'TranscriptGrid', 'SecureLearn', 'DegreeDrop'], details: {} },
+                { name: 'YouthSphere', subNodes: ['CircleCast', 'ClassLink', 'ScrollTribe', 'GroupEcho', 'PeerRing'], details: {} },
+                { name: 'EduGlow', subNodes: ['SignalLight', 'LearnPulse', 'BrainSync', 'FlashGrade', 'EnlightNode'], details: {} },
+                { name: 'LearnBloom', subNodes: ['BloomNode', 'GrowthTrack', 'SkillSeed', 'EduSprout', 'PeerSoil'], details: {} },
+                { name: 'MentorLoop', subNodes: ['LoopConnect', 'WisdomPath', 'MentorVault', 'ScrollPing', 'TeachBond'], details: {} },
+                { name: 'YouthID', subNodes: ['IDSync', 'LearnerNode', 'ProofTag', 'IdentityScroll', 'JoinClass'], details: {} },
+                { name: 'ScrollQuiz', subNodes: ['QuizNode', 'AnswerTag', 'TimerMesh', 'ScoreClaim', 'ReviewPulse'], details: {} },
+                { name: 'PupilChain', subNodes: ['PupilBlock', 'TaskNode', 'LedgerPath', 'EduEcho', 'LearnLock'], details: {} },
+                { name: 'IdeaGrid', subNodes: ['IdeaDrop', 'GridThink', 'SparkVault', 'PeerPush', 'ThoughtClaim'], details: {} },
+                { name: 'VaultLearn', subNodes: ['SecureScroll', 'GradeLock', 'ChainTest', 'RecordMesh', 'PayoutGrade'], details: {} },
+                { name: 'SkillNest', subNodes: ['NestGrow', 'RoleTree', 'PeerRoot', 'MentorNode', 'CertPulse'], details: {} },
+                { name: 'ClassFlow', subNodes: ['FlowSync', 'ClassRoute', 'PeerGroup', 'ScrollRing', 'LessonCast'], details: {} },
+                { name: 'CertifyCast', subNodes: ['CastAward', 'NodeBadge', 'VaultProof', 'ScrollCredit', 'ChainEarn'], details: {} },
+                { name: 'PathMentor', subNodes: ['MentorMap', 'GrowthLink', 'TrailNode', 'ScrollCoach', 'PeerTrace'], details: {} },
+                { name: 'IdeaNest', subNodes: ['NestPath', 'SparkClaim', 'ScrollTree', 'PupilEcho', 'ThoughtPulse'], details: {} },
+                { name: 'SchoolVault', subNodes: ['VaultGate', 'IDBoard', 'RosterDrop', 'GridEnroll', 'SecureClass'], details: {} },
+                { name: 'LearnSignal', subNodes: ['SignalNode', 'BrainPing', 'LessonTrack', 'EduCast', 'PathAlert'], details: {} },
+                { name: 'GridBadge', subNodes: ['BadgeSync', 'PathAward', 'TagNode', 'CreditDrop', 'CertLock'], details: {} },
+                { name: 'ScrollCraft', subNodes: ['CraftScroll', 'YieldPath', 'PeerSkill', 'VaultMaker', 'ProjectPulse'], details: {} },
+                { name: 'MindBoard', subNodes: ['BoardTag', 'ClassSignal', 'IdeaPost', 'TaskDrop', 'VoteMark'], details: {} },
+                { name: 'ClassEcho', subNodes: ['EchoNode', 'SyncMesh', 'StudentCast', 'AlertPing', 'ScrollPlay'], details: {} },
+                { name: 'VaultPupil', subNodes: ['PupilID', 'SecureClaim', 'GradeVault', 'TrackNode', 'CertTrigger'], details: {} },
+                { name: 'YouthSignal', subNodes: ['PeerAlert', 'LoopClaim', 'ScrollWave', 'VoiceDrop', 'IDMesh'], details: {} },
+                { name: 'TeachStack', subNodes: ['StackLink', 'LessonPulse', 'GradeBeam', 'TrackNode', 'PeerPath'], details: {} },
+                { name: 'StudyCast', subNodes: ['StudyStream', 'PeerJoin', 'QuizSignal', 'ReviewGrid', 'ClassLink'], details: {} },
+                { name: 'RoleGrid', subNodes: ['RoleMap', 'ClaimSync', 'PeerTree', 'IdentityPath', 'TagTrack'], details: {} },
+                { name: 'LearnFrame', subNodes: ['FrameNode', 'LessonTrace', 'PupilMesh', 'CastDrop', 'ScoreProof'], details: {} },
+                { name: 'PulseAcademy', subNodes: ['AcademyPing', 'PeerLight', 'FocusPath', 'VaultLearn', 'BadgeSync'], details: {} },
+                { name: 'GradeSync', subNodes: ['GradeLink', 'ResultEcho', 'TestMesh', 'PassTrack', 'VaultSheet'], details: {} },
+                { name: 'TeachCircle', subNodes: ['CircleCast', 'MentorPulse', 'ScrollBeam', 'IdeaClaim', 'PeerRing'], details: {} },
+                { name: 'CampusNet', subNodes: ['CampusID', 'GroupPath', 'ScrollZone', 'PeerAlert', 'ConnectMesh'], details: {} },
+                { name: 'StudyBoard', subNodes: ['StudyNode', 'NoteTrace', 'ProjectGrid', 'SyncClaim', 'ViewRank'], details: {} },
+                { name: 'ScrollPath', subNodes: ['PathLink', 'VaultCredit', 'PeerYield', 'LessonGrid', 'ClassSync'], details: {} },
+                { name: 'LearnQuest', subNodes: ['QuestNode', 'MapTrack', 'StudyGoal', 'ProgressPath', 'PeerSignal'], details: {} },
+                { name: 'EduNestPro', subNodes: ['NestID', 'PathPulse', 'MentorNode', 'VaultGrade', 'PupilClaim'], details: {} },
+                { name: 'LoopStudy', subNodes: ['StudyLoop', 'GridSync', 'QuizWave', 'PeerCast', 'ReviewTrack'], details: {} },
+                { name: 'GradeForge', subNodes: ['ForgeNode', 'GradeRing', 'ResultPush', 'CertPath', 'LearnLine'], details: {} },
+                { name: 'IdeaLink', subNodes: ['SparkLine', 'LoopLink', 'IdeaDrop', 'MentorPing', 'ClassTrace'], details: {} },
+                { name: 'TeachTrack', subNodes: ['ClassFlow', 'InstructorNode', 'FeedbackGrid', 'PeerScore', 'PathEcho'], details: {} },
+                { name: 'VaultClass', subNodes: ['SecureNode', 'RosterClaim', 'EnrollTrack', 'PeerMap', 'ClassKey'], details: {} },
+                { name: 'BadgeMesh', subNodes: ['BadgeID', 'VaultLink', 'ScrollProof', 'AwardBeam', 'PayoutPing'], details: {} },
+                { name: 'EduCast', subNodes: ['CoursePing', 'ClassSignal', 'LectureDrop', 'QuizRelay', 'PeerPush'], details: {} },
+                { name: 'YouthGrid', subNodes: ['MeshLearn', 'PeerTrace', 'StudyJoin', 'PupilMark', 'LessonSync'], details: {} },
+                { name: 'LearnProof', subNodes: ['ProofID', 'CourseClaim', 'ScrollCert', 'VaultDrop', 'GradeLoop'], details: {} },
+                { name: 'PathCoach', subNodes: ['CoachNode', 'RolePath', 'ScrollEcho', 'StudyChain', 'CertPush'], details: {} },
+                { name: 'TalentID', subNodes: ['TalentClaim', 'VaultPass', 'SkillMap', 'IDScroll', 'LearnLock'], details: {} },
+                { name: 'OmniPupil', subNodes: ['OmniLearn', 'ScrollLoop', 'ViewNode', 'ClassCast', 'IDTrack'], details: {} },
+                { name: 'SchoolChain', subNodes: ['LedgerLearn', 'BlockEnroll', 'VaultBoard', 'PeerPath', 'ClassFlow'], details: {} },
+                { name: 'GradeVault', subNodes: ['VaultClaim', 'CreditPing', 'ScoreSheet', 'SecureDrop', 'LedgerTrack'] }
+            ],
+            "admin-panel": [] // Admin panel doesn't have brands/nodes in the same way
+        };
+
+        // This holds the structure for products and their features based on pricing tiers
+        const SECTOR_TIER_PRICING = {
+            "Starter": {
+                multiplier: 1,
+                features: [
+                    "Basic Data Synchronization",
+                    "Community Support via Portal",
+                    "Limited API Access",
+                    "Up to 5 Subnodes",
+                    "Standard Analytics Dashboard",
+                    "Monthly Compliance Reports"
+                ],
+                monthlyMetrics: {
+                    'Avg. API Calls/day': '1,000',
+                    'Data Sync Latency': '50ms',
+                    'Support Tickets/month': '5'
                 }
-                // Merge backend brands into clientAdminData, avoiding duplicates
-                backendData[sectorKey].brands.forEach((bName, index) => {
-                    if (!clientAdminData[sectorKey].brands.some(cb => cb.name === bName)) {
-                        clientAdminData[sectorKey].brands.push({ name: bName, subNodes: backendData[sectorKey].nodes[index] || [], details: {} });
+            },
+            "Pro": {
+                multiplier: 2.5,
+                features: [
+                    "Advanced Data Synchronization",
+                    "Priority Email Support",
+                    "Full API Access",
+                    "Up to 50 Subnodes",
+                    "Real-Time Analytics Dashboard",
+                    "Weekly Compliance Reports",
+                    "Custom Alert System",
+                    "Multi-Region Deployment"
+                ],
+                monthlyMetrics: {
+                    'Avg. API Calls/day': '10,000',
+                    'Data Sync Latency': '20ms',
+                    'Support Tickets/month': '2'
+                }
+            },
+            "Enterprise": {
+                multiplier: 5,
+                features: [
+                    "Enterprise-Grade Data Synchronization",
+                    "Dedicated Account Manager",
+                    "24/7 Phone & Email Support",
+                    "Unlimited Subnodes",
+                    "Customizable Analytics & Reporting",
+                    "Daily Compliance Reports & Audits",
+                    "AI-Powered Anomaly Detection",
+                    "Global Deployment Zones",
+                    "On-Site Training & Setup"
+                ],
+                monthlyMetrics: {
+                    'Avg. API Calls/day': '100,000+',
+                    'Data Sync Latency': '5ms',
+                    'Support Tickets/month': '0.5' // Indicating rare or very quick resolution
+                }
+            }
+        };
+
+        // Initialize client-side data from localStorage or as an empty object
+        let clientAdminData = JSON.parse(localStorage.getItem("clientAdminData")) || {};
+
+        // --- FIX for Issue #3: Robust initialization and data structure for clientAdminData ---
+        // Ensure clientAdminData has all sectors initialized with empty brands arrays (of objects)
+        for (const sectorKey in sectorList) {
+            if (!clientAdminData[sectorKey]) {
+                clientAdminData[sectorKey] = { brands: [] }; // Initialize brands as an empty array of objects
+            } else if (!Array.isArray(clientAdminData[sectorKey].brands)) {
+                // If 'brands' property exists but is not an array, re-initialize it.
+                // This handles cases where old localStorage data might have different formats.
+                console.warn(`clientAdminData for sector ${sectorKey} has a non-array 'brands' property. Re-initializing.`);
+                clientAdminData[sectorKey].brands = [];
+            } else {
+                // Ensure existing brands in clientAdminData are objects with a 'subNodes' array
+                clientAdminData[sectorKey].brands = clientAdminData[sectorKey].brands.map(brand => {
+                    if (typeof brand === 'string') {
+                        // Convert old string format to object format
+                        return { name: brand, subNodes: [`${brand.slice(0,3).toUpperCase()}Node`] };
+                    }
+                    // Ensure subNodes exists and is an array
+                    if (!brand.subNodes || !Array.isArray(brand.subNodes)) {
+                        brand.subNodes = [];
+                    }
+                    return brand;
+                });
+            }
+        }
+
+
+        // Dummy static data for ALL_SECTOR_DATA_STATIC (if your backend isn't running)
+        // This is a copy of ALL_BRANDS_DETAILS_BY_SECTOR but structured as { brands: [], subNodes: [[]] } for calculation
+        // In a real app, this would come from your backend.
+        const ALL_SECTOR_DATA_STATIC = {};
+        for (const sectorKey in ALL_BRANDS_DETAILS_BY_SECTOR) {
+            ALL_SECTOR_DATA_STATIC[sectorKey] = {
+                brands: ALL_BRANDS_DETAILS_BY_SECTOR[sectorKey].map(b => b.name),
+                // Correctly map subnodes for static data
+                subNodes: ALL_BRANDS_DETAILS_BY_SECTOR[sectorKey].map(b => b.subNodes)
+            };
+        }
+
+
+        // Wrap the entire main script logic in an IIFE
+        (function() {
+
+            // --- Core Admin Panel Functions ---
+            // These functions manage section visibility and main navigation
+            let currentActivePanelId = null;
+            let activeBrandButton = null; // To keep track of the currently active brand button
+
+            // Function to load the main dashboard content from the backend
+            // NOTE: This function assumes a backend is running at http://localhost:3000/api/sectors
+            // If you don't have a backend, this part will show an error.
+            async function loadMainDashboardData() {
+                const dashboard = document.getElementById("brandDashboard"); // This element doesn't exist in the admin HTML
+                // This function seems to be intended for a different page (e.g., index.html or products.html)
+                // For the admin panel, we are using renderFaaZoneIndexTable and displaySectorSpecificProducts
+                console.warn("loadMainDashboardData called in Admin Portal. This function is likely for another page (e.g., index.html). Skipping execution in admin panel context.");
+                // Removed the fetch call here as it's not directly used for the admin panel's current structure
+                // You can re-enable and adapt if you have a specific dashboard area in this admin portal.
+            }
+
+            window.showAdminSection = function(sectionId, clickedLink) {
+                // Hide all sections and deactivate all nav links first
+                document.querySelectorAll('section[id$="-section"]').forEach(el => el.classList.add('hidden'));
+                document.querySelectorAll('.admin-nav-scroll a').forEach(link => link.classList.remove('active'));
+
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    section.classList.remove('hidden');
+                    if (clickedLink) {
+                        clickedLink.classList.add('active');
+                        currentActivePanelId = sectionId;
+                    }
+                    // Clear previous brand snapshot when switching main sections
+                    document.getElementById('brandDetailsContainer').innerHTML = '';
+                    if (activeBrandButton) {
+                        activeBrandButton.classList.remove('active');
+                        activeBrandButton = null;
+                    }
+
+                    // Specific actions based on the section being shown
+                    if (sectionId === 'metrics-section') {
+                        if (!pulseChartInstance) {
+                            renderDynamicPulseChart();
+                        }
+                        // Ensure interval is running only when metrics section is active
+                        if (!window._pulseChartInterval) {
+                            window._pulseChartInterval = setInterval(updateDynamicPulseChart, 3000);
+                        }
+                        calculateGlobalMetrics(); // Update metrics when entering this section
+                    } else {
+                        // Clear interval when leaving metrics section
+                        if (window._pulseChartInterval) {
+                            clearInterval(window._pulseChartInterval);
+                            window._pulseChartInterval = null;
+                        }
+                    }
+
+                    if (sectionId === 'global-index-section') {
+                        renderFaaZoneIndexTable();
+                        calculateGlobalMetrics();
+                    } else if (sectionId === 'add-brand-section') {
+                        populateSectorSelect();
+                        calculateGlobalMetrics();
+                        renderFaaZoneIndexTable(); // Ensure table is rendered if this is the first section shown
+                    }
+                    else if (sectionId === 'sector-view-section') {
+                        populateSectorViewSelect();
+                        const sectorViewSelect = document.getElementById('sectorViewSelect');
+                        // Display the first available sector by default if none selected or if it's the first time
+                        // Ensure we don't pick 'admin-panel' as a default viewable sector
+                        const viewableSectors = Object.keys(sectorList).filter(key => key !== 'admin-panel');
+                        if (sectorViewSelect.value === '' && viewableSectors.length > 0) {
+                            sectorViewSelect.value = viewableSectors[0];
+                            displaySectorSpecificProducts(sectorViewSelect.value);
+                        } else if (sectorViewSelect.value !== '') {
+                            // Re-display if a sector was already selected
+                            displaySectorSpecificProducts(sectorViewSelect.value);
+                        }
+                    }
+                }
+            }
+            
+            function populateSectorSelect() {
+                const select = document.getElementById('sectorSelect');
+                if (!select) return;
+                select.innerHTML = ''; // Clear existing options
+                Object.entries(sectorList).forEach(([key, label]) => {
+                    if (key !== 'admin-panel') { // Exclude admin panel from being a target sector
+                        const option = document.createElement('option');
+                        option.value = key;
+                        option.textContent = label;
+                        select.appendChild(option);
                     }
                 });
             }
-        }
+            
+            function populateSectorViewSelect() {
+                const select = document.getElementById('sectorViewSelect');
+                if (!select) return;
+                select.innerHTML = '';
 
-        console.log("Initial backend data loaded and merged:", clientAdminData);
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = '--- Select a Sector ---';
+                select.appendChild(defaultOption);
 
-    } catch (err) {
-        console.error("❌ Could not load initial backend data:", err);
-        window.showTemporaryMessage(`🚨 Local Backend Error: ${err.message}. Ensure your 'server/server.js' is running on ${BACKEND_LOCAL_SERVER_URL}.`, 'error');
-    }
-}
+                Object.entries(sectorList).forEach(([key, label]) => {
+                    if (key !== 'admin-panel') {
+                        const option = document.createElement('option');
+                        option.value = key;
+                        option.textContent = label;
+                        select.appendChild(option);
+                    }
+                });
 
-function populateSectorSelect() {
-    const select = document.getElementById('sectorSelect');
-    if (!select) return;
-    select.innerHTML = ''; 
-    Object.entries(sectorList).forEach(([key, label]) => {
-        if (key !== 'admin-panel') { 
-            const option = document.createElement('option');
-            option.value = key;
-            option.textContent = label;
-            select.appendChild(option);
-        }
-    });
-}
+                select.removeEventListener('change', handleSectorViewChange); 
+                select.addEventListener('change', handleSectorViewChange);
+            }
 
-function populateSectorViewSelect() {
-    const select = document.getElementById('sectorViewSelect');
-    if (!select) return;
-    select.innerHTML = '';
+            function handleSectorViewChange(event) {
+                const selectedSectorKey = event.target.value;
+                if (activeBrandButton) {
+                    activeBrandButton.classList.remove('active');
+                    activeBrandButton = null;
+                }
+                document.getElementById('brandDetailsContainer').innerHTML = '';
 
-    const defaultOption = document.createElement('option');
-    defaultOption.value = '';
-    defaultOption.textContent = '--- Select a Sector ---';
-    select.appendChild(defaultOption);
+                if (selectedSectorKey) {
+                    displaySectorSpecificProducts(selectedSectorKey);
+                } else {
+                    document.getElementById('dynamicSectorDashboard').innerHTML = '<p class="text-gray-400 col-span-full text-center mt-8">Select a sector to view its detailed dashboard.</p>';
+                }
+            }
 
-    Object.entries(sectorList).forEach(([key, label]) => {
-        if (key !== 'admin-panel') {
-            const option = document.createElement('option');
-            option.value = key;
-            option.textContent = label;
-            select.appendChild(option);
-        }
-    });
+            function addBrandToSector() {
+                const sectorSelect = document.getElementById("sectorSelect");
+                const brandInput = document.getElementById("brandInput");
+                const subnodesInput = document.getElementById("subnodesInput");
+                const adminStatus = document.getElementById("adminStatus");
+                const addBrandBtn = document.getElementById("addBrandBtn");
 
-    select.removeEventListener('change', handleSectorViewChange); 
-    select.addEventListener('change', handleSectorViewChange);
-}
+                const sectorKey = sectorSelect.value;
+                const brandName = brandInput.value.trim();
+                const subnodesArray = subnodesInput.value.split(",").map(n => n.trim()).filter(Boolean);
 
-function handleSectorViewChange(event) {
-    const selectedSectorKey = event.target.value;
-    if (activeBrandButton) {
-        activeBrandButton.classList.remove('active');
-        activeBrandButton = null;
-    }
-    document.getElementById('brandDetailsContainer').innerHTML = '';
+                if (!brandName || subnodesArray.length === 0) {
+                    adminStatus.textContent = "⚠️ Please fill in both brand name and at least one subnode.";
+                    adminStatus.classList.remove('text-green-500');
+                    adminStatus.classList.add('text-red-500');
+                    addBrandBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                    addBrandBtn.classList.add('bg-red-500', 'hover:bg-red-600');
+                    setTimeout(() => {
+                        adminStatus.textContent = "Ready to receive input.";
+                        adminStatus.classList.remove('text-red-500');
+                        addBrandBtn.classList.remove('bg-red-500', 'hover:bg-red-600');
+                        addBrandBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+                    }, 3000);
+                    return;
+                }
 
-    if (selectedSectorKey) {
-        displaySectorSpecificProducts(selectedSectorKey);
-    } else {
-        document.getElementById('dynamicSectorDashboard').innerHTML = '<p class="text-gray-400 col-span-full text-center mt-8">Select a sector to view its detailed dashboard.</p>';
-    }
-}
+                // Simulate saving to backend and updating local data
+                console.log(`Attempting to add brand "${brandName}" with subnodes [${subnodesArray.join(', ')}] to sector "${sectorKey}"`);
+                
+                // In a real application, you would send this data to your backend via fetch:
+                // fetch('http://localhost:3000/api/sectors', { ... }).then(...)
+                // For this example, we'll just update clientAdminData directly.
 
-async function addBrandToSector() {
-    const sectorSelect = document.getElementById("sectorSelect");
-    const brandInput = document.getElementById("brandInput");
-    const subnodesInput = document.getElementById("subnodesInput");
-    const adminStatus = document.getElementById("adminStatus");
-    const addBrandBtn = document.getElementById("addBrandBtn");
+                if (!clientAdminData[sectorKey]) {
+                    clientAdminData[sectorKey] = { brands: [] };
+                }
+                // Add the brand as an object to match the structure expected by generateMockBrandSnapshotData
+                // Ensure clientAdminData.brands stores objects with name and subNodes
+                clientAdminData[sectorKey].brands.push({ name: brandName, subNodes: subnodesArray });
 
-    const sectorKey = sectorSelect.value;
-    const brandName = brandInput.value.trim();
-    const subnodesArray = subnodesInput.value.split(",").map(n => n.trim()).filter(Boolean);
+                localStorage.setItem("clientAdminData", JSON.stringify(clientAdminData));
 
-    if (!brandName || subnodesArray.length === 0) {
-        adminStatus.textContent = "⚠️ Please fill in both brand name and at least one subnode.";
-        adminStatus.classList.remove('text-green-500', 'text-blue-500');
-        adminStatus.classList.add('text-red-500');
-        addBrandBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
-        addBrandBtn.classList.add('bg-red-500', 'hover:bg-red-600');
-        setTimeout(() => {
-            adminStatus.textContent = "Ready to receive input.";
-            adminStatus.classList.remove('text-red-500');
-            addBrandBtn.classList.remove('bg-red-500', 'hover:bg-red-600');
-            addBrandBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
-        }, 3000);
-        return;
-    }
+                adminStatus.textContent = `✅ Added ${brandName} to ${sectorList[sectorKey]} (Client-Side).`;
+                adminStatus.classList.remove('text-red-500');
+                adminStatus.classList.add('text-green-500');
+                addBrandBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                addBrandBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+                addBrandBtn.innerHTML = '✔️ Added!';
+                
+                renderFaaZoneIndexTable(); // Re-render FAA Zone Index table
+                calculateGlobalMetrics(); // Recalculate metrics
+                if (currentActivePanelId === 'sector-view-section' && document.getElementById('sectorViewSelect').value === sectorKey) {
+                    displaySectorSpecificProducts(sectorKey); // Re-render sector view if it's the active sector
+                }
 
-    adminStatus.textContent = `Attempting to add "${brandName}" to ${sectorList[sectorKey]} (via Backend)...`;
-    adminStatus.classList.remove('text-green-500', 'text-red-500');
-    adminStatus.classList.add('text-blue-500'); // Info color
+                brandInput.value = "";
+                subnodesInput.value = "";
 
-    try {
-        // Send data to your local Express backend
-        const response = await fetch(`${BACKEND_LOCAL_SERVER_URL}/api/sectors`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sector: sectorKey, brand: brandName, subnodes: subnodesArray })
-        });
+                setTimeout(() => {
+                    adminStatus.textContent = "Ready to receive input.";
+                    adminStatus.classList.remove('text-green-500', 'text-red-500');
+                    addBrandBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                    addBrandBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+                    addBrandBtn.innerHTML = '➕ Add Brand';
+                }, 3000);
+            }
+            
+            function clearAdminAddedData() {
+                localStorage.removeItem("clientAdminData");
+                clientAdminData = {};
+                // Re-initialize clientAdminData for all sectors as empty objects with empty brands arrays
+                for (const sectorKey in sectorList) {
+                    clientAdminData[sectorKey] = { brands: [] };
+                }
+                renderFaaZoneIndexTable();
+                calculateGlobalMetrics();
+                document.getElementById('dynamicSectorDashboard').innerHTML = '<p class="text-gray-400 col-span-full text-center mt-8">Select a sector to view its detailed dashboard.</p>';
+                document.getElementById('brandDetailsContainer').innerHTML = '';
+                // No need to loadMainDashboardData here if it's only for a different page.
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || `Backend error: ${response.status} ${response.statusText}`);
-        }
+                const adminStatus = document.getElementById("adminStatus");
+                adminStatus.textContent = "🗑️ Client-side admin data cleared.";
+                adminStatus.classList.remove('text-red-500');
+                adminStatus.classList.add('text-green-500');
+                setTimeout(() => { 
+                    adminStatus.textContent = "Ready to receive input.";
+                    adminStatus.classList.remove('text-green-500');
+                }, 3000);
+            }
+            
+            // Function to toggle between monthly and annual prices
+            window.toggleSubscriptionType = function(cardElement, isAnnualChecked) {
+                const priceSpan = cardElement.querySelector('.price-display');
+                const originalMonthlyPrice = parseFloat(priceSpan.dataset.originalMonthlyPrice);
+                const originalAnnualPrice = parseFloat(priceSpan.dataset.originalAnnualPrice);
+                const currentCurrency = priceSpan.dataset.currencyCode || BASE_CURRENCY;
 
-        const data = await response.json();
-        
-        if (data.success) {
-            // Only add to clientAdminData if backend reports success (e.g., not a duplicate)
-            if (!clientAdminData[sectorKey]) clientAdminData[sectorKey] = { brands: [] };
-            clientAdminData[sectorKey].brands.push({ name: brandName, subNodes: subnodesArray, details: {} });
-            localStorage.setItem("clientAdminData", JSON.stringify(clientAdminData));
+                let newPrice;
+                let newBillingCycle;
+                let suffix;
 
-            adminStatus.textContent = `✅ Added ${brandName} to ${sectorList[sectorKey]} (Backend & Client-Side).`;
-            adminStatus.classList.remove('text-blue-500', 'text-red-500');
-            adminStatus.classList.add('text-green-500');
-            addBrandBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
-            addBrandBtn.classList.add('bg-green-500', 'hover:bg-green-600');
-            addBrandBtn.innerHTML = '✔️ Added!';
-        } else {
-             adminStatus.textContent = `ℹ️ ${data.message}`; // E.g., "Brand already exists"
-             adminStatus.classList.remove('text-green-500', 'text-red-500');
-             adminStatus.classList.add('text-blue-500');
-        }
-        
-        renderFaaZoneIndexTable(); // Re-render FAA Zone Index table
-        calculateGlobalMetrics(); // Recalculate metrics
-        if (currentActivePanelId === 'sector-view-section' && document.getElementById('sectorViewSelect').value === sectorKey) {
-            displaySectorSpecificProducts(sectorKey); // Re-render sector view
-        }
+                if (isAnnualChecked) {
+                    newPrice = originalAnnualPrice;
+                    newBillingCycle = "ANNUAL";
+                    suffix = "/ year";
+                } else {
+                    newPrice = originalMonthlyPrice;
+                    newBillingCycle = "MONTHLY";
+                    suffix = "/ month";
+                }
 
-        brandInput.value = "";
-        subnodesInput.value = "";
+                let convertedPrice = newPrice;
+                if (currentCurrency !== BASE_CURRENCY && exchangeRates[currentCurrency]) {
+                    convertedPrice = newPrice * exchangeRates[currentCurrency];
+                }
+                
+                priceSpan.innerHTML = `${window.getCurrencySymbol(currentCurrency)}${convertedPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span class="text-xl text-gray-400">${suffix}</span>`;
 
-    } catch (err) {
-        console.error("❌ Error adding brand to backend:", err);
-        adminStatus.textContent = `❌ Failed to add brand: ${err.message}. Is local server running?`;
-        adminStatus.classList.remove('text-green-500', 'text-blue-500');
-        adminStatus.classList.add('text-red-500');
-        addBrandBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
-        addBrandBtn.classList.add('bg-red-500', 'hover:bg-red-600');
-        addBrandBtn.innerHTML = 'Failed!';
-    } finally {
-        setTimeout(() => {
-            adminStatus.textContent = "Ready to receive input.";
-            adminStatus.classList.remove('text-green-500', 'text-red-500', 'text-blue-500');
-            addBrandBtn.classList.remove('bg-green-500', 'hover:bg-green-600', 'bg-red-500', 'hover:bg-red-600');
-            addBrandBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
-            addBrandBtn.innerHTML = '➕ Add Brand';
-        }, 3000);
-    }
-}
+                const buyButton = cardElement.querySelector('.buy-now-button');
+                const paypalContainer = cardElement.querySelector('.paypal-button-container');
+                if (paypalContainer) {
+                    paypalContainer.dataset.amount = newPrice.toFixed(2);
+                    paypalContainer.dataset.billingCycle = newBillingCycle;
+                    const itemName = buyButton.dataset.itemName;
+                    const basePlanName = itemName.replace(/\s/g, '_').toLowerCase();
+                    const specificPlanKey = `${basePlanName}_${newBillingCycle.toLowerCase()}`;
+                    paypalContainer.dataset.planKey = specificPlanKey; // Pass the specific logical plan key
 
-function clearAdminAddedData() {
-    localStorage.removeItem("clientAdminData");
-    clientAdminData = {};
-    for (const sectorKey in sectorList) {
-        clientAdminData[sectorKey] = { brands: [] }; 
-    }
-    renderFaaZoneIndexTable();
-    calculateGlobalMetrics();
-    document.getElementById('dynamicSectorDashboard').innerHTML = '<p class="text-gray-400 col-span-full text-center mt-8">Select a sector to view its detailed dashboard.</p>';
-    document.getElementById('brandDetailsContainer').innerHTML = '';
+                    // IMPORTANT: Re-rendering PayPal buttons on currency/toggle change is complex.
+                    // The PayPal SDK expects to be rendered once. Dynamically changing plan_id on a rendered button
+                    // is not directly supported. For this mock, simply updating dataset is illustrative.
+                    // In a real app, you might need to destroy and re-create the PayPal button,
+                    // or handle the price change in a way that doesn't rely on button re-render.
+                    // For now, if the PayPal button is already rendered, we don't touch it.
+                    // A user would have to click the "Subscribe Now" button again to pick up the new price.
+                    // Or, simpler for this demo, we re-trigger the rendering of products when currency changes
+                    // which rebuilds the PayPal buttons.
+                }
 
-    const adminStatus = document.getElementById("adminStatus");
-    adminStatus.textContent = "🗑️ Client-side admin data cleared.";
-    adminStatus.classList.remove('text-red-500');
-    adminStatus.classList.add('text-green-500');
-    setTimeout(() => { 
-        adminStatus.textContent = "Ready to receive input.";
-        adminStatus.classList.remove('text-green-500');
-    }, 3000);
-}
+            }
 
-function toggleSubscriptionType(cardElement, isAnnualChecked) {
-    const priceSpan = cardElement.querySelector('.price-display');
-    const originalMonthlyPrice = parseFloat(priceSpan.dataset.originalMonthlyPrice);
-    const originalAnnualPrice = parseFloat(priceSpan.dataset.originalAnnualPrice);
-    const currentCurrency = priceSpan.dataset.currencyCode || BASE_CURRENCY; 
-
-    let newPrice;
-    let newBillingCycle;
-    let suffix;
-
-    if (isAnnualChecked) { 
-        newPrice = originalAnnualPrice;
-        newBillingCycle = "ANNUAL";
-        suffix = "/ year";
-    } else { 
-        newPrice = originalMonthlyPrice;
-        newBillingCycle = "MONTHLY";
-        suffix = "/ month";
-    }
-
-    let convertedPrice = newPrice;
-    if (currentCurrency !== BASE_CURRENCY && exchangeRates[currentCurrency]) {
-        convertedPrice = newPrice * exchangeRates[currentCurrency];
-    }
-    
-    priceSpan.innerHTML = `${window.getCurrencySymbol(currentCurrency)}${convertedPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span class="text-xl text-gray-400">${suffix}</span>`;
-
-    const paypalButtonContainer = cardElement.querySelector('.paypal-button-container-dynamic');
-    if (paypalButtonContainer) {
-        // Update the data attributes on the container
-        paypalButtonContainer.dataset.amount = newPrice.toFixed(2); // Store original ZAR amount
-        paypalButtonContainer.dataset.billingCycle = newBillingCycle;
-        const basePlanName = paypalButtonContainer.dataset.itemName.replace(/<.*?>/g, '').trim();
-        paypalButtonContainer.dataset.planKey = `${basePlanName}_${newBillingCycle}`;
-
-        // Re-render the PayPal button for this specific card
-        renderPayPalButtonsForContainer(paypalButtonContainer.id);
-    }
-}
-
-function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = []) {
-    let subnodes = explicitSubnodes;
-    if (subnodes.length === 0) {
-        const staticSectorBrands = ALL_BRANDS_DETAILS_BY_SECTOR[sectorKey] || [];
-        const staticBrandEntry = staticSectorBrands.find(b => b.name === brandName);
-        if (staticBrandEntry && staticBrandEntry.subNodes && staticBrandEntry.subNodes.length > 0) {
-            subnodes = staticBrandEntry.subNodes;
-        } else {
-            subnodes = [`MockNode ${brandName.slice(0,3).toUpperCase()}A™`, `MockNode ${brandName.slice(0,3).toUpperCase()}B™`];
-        }
-    }
+            // --- Mock Data Generation for Brand Snapshots ---
+            function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = []) {
+                let subnodes = explicitSubnodes;
+                if (subnodes.length === 0) {
+                    const staticSectorBrands = ALL_BRANDS_DETAILS_BY_SECTOR[sectorKey] || [];
+                    const staticBrandEntry = staticSectorBrands.find(b => b.name === brandName);
+                    if (staticBrandEntry && staticBrandEntry.subNodes && staticBrandEntry.subNodes.length > 0) {
+                        subnodes = staticBrandEntry.subNodes;
+                    } else {
+                        // Fallback if no static or explicitly provided subnodes
+                        subnodes = [`MockNode ${brandName.slice(0,3).toUpperCase()}A™`, `MockNode ${brandName.slice(0,3).toUpperCase()}B™`];
+                    }
+                }
                 
                 const sectorInfo = FAA_ZONE_INDEX_SUMMARY_DATA[sectorKey] || {};
                 const sectorDisplayName = sectorList[sectorKey] || sectorKey.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
                 const baseId = brandName.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().substring(0, 5);
                 const randomNum = () => Math.floor(Math.random() * 9000) + 1000;
-                const randomPulse = () => (Math.random() * 50 + 50).toFixed(2); 
-                const randomDataVolume = () => (Math.random() * 100 + 10).toFixed(2); 
-                const randomLatency = () => (Math.random() * 50 + 10).toFixed(2); 
+                const randomPulse = () => (Math.random() * 50 + 50).toFixed(2);
+                const randomDataVolume = () => (Math.random() * 100 + 10).toFixed(2);
+                const randomLatency = () => (Math.random() * 50 + 10).toFixed(2);
                 const randomActiveNodes = () => Math.floor(Math.random() * 1000) + 50;
                 const randomAuditDate = () => `2025-${(Math.floor(Math.random() * 12) + 1).toString().padStart(2, '0')}-${(Math.floor(Math.random() * 28) + 1).toString().padStart(2, '0')}`;
                 
@@ -1087,41 +1699,41 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
                 
                 const allFeatures = [...coreFeatures, ...selectedAdditionalFeatures];
 
-                const baseMonthlyFee = parseFloat(sectorInfo.monthlyFee);
+                const baseMonthlyFee = parseFloat(String(sectorInfo.monthlyFee).replace('$', '').replace(',', ''));
                 const annualDiscountRate = 0.15;
 
                 const pricingTiers = [
                     {   
                         name: "Starter Node",   
-                        monthlyAmount: baseMonthlyFee,   
-                        annualAmount: baseMonthlyFee * 12 * (1 - annualDiscountRate),
+                        monthlyAmount: baseMonthlyFee * SECTOR_TIER_PRICING.Starter.multiplier,   
+                        annualAmount: baseMonthlyFee * SECTOR_TIER_PRICING.Starter.multiplier * 12 * (1 - annualDiscountRate),
                         description: "Ideal for small teams and pilot projects. Access essential features and secure basic data synchronization.",   
-                        benefits: SECTOR_TIER_PRICING.Starter.features
+                        benefits: ["Essential features", "Basic data sync", "Community support"]   
                     },
                     {   
                         name: "Pro Grid",   
-                        monthlyAmount: baseMonthlyFee * 2.5,   
-                        annualAmount: baseMonthlyFee * 2.5 * 12 * (1 - annualDiscountRate),
-                        description: `Designed for growing firms needing advanced capabilities. Includes many core features and enhanced performance.`,   
-                        benefits: SECTOR_TIER_PRICING.Pro.features
+                        monthlyAmount: baseMonthlyFee * SECTOR_TIER_PRICING.Pro.multiplier,   
+                        annualAmount: baseMonthlyFee * SECTOR_TIER_PRICING.Pro.multiplier * 12 * (1 - annualDiscountRate),
+                        description: `Designed for growing firms needing advanced capabilities. Includes ${Math.ceil(Math.random() * 5 + 3)} core features and enhanced performance.`,   
+                        benefits: ["Advanced features", "High-volume data processing", "Priority support", "Expanded analytics"]   
                     },
                     {   
                         name: "Enterprise Omni-Sync",   
-                        monthlyAmount: baseMonthlyFee * 5,   
-                        annualAmount: baseMonthlyFee * 5 * 12 * (1 - annualDiscountRate),
+                        monthlyAmount: baseMonthlyFee * SECTOR_TIER_PRICING.Enterprise.multiplier,   
+                        annualAmount: baseMonthlyFee * SECTOR_TIER_PRICING.Enterprise.multiplier * 12 * (1 - annualDiscountRate),
                         description: "For large organizations requiring full VaultMesh access, custom integrations, and dedicated resources.",   
-                        benefits: SECTOR_TIER_PRICING.Enterprise.features
+                        benefits: ["Full VaultMesh access", "Dedicated account manager", "24/7 Phone Support", "Enhanced Custom Integrations", "On-site Training & Setup"]   
                     }
                 ];
 
                 const mockData = {
-                    sectorGlyph: sectorInfo.glyph || '🌐',
+                    sectorGlyph: sectorInfo.glyph || '�',
                     sectorName: sectorDisplayName,
                     brandName: brandName,
                     intro: randomIntro,
                     keyFeatures: allFeatures,
                     subnodes: subnodes,
-                    pricing: pricingTiers, 
+                    pricing: pricingTiers,
                     metadata: {
                         productId: `${baseId}-${randomNum()}`,
                         vaultId: `VAULT-${randomNum()}`,
@@ -1148,7 +1760,8 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
                 return mockData;
             }
 
-            function displayBrandDetails(sectorKey, brandName, clickedButton) {
+            // --- Display Brand Details (Snapshot) ---
+            window.displayBrandDetails = function(sectorKey, brandName, clickedButton) { // Made global
                 const container = document.getElementById('brandDetailsContainer');
                 if (!container) {
                     console.error("Brand details container not found!");
@@ -1165,26 +1778,25 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
                 }
 
                 let selectedBrand = null;
-                // Search in clientAdminData first (which includes backend data)
-                const combinedBrandsInSector = clientAdminData[sectorKey]?.brands || [];
-                selectedBrand = combinedBrandsInSector.find(b => b.name === brandName);
+                const staticBrandsInSector = ALL_BRANDS_DETAILS_BY_SECTOR[sectorKey] || [];
+                selectedBrand = staticBrandsInSector.find(b => b.name === brandName);
 
-                // If not found in combined, fallback to static (shouldn't be needed if backend/clientAdminData is unified)
+                // Check client-added data if not found in static
                 if (!selectedBrand) {
-                    const staticBrands = ALL_BRANDS_DETAILS_BY_SECTOR[sectorKey] || [];
-                    selectedBrand = staticBrands.find(b => b.name === brandName);
+                    const clientAddedBrandsInSector = clientAdminData[sectorKey]?.brands || [];
+                    selectedBrand = clientAddedBrandsInSector.find(b => b.name === brandName);
                 }
 
-                const currentSubNodesForSnapshot = selectedBrand?.subNodes || [];
+                const currentSubNodesForSnapshot = selectedBrand && selectedBrand.subNodes ? selectedBrand.subNodes : [];
+
                 let brandSnapshotData = generateMockBrandSnapshotData(sectorKey, brandName, currentSubNodesForSnapshot);
-                
-                // If the selectedBrand has custom details, merge them
-                if (selectedBrand?.details && Object.keys(selectedBrand.details).length > 0) {
+                if (selectedBrand && selectedBrand.details && Object.keys(selectedBrand.details).length > 0) {
+                    // Merging details from static data if available
                     brandSnapshotData = { 
                         ...brandSnapshotData, 
                         ...selectedBrand.details,
                         metadata: { ...brandSnapshotData.metadata, ...(selectedBrand.details.metadata || {}) },
-                        realTimeMetrics: { ...brandSnapshotData.realTimeMetrics, ...(selectedBrand.details.realTimeMetrics || {}) },
+                        realTimeMetrics: { ...brandSnapshotData.realTimeMetrics, ...(selectedBrand.details.realTimeMetrics || {}) }, // Corrected typo here
                         pricing: selectedBrand.details.pricing || brandSnapshotData.pricing,
                         vaultTraceEntries: selectedBrand.details.vaultTraceEntries || brandSnapshotData.vaultTraceEntries
                     };
@@ -1230,7 +1842,7 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
                                         if (currentCurrency !== BASE_CURRENCY && exchangeRates[currentCurrency]) {
                                             displayMonthlyPrice = displayMonthlyPrice * exchangeRates[currentCurrency];
                                             displayAnnualPrice = displayAnnualPrice * exchangeRates[currentCurrency];
-                                            displayPrice = displayMonthlyPrice; 
+                                            displayPrice = displayMonthlyPrice;
                                         }
 
                                         const firstProductCard = document.querySelector('#dynamicSectorDashboard .product-card');
@@ -1304,46 +1916,67 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
             };
 
 
+            // --- Section for Products & Pricing Tiers (for Admin Sector View) ---
+            // This function dynamically displays pricing cards for a selected sector in the admin view.
             function displaySectorSpecificProducts(sectorKey) {
                 const container = document.getElementById('dynamicSectorDashboard');
                 if (!container) {
                     console.error("Dynamic sector dashboard container not found!");
                     return;
                 }
-                container.innerHTML = ''; 
-                document.getElementById('brandDetailsContainer').innerHTML = ''; 
+                container.innerHTML = ''; // Clear previous content
+                document.getElementById('brandDetailsContainer').innerHTML = ''; // Also clear brand snapshot
 
                 const sectorDispName = sectorList[sectorKey] || sectorKey.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
                 const sectorDataForPricing = FAA_ZONE_INDEX_SUMMARY_DATA[sectorKey];
                 
-                // Get brands from clientAdminData (which now includes backend data)
-                const allBrandsForDisplay = clientAdminData[sectorKey]?.brands || [];
+                // Get brands for display in the sector view (from static + client-added)
+                let brandsInSector = [...(ALL_BRANDS_DETAILS_BY_SECTOR[sectorKey] || [])];
+                const clientAddedBrandsRaw = clientAdminData[sectorKey]?.brands || [];
+                
+                // Ensure client-added brands are also objects with name and subNodes
+                const clientAddedBrandsStructured = clientAddedBrandsRaw.map(brand => {
+                    // If brand is a string (from old localStorage), convert it to object. Otherwise, use as is.
+                    // Ensure subNodes property exists for consistency
+                    return typeof brand === 'object' && brand !== null && brand.name
+                        ? { name: brand.name, subNodes: Array.isArray(brand.subNodes) ? brand.subNodes : [] }
+                        : { name: brand, subNodes: [`${String(brand).slice(0,3).toUpperCase()}Node`] }; // Fallback for old string format
+                });
+                
+                // Combine static and client-added brands, removing duplicates by name
+                const combinedBrands = {};
+                brandsInSector.forEach(brand => combinedBrands[brand.name] = brand);
+                clientAddedBrandsStructured.forEach(brand => combinedBrands[brand.name] = brand); // Client-added overrides static if same name
+
+                const allBrandsForDisplay = Object.values(combinedBrands);
+
 
                 if (!sectorDataForPricing || allBrandsForDisplay.length === 0) {
                     container.innerHTML = `<p class="text-gray-400 col-span-full text-center mt-8">No detailed data or brands available for this sector yet.</p>`;
                     return;
                 }
 
+                // Define products (pricing tiers) for the selected sector
                 const baseMonthlyFee = parseFloat(String(sectorDataForPricing.monthlyFee).replace('$', '').replace(',', ''));
-                const annualDiscountRate = 0.15; 
+                const annualDiscountRate = 0.15; // 15% discount for annual plans
 
                 const products = [
                     {
                         name: `${sectorDispName.replace(/<.*?>/g, '')} Starter Package`,
-                        monthlyAmount: baseMonthlyFee,
-                        annualAmount: (baseMonthlyFee * 12 * (1 - annualDiscountRate)),
+                        monthlyAmount: baseMonthlyFee * SECTOR_TIER_PRICING.Starter.multiplier,
+                        annualAmount: (baseMonthlyFee * SECTOR_TIER_PRICING.Starter.multiplier * 12 * (1 - annualDiscountRate)),
                         tier: "Starter"
                     },
                     {
                         name: `${sectorDispName.replace(/<.*?>/g, '')} Pro Package`,
-                        monthlyAmount: (baseMonthlyFee * 2.5),
-                        annualAmount: (baseMonthlyFee * 2.5 * 12 * (1 - annualDiscountRate)),
+                        monthlyAmount: baseMonthlyFee * SECTOR_TIER_PRICING.Pro.multiplier,
+                        annualAmount: (baseMonthlyFee * SECTOR_TIER_PRICING.Pro.multiplier * 12 * (1 - annualDiscountRate)),
                         tier: "Pro", featured: true
                     },
                     {
                         name: `${sectorDispName.replace(/<.*?>/g, '')} Enterprise Package`,
-                        monthlyAmount: (baseMonthlyFee * 5),
-                        annualAmount: (baseMonthlyFee * 5 * 12 * (1 - annualDiscountRate)), 
+                        monthlyAmount: baseMonthlyFee * SECTOR_TIER_PRICING.Enterprise.multiplier,
+                        annualAmount: (baseMonthlyFee * SECTOR_TIER_PRICING.Enterprise.multiplier * 12 * (1 - annualDiscountRate)),
                         tier: "Enterprise"
                     }
                 ];
@@ -1352,9 +1985,6 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
                 products.forEach(product => {
                     const tierInfo = SECTOR_TIER_PRICING[product.tier];
                     if (!tierInfo) return;
-
-                    // Generate a unique ID for the PayPal button container for each product card
-                    const paypalButtonContainerId = `paypal-button-container-${sectorKey}-${product.tier}`;
 
                     pricingHtml += `
                         <div class="col-span-1">
@@ -1376,8 +2006,7 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
                                             data-original-monthly-price="${product.monthlyAmount.toFixed(2)}"
                                             data-original-annual-price="${product.annualAmount.toFixed(2)}"
                                             data-currency-symbol="R"
-                                            data-currency-code="ZAR"> 
-                                            R${parseFloat(product.monthlyAmount).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                                            data-currency-code="ZAR"> R${parseFloat(product.monthlyAmount).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                                             <span class="text-xl text-gray-400">/ month</span>
                                         </span>
                                     </div>
@@ -1387,14 +2016,20 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
                                         `).join('')}
                                     </ul>
                                 </div>
-                                <div id="${paypalButtonContainerId}" 
-                                     class="paypal-button-container-dynamic"
-                                     data-item-name="${product.name}"
-                                     data-amount="${product.monthlyAmount.toFixed(2)}" 
-                                     data-item-description="${product.name} - Monthly Subscription"
-                                     data-billing-cycle="MONTHLY"
-                                     data-plan-key="${product.name.replace(/<.*?>/g, '').trim().replace(/\s/g, '_')}_MONTHLY">
+                                <!-- PayPal button container added here -->
+                                <div class="paypal-button-container"
+                                    data-item-name="${product.name}"
+                                    data-amount="${product.monthlyAmount.toFixed(2)}"
+                                    data-item-description="Monthly subscription for ${product.name}."
+                                    data-billing-cycle="MONTHLY"
+                                    data-plan-key="${product.name.replace(/\s/g, '_').toLowerCase()}_monthly"
+                                    >
+                                    <!-- PayPal button will render here -->
                                 </div>
+                                <button class="buy-now-button cta-button w-full mt-4" 
+                                    onclick="window.initiatePayPalSubscription(event)">
+                                    Subscribe Now
+                                </button>
                             </div>
                         </div>
                     `;
@@ -1425,7 +2060,7 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
                 tierMetricsHtml += `</div></div>`;
                 container.innerHTML += tierMetricsHtml;
 
-                // Section for Brands and Subnodes (NEW INTERACTIVE DISPLAY)
+                // Section for Brands and Subnodes (Interactive Display)
                 let brandsAndSnapshotHtml = `
                     <div class="admin-panel-card mt-20">
                         <h3 class="text-2xl font-bold mb-4">Brands in ${sectorDispName}</h3>
@@ -1433,10 +2068,14 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
                         <div id="sectorBrandButtons" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
                 `;
 
+                // Add all brands (static + client-added) as buttons
                 allBrandsForDisplay.forEach(brand => {
+                    // Ensure brand is an object and has a name property, or assume it's a string
+                    const brandNameForButton = typeof brand === 'object' && brand !== null && brand.name ? brand.name : brand;
+
                     brandsAndSnapshotHtml += `
-                        <button class="brand-button" data-sector-key="${sectorKey}" data-brand-name="${brand.name}">
-                            ${brand.name}
+                        <button class="brand-button" data-sector-key="${sectorKey}" data-brand-name="${brandNameForButton}">
+                            ${brandNameForButton}
                         </button>
                     `;
                 });
@@ -1459,20 +2098,78 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
                 // Apply currency conversion to the newly rendered price displays
                 const sectorPriceDisplays = container.querySelectorAll('.price-display');
                 const sectorCurrencySelect = document.getElementById('sector-currency-select');
-                if (sectorCurrencySelect && typeof window.getCurrencySymbol === 'function' && typeof exchangeRates !== 'undefined') {
+                if (sectorCurrencySelect && typeof window.getCurrencySymbol === 'function' && typeof window.exchangeRates !== 'undefined') {
                     updatePricesInSectorView(sectorPriceDisplays, sectorCurrencySelect.value);
                 } else {
                     console.warn("Currency converter or its dependencies not fully initialized for sector view.");
                 }
 
-                // IMPORTANT: Render PayPal buttons AFTER the HTML for product cards is in the DOM
-                document.querySelectorAll('.paypal-button-container-dynamic').forEach(containerDiv => {
-                    renderPayPalButtonsForContainer(containerDiv.id);
+                // Render PayPal buttons in their new containers after products are displayed
+                container.querySelectorAll('.paypal-button-container').forEach(paypalButtonContainer => {
+                    const itemName = paypalButtonContainer.dataset.itemName;
+                    const amount = paypalButtonContainer.dataset.amount;
+                    const billingCycle = paypalButtonContainer.dataset.billingCycle;
+                    const specificPlanKey = paypalButtonContainer.dataset.planKey; // This is the *logical* plan key
+
+                    // Retrieve the single global base plan ID
+                    const basePlanId = paypalPlanIDs["fruitful-global-base"];
+                    
+                    // If the PayPal button has NOT been rendered in this container yet, and basePlanId is available
+                    const parentProductCard = paypalButtonContainer.closest('.product-card');
+                    const subscribeButton = parentProductCard.querySelector('.buy-now-button');
+
+                    if (paypalButtonContainer.children.length === 0 && basePlanId && basePlanId !== "P-YOURGLOBALBASEPLANID") {
+                        paypal.Buttons({
+                            createSubscription: function(data, actions) {
+                                return actions.subscription.create({
+                                    plan_id: basePlanId, // Use the single base plan ID
+                                    custom_id: specificPlanKey // Pass the specific logical plan as custom_id
+                                });
+                            },
+                            onApprove: function(data, actions) {
+                                console.log('Subscription Approved:', data);
+                                // In a real app, you would send data.subscriptionID and data.custom_id to your backend
+                                // Your backend would then use data.custom_id to provision the correct service (agriculture, enterprise, monthly).
+                                window.showTemporaryMessage(`Subscription for ${itemName} approved! ID: ${data.subscriptionID}. Logical Plan: ${data.custom_id || specificPlanKey}`, "success");
+                            },
+                            onCancel: function(data) {
+                                console.log('Subscription Cancelled:', data);
+                                window.showTemporaryMessage('PayPal subscription cancelled.', "info");
+                                if (subscribeButton) subscribeButton.style.display = 'block'; // Show original button again
+                                paypalButtonContainer.innerHTML = ''; // Clear PayPal button
+                            },
+                            onError: function(err) {
+                                console.error('PayPal Error:', err);
+                                window.showTemporaryMessage(`PayPal error: ${err.message || err}`, "error");
+                                if (subscribeButton) subscribeButton.style.display = 'block'; // Show original button again
+                                paypalButtonContainer.innerHTML = ''; // Clear PayPal button
+                            }
+                        }).render(paypalButtonContainer); // Render into the dedicated container
+                    } else if (!basePlanId || basePlanId === "P-YOURGLOBALBASEPLANID") {
+                         // If no valid base plan ID, disable the original subscribe button
+                         if (subscribeButton) {
+                            subscribeButton.textContent = "Plan Unavailable";
+                            subscribeButton.disabled = true;
+                            subscribeButton.classList.remove('cta-button'); // Remove styling
+                            subscribeButton.style.backgroundColor = 'gray'; // Add gray background
+                            subscribeButton.style.cursor = 'not-allowed';
+                            // Show a specific warning for this product card if its base plan ID is missing
+                            console.warn(`PayPal Subscription for ${itemName} (${specificPlanKey}) is unavailable: Base Plan ID is a placeholder or missing.`);
+                         }
+                         // The global message about the base plan ID missing will be shown on load by fetchPayPalPlanIDs
+                    }
                 });
             }
 
 
             // --- Global Metrics & Chart Functions ---
+            // _currentGlobalMetrics is declared here as a property of the window object to prevent redeclaration errors
+            // if the script is inadvertently loaded or executed multiple times in the same global context.
+            window._currentGlobalMetrics = { 
+                activeNodes: 0, licensesActive: 0, vaultDeployments: 0, 
+                syncLogs: 0, auditsRunning: 0, signalZones: 0, scrollGridIndex: 0
+            };
+
             function calculateGlobalMetrics() {
                 let tempActiveNodes = 0;
                 let tempLicensesActive = 0;
@@ -1482,16 +2179,25 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
                 let tempSignalZones = 0;
                 let tempScrollGridIndex = 0;
 
-                // Use clientAdminData as the source for counts (it now includes merged backend data)
-                for (const sectorKey in clientAdminData) {
-                    if (sectorKey === 'admin-panel' || !sectorList[sectorKey]) continue; 
+                for (const sectorKey in sectorList) {
+                    if (sectorKey === 'admin-panel') continue; 
 
-                    const brandsInSector = clientAdminData[sectorKey]?.brands || [];
-
-                    const totalCoreBrands = brandsInSector.length;
-                    const totalNodes = brandsInSector.flatMap(brand => brand.subNodes || []).length;
+                    // Get static brands and their subnodes
+                    const staticBrandsInSector = ALL_BRANDS_DETAILS_BY_SECTOR[sectorKey] || [];
+                    const staticBrandsCount = staticBrandsInSector.length;
+                    const staticNodesCount = staticBrandsInSector.flatMap(brand => Array.isArray(brand.subNodes) ? brand.subNodes : []).length;
                     
-                    tempActiveNodes += totalCoreBrands;
+                    // Get client-added brands and their subnodes
+                    const adminData = clientAdminData[sectorKey];
+                    const adminAddedBrands = adminData?.brands || [];
+                    const adminAddedBrandsCount = adminAddedBrands.length;
+                    // --- FIX for Issue #3: Ensure subNodes are correctly accessed and are arrays ---
+                    const adminAddedNodesCount = adminAddedBrands.flatMap(brand => Array.isArray(brand.subNodes) ? brand.subNodes : []).length; 
+
+                    const totalCoreBrands = staticBrandsCount + adminAddedBrandsCount;
+                    const totalNodes = staticNodesCount + adminAddedNodesCount;
+                    
+                    tempActiveNodes += totalCoreBrands; 
                     tempLicensesActive += totalCoreBrands * 2; 
                     tempVaultDeployments += totalCoreBrands * 1.5; 
                     tempSyncLogs += totalCoreBrands * 5; 
@@ -1500,37 +2206,56 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
                     tempScrollGridIndex += (totalCoreBrands + totalNodes);
                 }
                 
-                currentGlobalMetrics.activeNodes = tempActiveNodes;
-                currentGlobalMetrics.licensesActive = tempLicensesActive;
-                currentGlobalMetrics.vaultDeployments = Math.round(tempVaultDeployments);
-                currentGlobalMetrics.syncLogs = tempSyncLogs;
-                currentGlobalMetrics.auditsRunning = tempAuditsRunning;
-                currentGlobalMetrics.signalZones = tempSignalZones;
-                currentGlobalMetrics.scrollGridIndex = tempScrollGridIndex;
+                window._currentGlobalMetrics.activeNodes = tempActiveNodes;
+                window._currentGlobalMetrics.licensesActive = tempLicensesActive;
+                window._currentGlobalMetrics.vaultDeployments = Math.round(tempVaultDeployments);
+                window._currentGlobalMetrics.syncLogs = tempSyncLogs;
+                window._currentGlobalMetrics.auditsRunning = tempAuditsRunning;
+                window._currentGlobalMetrics.signalZones = tempSignalZones;
+                window._currentGlobalMetrics.scrollGridIndex = tempScrollGridIndex;
 
-                document.getElementById("activeNodesCount").textContent = currentGlobalMetrics.activeNodes.toLocaleString();
-                document.getElementById("licensesActiveCount").textContent = currentGlobalMetrics.licensesActive.toLocaleString();
-                document.getElementById("vaultDeploymentsCount").textContent = currentGlobalMetrics.vaultDeployments.toLocaleString();
-                document.getElementById("syncLogsCount").textContent = currentGlobalMetrics.syncLogs.toLocaleString();
+                document.getElementById("activeNodesCount").textContent = window._currentGlobalMetrics.activeNodes.toLocaleString();
+                document.getElementById("licensesActiveCount").textContent = window._currentGlobalMetrics.licensesActive.toLocaleString();
+                document.getElementById("vaultDeploymentsCount").textContent = window._currentGlobalMetrics.vaultDeployments.toLocaleString();
+                document.getElementById("syncLogsCount").textContent = window._currentGlobalMetrics.syncLogs.toLocaleString();
+                // Ensure these elements exist in your HTML if you want them updated
                 const auditsRunningEl = document.getElementById("auditsRunningCount");
-                if(auditsRunningEl) auditsRunningEl.textContent = currentGlobalMetrics.auditsRunning.toLocaleString(); 
+                if(auditsRunningEl) auditsRunningEl.textContent = window._currentGlobalMetrics.auditsRunning.toLocaleString(); 
                 const signalZonesEl = document.getElementById("signalZonesCount");
-                if(signalZonesEl) signalZonesEl.textContent = currentGlobalMetrics.signalZones.toLocaleString(); 
+                if(signalZonesEl) signalZonesEl.textContent = window._currentGlobalMetrics.signalZones.toLocaleString(); 
                 const scrollGridIndexEl = document.getElementById("scrollGridIndexCount");
-                if(scrollGridIndexEl) scrollGridIndexEl.textContent = currentGlobalMetrics.scrollGridIndex.toLocaleString(); 
+                if(scrollGridIndexEl) scrollGridIndexEl.textContent = window._currentGlobalMetrics.scrollGridIndex.toLocaleString(); 
             }
+
+
+            // --- Dynamic Pulse Chart ---
+            let pulseChartInstance = null; 
+            const chartTimeLabels = Array.from({ length: 10 }, (_, i) => `T-${(9-i)*3}s`); 
+            chartTimeLabels[9] = "Now";
+
+            const chartDataPoints = {
+                activeNodes: Array(10).fill(0),
+                licensesActive: Array(10).fill(0),
+                vaultDeployments: Array(10).fill(0)
+            };
 
             function renderDynamicPulseChart() {
                 const ctxEl = document.getElementById("pulseChart");
-                if (!ctxEl) { console.error("Canvas element for pulseChart not found!"); return; }
+                if (!ctxEl) {
+                    console.error("Canvas element for pulseChart not found!");
+                    return;
+                }
                 const ctx = ctxEl.getContext("2d");
 
-                if (pulseChartInstance) { pulseChartInstance.destroy(); }
+                if (pulseChartInstance) {
+                    pulseChartInstance.destroy();
+                }
                 
                 calculateGlobalMetrics(); 
-                chartDataPoints.activeNodes = Array(10).fill(currentGlobalMetrics.activeNodes);
-                chartDataPoints.licensesActive = Array(10).fill(currentGlobalMetrics.licensesActive);
-                chartDataPoints.vaultDeployments = Array(10).fill(currentGlobalMetrics.vaultDeployments);
+                // Initialize chart data points with current metrics, then simulate changes
+                chartDataPoints.activeNodes = Array(10).fill(window._currentGlobalMetrics.activeNodes);
+                chartDataPoints.licensesActive = Array(10).fill(window._currentGlobalMetrics.licensesActive);
+                chartDataPoints.vaultDeployments = Array(10).fill(window._currentGlobalMetrics.vaultDeployments);
 
 
                 pulseChartInstance = new Chart(ctx, {
@@ -1541,21 +2266,21 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
                             {
                                 label: 'Active Nodes',
                                 data: [...chartDataPoints.activeNodes],
-                                borderColor: '#60A5FA', 
+                                borderColor: '#60A5FA', // Light Blue
                                 backgroundColor: 'rgba(96, 165, 250, 0.1)',
                                 borderWidth: 2, tension: 0.3, fill: true, pointRadius: 2, pointHoverRadius: 4
                             },
                             {
                                 label: 'Licenses Active',
                                 data: [...chartDataPoints.licensesActive],
-                                borderColor: '#34D399', 
+                                borderColor: '#34D399', // Emerald Green
                                 backgroundColor: 'rgba(52, 211, 153, 0.1)',
                                 borderWidth: 2, tension: 0.3, fill: true, pointRadius: 2, pointHoverRadius: 4
                             },
                             {
                                 label: 'Vault Deployments',
                                 data: [...chartDataPoints.vaultDeployments],
-                                borderColor: '#FCD34D', 
+                                borderColor: '#FCD34D', // Amber Yellow
                                 backgroundColor: 'rgba(252, 211, 77, 0.1)',
                                 borderWidth: 2, tension: 0.3, fill: true, pointRadius: 2, pointHoverRadius: 4
                             }
@@ -1570,7 +2295,7 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
                             tooltip: { mode: 'index', intersect: false }
                         }, 
                         scales: { 
-                            y: { beginAtZero: true, ticks: { color: "#A0A0A0" }, title: { display: true, text: 'Count', color: '#C0C0C0'}}, 
+                            y: { beginAtZero: true, ticks: { color: "#A0A0A0" }, title: { display: true, text: 'Count', color: '#C0C0C0'} }, 
                             x: { ticks: { color: "#A0A0A0" }, title: {display: true, text: 'Time (Updates every 3s)', color: '#C0C0C0'} } 
                         } 
                     }
@@ -1580,16 +2305,15 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
             function updateDynamicPulseChart() {
                 if (!pulseChartInstance) return;
                 
-                calculateGlobalMetrics(); 
+                calculateGlobalMetrics(); // Ensure _currentGlobalMetrics is up-to-date
 
                 chartDataPoints.activeNodes.shift();
                 chartDataPoints.licensesActive.shift();
                 chartDataPoints.vaultDeployments.shift();
 
-                // Add some variance for dynamic effect
-                chartDataPoints.activeNodes.push(currentGlobalMetrics.activeNodes + (Math.random() * 100 - 50)); 
-                chartDataPoints.licensesActive.push(currentGlobalMetrics.licensesActive + (Math.random() * 20 - 10));
-                chartDataPoints.vaultDeployments.push(currentGlobalMetrics.vaultDeployments + (Math.random() * 5 - 2));
+                chartDataPoints.activeNodes.push(window._currentGlobalMetrics.activeNodes + (Math.random() * 100 - 50)); // Add some variance
+                chartDataPoints.licensesActive.push(window._currentGlobalMetrics.licensesActive + (Math.random() * 20 - 10));
+                chartDataPoints.vaultDeployments.push(window._currentGlobalMetrics.vaultDeployments + (Math.random() * 5 - 2));
                 
                 pulseChartInstance.data.datasets[0].data = [...chartDataPoints.activeNodes];
                 pulseChartInstance.data.datasets[1].data = [...chartDataPoints.licensesActive];
@@ -1598,20 +2322,14 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
                 pulseChartInstance.update();
             }
 
-            async function renderFaaZoneIndexTable() {
+            // --- FAA.ZONE INDEX Table Renderer ---
+            function renderFaaZoneIndexTable() {
                 const tableBody = document.getElementById("faaZoneIndexTableBody");
                 if (!tableBody) {
                     console.error("FAA Zone Index table body not found.");
                     return;
                 }
-                tableBody.innerHTML = '<tr><td colspan="10" class="text-center py-4">Loading data...</td></tr>'; 
-
-                // Use clientAdminData for table rendering as it's now the merged source of truth
-                // No need to fetch /api/sectors again here, as loadInitialBackendData already did it.
-                // If the table needs to reflect real-time backend changes without a full page reload,
-                // you'd either poll the backend or use websockets.
-                
-                tableBody.innerHTML = ''; // Clear loading state
+                tableBody.innerHTML = ''; // Clear existing content
 
                 const sectorsToDisplay = Object.keys(FAA_ZONE_INDEX_SUMMARY_DATA);
                 
@@ -1623,19 +2341,27 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
 
                 sectorsToDisplay.forEach(sectorKey => {
                     const summary = FAA_ZONE_INDEX_SUMMARY_DATA[sectorKey];
-                    if (!summary) { 
+                    if (!summary) { // Check if summary data exists for this sectorKey
                         console.warn(`Summary data missing for sector: ${sectorKey} in FAA_ZONE_INDEX_SUMMARY_DATA`);
-                        return; 
+                        return; // Skip this sector if no summary data
                     }
                     const displayName = sectorList[sectorKey] || sectorKey.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
-                    // Get counts from the unified clientAdminData
-                    const brandsInThisSector = clientAdminData[sectorKey]?.brands || [];
-                    const totalCoreBrands = brandsInThisSector.length;
-                    const totalNodes = brandsInThisSector.flatMap(brand => brand.subNodes || []).length;
+                    const staticBrandsForCount = ALL_BRANDS_DETAILS_BY_SECTOR[sectorKey] || [];
+                    const staticBrandsCount = staticBrandsForCount.length;
+                    const staticNodesCount = staticBrandsForCount.flatMap(brand => Array.isArray(brand.subNodes) ? brand.subNodes : []).length;
+                    
+                    const adminData = clientAdminData[sectorKey];
+                    const adminAddedBrands = adminData?.brands || [];
+                    const adminAddedBrandsCount = adminAddedBrands.length;
+                    // --- FIX for Issue #3: Ensure subNodes are correctly accessed and are arrays ---
+                    const adminAddedNodesCount = adminAddedBrands.flatMap(brand => Array.isArray(brand.subNodes) ? brand.subNodes : []).length; 
+
+                    const totalCoreBrands = staticBrandsCount + adminAddedBrandsCount;
+                    const totalNodes = staticNodesCount + adminAddedNodesCount;
 
                     const row = tableBody.insertRow();
-                    row.className = 'table-row-style'; 
+                    row.className = 'table-row-style'; // Apply the defined row style
                     
                     row.innerHTML = `
                         <td class="table-cell-padding text-xl">${summary.glyph}</td>
@@ -1653,7 +2379,7 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
                             </button>
                         </td>
                         <td class="table-cell-padding">
-                            <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs cta-button deploy-button"
+                            <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs deploy-button"
                                 data-sector-key="${sectorKey}" data-action="deploy">
                                 Deploy Plan
                             </button>
@@ -1661,308 +2387,268 @@ function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = 
                     `;
                 });
 
+                // Attach event listeners to the new Inspect and Deploy buttons
                 document.querySelectorAll('#faaZoneIndexTableBody .inspect-button').forEach(button => {
                     button.addEventListener('click', (event) => {
                         const sectorKey = event.target.dataset.sectorKey;
+                        
+                        // Find the corresponding navigation link and simulate a click
                         const navLink = document.querySelector(`.admin-nav-scroll a[data-section="sector-view-section"]`);
                         if (navLink) {
                             showAdminSection('sector-view-section', navLink);
+                            // Set the dropdown to the correct sector
                             const sectorViewSelect = document.getElementById('sectorViewSelect');
                             sectorViewSelect.value = sectorKey;
+                            // Then display the products for that sector
                             displaySectorSpecificProducts(sectorKey);
                         }
                     });
                 });
 
-                document.querySelectorAll('#faaZoneIndexTableBody .deploy-button').forEach(button => {
+                 document.querySelectorAll('#faaZoneIndexTableBody .deploy-button').forEach(button => {
                     button.addEventListener('click', (event) => {
                         const sectorKey = event.target.dataset.sectorKey;
-                        // For "Deploy Plan" from Global Index, we'll try to deploy all tiers.
-                        // The backend will handle the actual PayPal API calls for each.
-                        deploySectorPlanToPayPal(sectorKey, event); 
+                        // This "Deploy Plan" action is now purely illustrative, simulating a backend process.
+                        window.showTemporaryMessage(`Simulating backend deployment for ${sectorKey}. (No PayPal redirect from here).`, "info");
+                        console.log(`Backend would now create/configure PayPal plans for ${sectorKey} if needed, using the single base plan logic.`);
                     });
                 });
             }
 
-            // --- Currency Converter Logic (already defined in global scope, just ensure proper references) ---
-            function fetchExchangeRates() { /* ... (already defined and working) ... */ }
-            function getCurrencySymbol(currencyCode) { /* ... (already defined and working) ... */ }
-            function updatePricesInSectorView(priceSpans, selectedCurrency) { /* ... (already defined and working) ... */ }
+            // --- PayPal Integration Functions ---
+            // These functions would interact with your backend to create/manage PayPal subscriptions.
+            // For now, they are mock implementations.
 
-
-            // --- PayPal Related Functions for Admin Portal (Deploy Plan & Subscribe Now) ---
-
-            // This function uses your Vercel serverless function to get PayPal Plan IDs.
-            // These IDs are essential for rendering PayPal buttons.
-            async function fetchPayPalPlanIDs() {
-                console.log("Fetching PayPal Plan IDs from Vercel API...");
-                window.showTemporaryMessage("Fetching PayPal Plan IDs...", "info");
-                try {
-                    // Call your Vercel serverless function
-                    const response = await fetch(`${PAYPAL_API_VERCEL_URL}?action=get-plans`);
-                    if (!response.ok) {
-                        throw new Error(`Failed to fetch PayPal plans from Vercel API: ${response.status} ${response.statusText}`);
-                    }
-                    const data = await response.json();
-                    Object.assign(paypalPlanIDs, data); // Populate the global paypalPlanIDs object
-                    console.log("PayPal Plan IDs fetched:", paypalPlanIDs);
-                    window.showTemporaryMessage("PayPal Plan IDs loaded successfully.", "success");
-                } catch (error) {
-                    console.error("Error fetching PayPal Plan IDs from Vercel API:", error);
-                    window.showTemporaryMessage(`Error fetching PayPal plans: ${error.message}. Ensure Vercel function is deployed.`, "error");
-                    // Optionally disable PayPal buttons if plans can't be fetched
-                    document.querySelectorAll('.paypal-button-container-dynamic').forEach(container => {
-                        container.innerHTML = '<p class="text-red-500 text-xs">PayPal unavailable. Error fetching plans.</p>';
-                    });
-                }
-            }
-
-            // This function is for the "Deploy Plan" button in the Global Index table.
-            // It calls your Vercel serverless function to *create* or *manage* PayPal plans.
-            async function deploySectorPlanToPayPal(sectorKey, event) {
-                const deployButton = event.target;
-                deployButton.disabled = true;
-                deployButton.textContent = 'Deploying...';
-                deployButton.classList.remove('bg-green-500', 'hover:bg-green-600');
-                deployButton.classList.add('bg-gray-400');
-
-                if (YOUR_PAYPAL_PRODUCT_ID.includes('YOUR_')) {
-                    window.showTemporaryMessage('PayPal Product ID is not configured. Cannot deploy plans.', 'error');
-                    console.error('PayPal Product ID is not configured. Please replace YOUR_STATIC_PAYPAL_PRODUCT_ID_HERE in the JavaScript.');
-                    deployButton.disabled = false;
-                    deployButton.textContent = 'Deploy Plan';
-                    deployButton.classList.remove('bg-gray-400');
-                    deployButton.classList.add('bg-green-500', 'hover:bg-green-600');
-                    return;
-                }
-
-                const sectorData = FAA_ZONE_INDEX_SUMMARY_DATA[sectorKey];
-                const sectorDisplayName = sectorList[sectorKey];
-
-                if (!sectorData) {
-                    window.showTemporaryMessage(`Pricing data not found for sector: ${sectorKey}. Cannot deploy plans.`, 'error');
-                    console.error(`Pricing data not found for sector: ${sectorKey}`);
-                    deployButton.disabled = false;
-                    deployButton.textContent = 'Deploy Plan';
-                    deployButton.classList.remove('bg-gray-400');
-                    deployButton.classList.add('bg-green-500', 'hover:bg-green-600');
-                    return;
-                }
-
-                const annualDiscount = 0.15; // 15% discount
-
-                // Prepare plan details for all tiers (Starter, Pro, Enterprise)
-                const plansToCreate = [];
-                for (const tierName in SECTOR_TIER_PRICING) {
-                    const baseMonthlyFee = parseFloat(String(sectorData.monthlyFee).replace('$', '').replace(',', ''));
-                    const multiplier = SECTOR_TIER_PRICING[tierName].multiplier;
-
-                    // Monthly Plan
-                    plansToCreate.push({
-                        name: `${sectorDisplayName.replace(/<.*?>/g, '').trim()} ${tierName} Package - Monthly`,
-                        description: `${sectorDisplayName.replace(/<.*?>/g, '').trim()} ${tierName} Monthly Plan`,
-                        frequency: 'MONTH',
-                        intervalCount: 1,
-                        amount: (baseMonthlyFee * multiplier).toFixed(2),
-                        currency: 'ZAR', // Ensure this matches your PayPal account currency
-                        tierName: tierName, // Custom field for easier identification
-                        billingCycleType: 'MONTHLY'
-                    });
-
-                    // Annual Plan
-                    plansToCreate.push({
-                        name: `${sectorDisplayName.replace(/<.*?>/g, '').trim()} ${tierName} Package - Annual`,
-                        description: `${sectorDisplayName.replace(/<.*?>/g, '').trim()} ${tierName} Annual Plan`,
-                        frequency: 'YEAR',
-                        intervalCount: 1,
-                        amount: (baseMonthlyFee * multiplier * 12 * (1 - annualDiscount)).toFixed(2),
-                        currency: 'ZAR',
-                        tierName: tierName,
-                        billingCycleType: 'ANNUAL'
-                    });
-                }
-
-                try {
-                    // Call your Vercel serverless function to create plans
-                    const response = await fetch(`${PAYPAL_API_VERCEL_URL}?action=create-plans-for-sector`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            productId: YOUR_PAYPAL_PRODUCT_ID,
-                            plans: plansToCreate // Pass the array of plan details
-                        })
-                    });
-
-                    const result = await response.json();
-
-                    if (response.ok) {
-                        let successMessage = `Successfully deployed PayPal plans for ${sectorDisplayName}!`;
-                        window.showTemporaryMessage(successMessage, 'success');
-                        console.log("Deployed Plans (LIVE/Sandbox):", result.createdPlans);
-                        
-                        // After successful creation, refetch plan IDs to update local cache
-                        await fetchPayPalPlanIDs();
-
-                        deployButton.textContent = 'Deployed ✔️';
-                        deployButton.classList.remove('bg-gray-400');
-                        deployButton.classList.add('bg-green-700');
-                    } else {
-                        window.showTemporaryMessage(`Failed to deploy plans for ${sectorDisplayName}: ${result.error || 'Unknown error'}. Check console.`, 'error');
-                        console.error('Plan deployment error (LIVE/Sandbox):', result);
-                        deployButton.textContent = 'Deploy Failed ❌';
-                        deployButton.classList.remove('bg-gray-400');
-                        deployButton.classList.add('bg-red-500');
-                    }
-                } catch (error) {
-                    window.showTemporaryMessage(`An error occurred while deploying plans: ${error.message}. Check console.`, 'error');
-                    console.error('Error deploying PayPal plans (LIVE/Sandbox):', error);
-                    deployButton.textContent = 'Deploy Failed ❌';
-                    deployButton.classList.remove('bg-gray-400');
-                    deployButton.classList.add('bg-red-500');
-                } finally {
-                    setTimeout(() => {
-                        deployButton.disabled = false;
-                        deployButton.textContent = 'Deploy Plan';
-                        deployButton.classList.remove('bg-green-700', 'bg-red-500');
-                        deployButton.classList.add('bg-green-500', 'hover:bg-green-600');
-                    }, 5000);
-                }
-            }
-
-            // Renders a PayPal button into a specific container
-            function renderPayPalButtonsForContainer(containerId) {
-                const container = document.getElementById(containerId);
-                if (!container) {
-                    console.error(`PayPal button container with ID ${containerId} not found.`);
-                    return;
-                }
-
-                // Clear any existing PayPal buttons in the container to prevent duplicates
-                container.innerHTML = ''; 
-
-                const itemName = container.dataset.itemName;
-                const billingCycle = container.dataset.billingCycle;
-                const planKey = container.dataset.planKey; // e.g., "Agriculture & Biotech Starter Package_MONTHLY"
+            // This function would typically be an API call to your backend
+            // which then calls PayPal's API to get existing Plan IDs or create new ones.
+            window.fetchPayPalPlanIDs = async function() {
+                console.log("Fetching PayPal Plan IDs...");
+                window.showTemporaryMessage("Fetching PayPal Plan IDs (mock data)...", "info");
+                // Simulate an API call delay
+                await new Promise(resolve => setTimeout(resolve, 1000)); 
                 
-                const planId = paypalPlanIDs[planKey]; // Get the planId from the fetched global map
+                // In a real application, you'd fetch real IDs from your backend like this:
+                /*
+                try {
+                    const response = await fetch('/api/paypal/plans');
+                    if (!response.ok) throw new Error('Failed to fetch PayPal plans from backend.');
+                    const data = await response.json();
+                    Object.assign(paypalPlanIDs, data); // Merge fetched IDs
+                    console.log("PayPal Plan IDs fetched:", paypalPlanIDs);
+                } catch (error) {
+                    console.error("Error fetching PayPal Plan IDs:", error);
+                    window.showTemporaryMessage("Error fetching PayPal plans. Check backend.", "error");
+                }
+                */
+                console.log("Mock PayPal Plan IDs loaded.");
+            };
 
-                if (!planId || planId.includes('YOUR_')) {
-                    console.warn(`PayPal Plan ID not found or is a placeholder for planKey: ${planKey}. Showing disabled button.`);
-                    // Display a fallback button or message if planId is not ready
-                    container.innerHTML = `
-                        <button disabled class="cta-button w-full bg-gray-600 cursor-not-allowed">
-                            Plan Not Ready (Admin Deploy)
-                        </button>`;
+
+            // This function would be triggered by the "Subscribe Now" button in the Sector View
+            window.initiatePayPalSubscription = function(event) {
+                const originalButton = event.target;
+                const cardElement = originalButton.closest('.product-card');
+                const paypalContainer = cardElement.querySelector('.paypal-button-container');
+
+                const itemName = paypalContainer.dataset.itemName;
+                const amount = paypalContainer.dataset.amount;
+                const billingCycle = paypalContainer.dataset.billingCycle;
+                const specificPlanKey = paypalContainer.dataset.planKey; // This is the *logical* plan key
+
+                console.log(`Initiating PayPal subscription for: ${itemName}, Amount: ${amount}, Cycle: ${billingCycle}, Logical Plan Key: ${specificPlanKey}`);
+                window.showTemporaryMessage(`Preparing PayPal subscription for ${itemName}...`, "info");
+
+                // Retrieve the single global base plan ID
+                const basePlanId = paypalPlanIDs["fruitful-global-base"];
+
+                if (!basePlanId || basePlanId === "P-YOURGLOBALBASEPLANID") {
+                    window.showTemporaryMessage(`PayPal Base Plan ID "fruitful-global-base" is a placeholder. Please configure a real ID to proceed.`, "error");
+                    console.error(`Missing PayPal Base Plan ID for: "fruitful-global-base"`);
+                    // Ensure the original button is re-enabled or shows appropriate status
+                    if (originalButton) {
+                        originalButton.textContent = "Plan Config Error";
+                        originalButton.disabled = true;
+                        originalButton.classList.remove('cta-button'); 
+                        originalButton.style.backgroundColor = '#cc2222'; // Darker red for config error
+                        originalButton.style.cursor = 'not-allowed';
+                    }
                     return;
                 }
+                
+                // Hide the original button and render PayPal button in its container
+                originalButton.style.display = 'none'; // Hide the original "Subscribe Now" button
+                paypalContainer.innerHTML = ''; // Clear any previous content in the container
 
-                // Render the PayPal button using the SDK
                 paypal.Buttons({
-                    style: {
-                        shape: 'rect',
-                        color: 'gold', 
-                        layout: 'vertical',
-                        label: 'subscribe', 
-                        height: 48 
-                    },
                     createSubscription: function(data, actions) {
-                        console.log(`Creating subscription with PayPal SDK for plan_id: ${planId}`);
-                        window.showTemporaryMessage(`Initiating PayPal subscription...`, "info");
-                        // This returns the subscription ID to PayPal which then redirects.
                         return actions.subscription.create({
-                            plan_id: planId // Use the actual PayPal Plan ID
+                            plan_id: basePlanId, // Use the single base plan ID
+                            custom_id: specificPlanKey, // Pass the specific logical plan as custom_id
+                            // This `custom_id` will be sent to your backend via PayPal's webhook on approval.
+                            // Your backend will then use this to identify the specific service to provision.
                         });
                     },
                     onApprove: function(data, actions) {
-                        // This callback fires after the user approves the subscription on PayPal's site.
-                        // You MUST send data.subscriptionID to your backend for verification and fulfillment.
                         console.log('Subscription Approved:', data);
-                        window.showTemporaryMessage(`Subscription for ${itemName} approved! ID: ${data.subscriptionID}`, "success");
-                        
-                        // Send confirmation to your Vercel serverless function
-                        fetch(`${PAYPAL_API_VERCEL_URL}?action=create-subscription-backend`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                planId: planId, // The PayPal Plan ID
-                                itemName: itemName,
-                                billingCycle: billingCycle,
-                                subscriptionID: data.subscriptionID, // The actual PayPal Subscription ID
-                                orderID: data.orderID, // May be available
-                                payerID: data.payerID,
-                                // Add any other relevant user/session data here
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(backendResponse => {
-                            console.log('Backend confirmation of subscription:', backendResponse);
-                            if (backendResponse.success) {
-                                window.showTemporaryMessage('Subscription successfully recorded and activated!', 'success');
-                            } else {
-                                window.showTemporaryMessage(`Backend record failed: ${backendResponse.message || 'Unknown error'}`, 'error');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error confirming subscription with backend:', error);
-                            window.showTemporaryMessage('Subscription approved, but failed to confirm with your system. Contact support.', 'error');
-                        });
+                        // In a real app, you would send data.subscriptionID and data.custom_id to your backend
+                        // Your backend would then use data.custom_id to provision the correct service (agriculture, enterprise, monthly).
+                        window.showTemporaryMessage(`Subscription for ${itemName} approved! ID: ${data.subscriptionID}. Logical Plan: ${data.custom_id || specificPlanKey}`, "success");
                     },
                     onCancel: function(data) {
-                        console.log('PayPal subscription cancelled by user:', data);
+                        console.log('Subscription Cancelled:', data);
                         window.showTemporaryMessage('PayPal subscription cancelled.', "info");
+                        if (originalButton) originalButton.style.display = 'block'; // Show original button again
+                        paypalContainer.innerHTML = ''; // Clear PayPal button
                     },
                     onError: function(err) {
-                        console.error('PayPal Buttons Error:', err);
-                        window.showTemporaryMessage(`PayPal payment failed: ${err.message || "An unknown error occurred."}`, "error");
+                        console.error('PayPal Error:', err);
+                        window.showTemporaryMessage(`PayPal error: ${err.message || err}`, "error");
+                        if (originalButton) originalButton.style.display = 'block'; // Show original button again
+                        paypalContainer.innerHTML = ''; // Clear PayPal button
                     }
-                }).render(container); // Render the button into the specified container
+                }).render(paypalContainer); // Render into the dedicated container
+            };
+
+            // --- Currency Converter Logic ---
+            window.fetchExchangeRates = async function() { // Made global
+                const selectElement = document.getElementById('sector-currency-select');
+
+                if (API_KEY === "YOUR_EXCHANGE_RATE_API_KEY" || API_KEY === "") {
+                    if (!apiKeyWarningShown) { // Only show this warning once
+                        window.showTemporaryMessage('Currency converter API key is missing. Please set it up for currency conversion to work.', 'error');
+                        apiKeyWarningShown = true;
+                    }
+                    if (selectElement) selectElement.disabled = true;
+                    console.warn("Currency converter: API_KEY is missing. Please get your API key from https://www.exchangerate-api.com/ and replace 'YOUR_EXCHANGE_RATE_API_KEY' in the code. Currency conversion will not work without it.");
+                    return;
+                }
+                try {
+                    const response = await fetch(`https://v6.exchangerate-api.com/v6/${API_KEY}/latest/${BASE_CURRENCY}`);
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        const errorMessage = `Could not fetch exchange rates: ${errorData['error-type'] || 'Unknown error.'}`;
+                        window.showTemporaryMessage(errorMessage, 'error');
+                        throw new Error(`HTTP error! Status: ${response.status}. API Error: ${errorData['error-type'] || 'Unknown error.'}`);
+                    }
+                    const data = await response.json();
+                    if (data && data.conversion_rates) {
+                        exchangeRates = data.conversion_rates;
+                        console.log('Admin: Exchange rates fetched:', exchangeRates);
+                    } else {
+                        window.showTemporaryMessage('Could not fetch exchange rates: Unexpected API response structure.', 'error');
+                        console.error('Admin: Failed to fetch conversion rates: Unexpected API response structure.', data);
+                        if (selectElement) selectElement.disabled = true;
+                    }
+                } catch (error) {
+                    window.showTemporaryMessage(`Error fetching exchange rates: ${error.message}. Check console.`, 'error');
+                    console.error('Admin: Error fetching exchange rates:', error.message || error);
+                    if (selectElement) selectElement.disabled = true;
+                }
             }
 
+            window.getCurrencySymbol = function(currencyCode) { // Made global
+                switch (currencyCode) {
+                    case 'USD': return '$';
+                    case 'EUR': return '€';
+                    case 'GBP': return '£';
+                    case 'ZAR': return 'R';
+                    default: return currencyCode;
+                }
+            }
+            
+            // Function to update prices in the Sector View dynamically
+            function updatePricesInSectorView(priceSpans, selectedCurrency) {
+                const selectedSymbol = getCurrencySymbol(selectedCurrency);
+                priceSpans.forEach(priceSpan => {
+                    // Determine if currently displaying annual or monthly based on the toggle state
+                    const cardElement = priceSpan.closest('.product-card');
+                    const toggleCheckbox = cardElement ? cardElement.querySelector('.toggle-switch input[type="checkbox"]') : null;
+                    const isAnnualDisplayed = toggleCheckbox ? toggleCheckbox.checked : false; // Default to monthly if no toggle or unchecked
+
+                    const originalPriceValue = isAnnualDisplayed ? parseFloat(priceSpan.dataset.originalAnnualPrice) : parseFloat(priceSpan.dataset.originalMonthlyPrice);
+                    let convertedPrice = originalPriceValue;
+
+                    if (selectedCurrency !== BASE_CURRENCY && exchangeRates[selectedCurrency]) {
+                        convertedPrice = originalPriceValue * exchangeRates[selectedCurrency];
+                    }
+                    // Retain the / month or / year suffix
+                    const suffix = isAnnualDisplayed ? '/ year' : '/ month';
+                    priceSpan.innerHTML = `${selectedSymbol}${convertedPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span class="text-xl text-gray-400">${suffix}</span>`;
+                    priceSpan.dataset.currencyCode = selectedCurrency;
+
+                    // Update the dataset.amount and planKey for the PayPal button container
+                    const paypalContainer = cardElement ? cardElement.querySelector('.paypal-button-container') : null;
+                    if (paypalContainer) {
+                        paypalContainer.dataset.amount = convertedPrice.toFixed(2);
+                        const itemName = paypalContainer.dataset.itemName; // Get item name from its own dataset
+                        const basePlanKey = itemName.replace(/\s/g, '_').toLowerCase(); // Sanitize
+                        paypalContainer.dataset.planKey = `${basePlanKey}_${isAnnualDisplayed ? 'annual' : 'monthly'}`;
+                        paypalContainer.dataset.billingCycle = isAnnualDisplayed ? 'ANNUAL' : 'MONTHLY';
+
+                        // IMPORTANT: Re-rendering PayPal buttons on currency/toggle change is complex.
+                        // The PayPal SDK expects to be rendered once. Dynamically changing plan_id on a rendered button
+                        // is not directly supported. For this mock, simply updating dataset is illustrative.
+                        // In a real app, you might need to destroy and re-create the PayPal button,
+                        // or handle the price change in a way that doesn't rely on button re-render.
+                        // For now, if the PayPal button is already rendered, we don't touch it.
+                        // A user would have to click the "Subscribe Now" button again to pick up the new price.
+                        // Or, simpler for this demo, we re-trigger the rendering of products when currency changes
+                        // which rebuilds the PayPal buttons.
+                    }
+                });
+            }
 
             // --- DOMContentLoaded Initialization ---
             document.addEventListener('DOMContentLoaded', async () => {
-                // First, load brands and other data from your local Express backend
-                await loadInitialBackendData(); 
-                // Then, fetch real (mock) PayPal Plan IDs from your Vercel PayPal API
-                await fetchPayPalPlanIDs(); 
-                // Fetch exchange rates
-                await fetchExchangeRates(); 
-
                 populateSectorSelect();
-                populateSectorViewSelect();
+                populateSectorViewSelect(); // Populate for the sector view dropdown
                 
+                await window.fetchPayPalPlanIDs(); // Await fetching PayPal Plan IDs on load
+                await window.fetchExchangeRates(); // Await fetching exchange rates on load
+
+                // Attach event listeners for main navigation
                 document.querySelectorAll('.admin-nav-link').forEach(link => {
                     link.addEventListener('click', (event) => {
-                        event.preventDefault(); 
+                        event.preventDefault(); // Prevent default link behavior
                         const sectionId = event.target.dataset.section;
-                        showAdminSection(sectionId, event.target);
+                        window.showAdminSection(sectionId, event.target);
                     });
                 });
 
+                // Manually trigger the initial active section
                 const initialNavLink = document.querySelector('.admin-nav-link[data-section="add-brand-section"]');
-            if (initialNavLink) {
-                showAdminSection('add-brand-section', initialNavLink);
-            }
+                if (initialNavLink) {
+                    window.showAdminSection('add-brand-section', initialNavLink);
+                }
 
-            document.getElementById('addBrandBtn').addEventListener('click', addBrandToSector);
-            document.getElementById('clearAdminDataBtn').addEventListener('click', clearAdminAddedData);
+                // Attach event listener for add brand button
+                document.getElementById('addBrandBtn').addEventListener('click', addBrandToSector);
+                // Attach event listener for clear admin data button
+                document.getElementById('clearAdminDataBtn').addEventListener('click', clearAdminAddedData);
 
-            const sectorCurrencySelect = document.getElementById('sector-currency-select');
-            if (sectorCurrencySelect) {
-                sectorCurrencySelect.addEventListener('change', (event) => {
-                    const selectedCurrency = event.target.value;
-                    const sectorPriceDisplays = document.querySelectorAll('#dynamicSectorDashboard .price-display');
-                    updatePricesInSectorView(sectorPriceDisplays, selectedCurrency);
-                });
-            }
+                // Add event listener for currency select in sector view
+                const sectorCurrencySelect = document.getElementById('sector-currency-select');
+                if (sectorCurrencySelect) {
+                    sectorCurrencySelect.addEventListener('change', (event) => {
+                        const selectedCurrency = event.target.value;
+                        const sectorViewSelect = document.getElementById('sectorViewSelect'); // Get current selected sector in view
+                        // Re-render the current sector view to apply new currency and re-initialize PayPal buttons
+                        if (sectorViewSelect && sectorViewSelect.value) {
+                             displaySectorSpecificProducts(sectorViewSelect.value);
+                        }
+                    });
+                }
 
-            calculateGlobalMetrics();
-            renderDynamicPulseChart();
-            window._pulseChartInterval = setInterval(updateDynamicPulseChart, 3000); 
-        });
+                // Initialize metrics and chart
+                calculateGlobalMetrics();
+                renderDynamicPulseChart();
+                // Store interval ID globally to clear it later if needed
+                window._pulseChartInterval = setInterval(updateDynamicPulseChart, 3000); 
 
+                // loadMainDashboardData(); // This was causing console errors as brandDashboard element is not in this HTML.
+            });
 
-
-</script>
+        })(); // End of IIFE
+    </script>
 </body>
 </html>

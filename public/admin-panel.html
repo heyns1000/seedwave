@@ -1,0 +1,2099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚙️ Admin Portal - FAA.ZONE™</title> <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles for the "Interstellar" theme */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); /* Deep space gradient */
+            color: #E0E0E0; /* Light gray for general text */
+            line-height: 1.6;
+            min-height: 100vh; /* Ensure full viewport height */
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styling - Adopted from FAA™ Global Ecosystem Dashboard */
+        header {
+            background-color: rgba(30, 30, 45, 0.9); /* Slightly transparent dark header */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Deeper shadow */
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            backdrop-filter: blur(5px); /* Subtle blur effect */
+            border-bottom: 1px solid rgba(70, 70, 90, 0.5); /* Subtle bottom border */
+            padding-top: 1.5rem; /* Equivalent to p-6/2 */
+            padding-bottom: 1.5rem;
+            padding-left: 2.5rem; /* Equivalent to lg:p-10/2 */
+            padding-right: 2.5rem;
+        }
+        header a {
+            transition: all 0.3s ease-in-out;
+            color: #C0C0C0; /* Lighter gray for links */
+            padding: 0.6rem 1rem;
+            border-radius: 0.5rem; /* More rounded */
+            font-weight: 500;
+        }
+        header a:hover {
+            background-color: rgba(60, 60, 90, 0.7); /* Darker hover background */
+            color: #93C5FD; /* Light blue accent on hover */
+            transform: translateY(-2px); /* Subtle lift effect */
+        }
+        header a.text-2xl { /* Logo specific styling */
+            color: #A78BFA; /* Purple accent for logo */
+            font-weight: 800;
+        }
+
+        /* Call-to-action Button (cta-button) */
+        /* Note: PayPal buttons will render within a div, not on this directly. */
+        /* This styling is more for other generic CTA buttons now. */
+        .cta-button {
+            background: linear-gradient(45deg, #6B46C1, #8B5CF6); /* Purple gradient */
+            color: white;
+            padding: 0.85rem 1.8rem; /* Slightly larger padding */
+            border-radius: 0.75rem; /* More rounded */
+            font-weight: 700; /* Bolder */
+            transition: all 0.4s ease;
+            box-shadow: 0 6px 15px rgba(139, 92, 246, 0.4); /* Glow effect */
+            position: relative;
+            overflow: hidden;
+            border: none;
+            letter-spacing: 0.05em; /* Slightly spaced out text */
+            min-width: 150px; /* Ensure consistent button width */
+            text-align: center;
+        }
+        .cta-button:hover {
+            background: linear-gradient(45deg, #7C5BC7, #9B6EF9); /* Slightly lighter gradient on hover */
+            transform: translateY(-3px) scale(1.02); /* More pronounced lift and slight scale */
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.6); /* Enhanced glow */
+        }
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0%;
+            height: 0%;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transition: all 0.7s ease-out;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+        }
+        .cta-button:hover::before {
+            width: 300%;
+            height: 300%;
+            opacity: 1;
+        }
+
+        /* Product Card Styling (adapted for dark theme) */
+        .product-card {
+            background-color: rgba(25, 25, 40, 0.9); /* Dark card background */
+            border-radius: 1rem; /* More rounded */
+            border: 1px solid rgba(70, 70, 90, 0.5); /* Subtle border */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5); /* Deeper, softer shadow */
+            transition: all 0.4s ease-in-out;
+            padding: 2rem; /* Consistent with dashboard p-8 for cards */
+            display: flex;
+            flex-direction: column;
+            /* text-align: center; -- Removed to allow text-left as default or from inner elements */
+            height: 500px; /* Adjusted height for optimal content fit */
+            justify-content: space-between; /* Pushes buttons to bottom */
+            position: relative;
+            z-index: 2;
+        }
+        /* Override alignment for content within product card for text-left as in products.html */
+        .product-card > div {
+            text-align: left; /* Ensure inner content aligns left */
+            align-items: flex-start;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px) scale(1.01); /* More distinct lift and scale */
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7); /* Even deeper shadow on hover */
+            border-color: #A78BFA; /* Purple border on hover */
+        }
+        .product-card.featured {
+            border-color: #A78BFA; /* Purple for featured border */
+            box-shadow: 0 15px 40px rgba(167, 139, 250, 0.4); /* Featured glow */
+        }
+        .product-card h3 {
+            color: #A78BFA; /* Purple for card titles */
+        }
+        .product-card p.text-gray-400 { /* Changed from text-gray-500 to text-gray-400 for consistency with new styling */
+            color: #B0B0B0; /* Lighter gray for descriptive text */
+        }
+        .price-display {
+            color: #93C5FD; /* Light blue for prices */
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+            width: 100%;
+            margin-bottom: 1.5rem; /* Consistent spacing, allows flex-grow to work */
+            flex-grow: 1; /* Allows list to take available space */
+        }
+        .feature-list li {
+            margin-bottom: 0.6rem; /* Adjusted spacing */
+            display: flex;
+            align-items: flex-start; /* Align icon with text top */
+            color: #C0C0C0; /* Light gray for features */
+            font-size: 0.95rem; /* Slightly larger text */
+        }
+        .feature-list li svg {
+            margin-right: 0.75rem;
+            color: #34D399; /* Green accent for checkmarks */
+            flex-shrink: 0; /* Prevent icon from shrinking */
+            width: 24px; /* Larger icon */
+            height: 24px;
+        }
+
+        /* Admin specific styles (dark theme adaptation) */
+        /* Adjusted padding and margin for consistent "waterlevel blocks" */
+        .admin-main-header {
+            background-color: rgba(30, 30, 45, 0.9);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            padding: 2.5rem; /* Adopted from dashboard p-10 */
+            border-radius: 1rem;
+            margin-bottom: 2.5rem; /* Adopted from dashboard gap-8 for sections */
+            border-top: 8px solid #93C5FD; /* Light blue accent bar */
+            color: #E0E0E0;
+        }
+        .admin-main-header h1 {
+            color: #93C5FD; /* Light blue for main heading */
+            font-weight: 900;
+        }
+        .admin-main-header p {
+            color: #B0B0B0;
+        }
+
+        .admin-nav-scroll {
+            background-color: rgba(30, 30, 45, 0.9);
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            padding: 1.2rem 2.5rem; /* Adjusted for p-10 from dashboard header */
+            margin-bottom: 2.5rem; /* Adopted from dashboard gap-8 for sections */
+            overflow-x: auto;
+            white-space: nowrap;
+            border: 1px solid rgba(70, 70, 90, 0.5);
+        }
+        .admin-nav-scroll a {
+            @apply px-4 py-2 rounded-lg text-gray-300 hover:bg-gray-700 font-medium; /* Darker hover, lighter text */
+            transition: all 0.3s ease-in-out;
+        }
+        .admin-nav-scroll a.active {
+            @apply bg-indigo-800 text-indigo-200 font-semibold; /* Darker indigo for active */
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3); /* Inner shadow for active state */
+        }
+
+        .admin-panel-card {
+            background-color: rgba(25, 25, 40, 0.9);
+            border-radius: 1rem;
+            border: 1px solid rgba(70, 70, 90, 0.5);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            padding: 2.5rem; /* Adopted from dashboard p-10 */
+            margin-bottom: 2.5rem; /* Adopted from dashboard gap-8 for sections */
+            color: #E0E0E0;
+        }
+        .admin-panel-card h2 {
+            color: #93C5FD; /* Light blue for section titles */
+        }
+        .admin-panel-card h3 {
+            color: #A78BFA; /* Purple for sub-titles */
+        }
+        .admin-panel-card p.text-gray-600 {
+            color: #B0B0B0;
+        }
+
+        /* Form elements (dark theme) */
+        label {
+            color: #C0C0C0;
+        }
+        input, select {
+            background-color: rgba(45, 45, 70, 0.8);
+            border: 1px solid rgba(80, 80, 100, 0.6);
+            color: #E0E0E0;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        input::placeholder {
+            color: #A0A0A0;
+        }
+        input:focus, select:focus {
+            border-color: #93C5FD;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.5); /* Focus glow */
+        }
+
+        /* Table Styling (dark theme) */
+        .table-header-style {
+            background-color: rgba(45, 45, 70, 0.8);
+            color: #A78BFA; /* Purple for header text */
+            font-weight: 700;
+            border-bottom: 2px solid rgba(100, 100, 120, 0.5);
+        }
+        .table-row-style {
+            border-bottom: 1px solid rgba(70, 70, 90, 0.5);
+        }
+        .table-row-style:last-child {
+            border-bottom: none;
+        }
+        .table-row-style:hover {
+            background-color: rgba(45, 45, 70, 0.5); /* Subtle hover for rows */
+        }
+        .table-cell-padding {
+            padding: 1rem; /* More padding */
+            color: #E0E0E0;
+        }
+        .table-cell-padding button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        .table-cell-padding button.bg-blue-500 { /* Inspect button */
+            background-color: #60A5FA; /* Brighter blue */
+            color: #1F2937;
+        }
+        .table-cell-padding button.bg-blue-500:hover {
+            background-color: #3B82F6;
+            transform: translateY(-1px);
+        }
+        .table-cell-padding button.bg-green-500 { /* Deploy button */
+            background: linear-gradient(90deg, #10B981, #059669); /* Green gradient */
+            color: white;
+        }
+        .table-cell-padding button.bg-green-500:hover {
+            background: linear-gradient(90deg, #059669, #047857);
+            transform: translateY(-1px);
+        }
+
+        /* Metrics Cards (dark theme) - Adjusted padding to match dashboard */
+        .metric-card { /* New class for reusability */
+            background-color: rgba(35, 35, 55, 0.9); /* Dark background */
+            border: 1px solid rgba(70, 70, 90, 0.5);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            border-radius: 0.75rem;
+            padding: 1.5rem; /* Consistent with dashboard metric cards */
+            color: #E0E0E0;
+        }
+        .metric-card h3 {
+            color: #93C5FD; /* Light blue for metric titles */
+        }
+        .metric-card p {
+            color: #A78BFA; /* Purple for metric values */
+        }
+
+
+        /* Chart container - Adjusted padding to match dashboard */
+        .w-full.bg-white.p-6.rounded-lg.shadow-inner.border.border-gray-200.h-96 {
+            background-color: rgba(25, 25, 40, 0.9);
+            border: 1px solid rgba(70, 70, 90, 0.5);
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3); /* Inner shadow */
+            color: #E0E0E0;
+            padding: 2.5rem; /* Consistent with dashboard p-10 */
+        }
+        .w-full.bg-white.p-6.rounded-lg.shadow-inner.border.border-gray-200.h-96 h3 {
+            color: #93C5FD;
+        }
+
+        /* Sector View specific elements (currency converter and dropdown) */
+        .currency-converter-container { /* New class to control this specific block */
+            background-color: rgba(45, 45, 70, 0.8); /* Darker background for this specific block */
+            border: 1px solid rgba(80, 80, 100, 0.6);
+            color: #D0D0D0; /* Light text for general content in this block */
+            border-radius: 0.75rem; /* Consistent rounding */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+            padding: 1.5rem; /* Consistent with dashboard p-6 for smaller blocks */
+        }
+        .currency-converter-container label {
+            color: #D0D0D0; /* Ensure label text is also light */
+        }
+        /* Specific styling for the currency select element itself within the admin portal */
+        #sector-currency-select {
+            background-color: rgba(60, 60, 90, 0.9); /* Even darker background for the select dropdown */
+            border: 1px solid rgba(100, 100, 120, 0.7);
+            color: #E0E0E0; /* Light text for the selected option */
+            min-width: 80px; /* Ensure dropdown has enough width */
+        }
+        #sector-currency-select option {
+            background-color: rgba(60, 60, 90, 0.9); /* Dark background for options */
+            color: #E0E0E0; /* Light text for options */
+        }
+
+        /* Toggle switch for monthly/annual */
+        .toggle-switch {
+            position: relative;
+            display: inline-flex; /* Use inline-flex for better control */
+            align-items: center;
+            justify-content: space-between; /* Space out text labels */
+            width: 180px; /* Increased width to prevent overlap */
+            height: 34px;
+            margin: 10px 0;
+            border-radius: 17px;
+            background-color: rgba(70, 70, 90, 0.8); /* Dark background */
+            cursor: pointer;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.05);
+            padding: 0 8px; /* Added padding here to control text spacing */
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: transparent;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 17px;
+            display: flex; /* Use flex for text alignment */
+            align-items: center;
+            justify-content: space-between; /* Distribute text labels */
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #C0C0C0;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 85px; /* Adjusted width for slider tab */
+            left: 4px;
+            bottom: 4px;
+            background: linear-gradient(45deg, #60A5FA, #93C5FD); /* Blue gradient for toggle handle */
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 13px; /* Half of height for rounded shape */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        input:checked + .slider {
+            background-color: transparent;
+        }
+        input:focus + .slider {
+            box-shadow: 0 0 1px #93C5FD;
+        }
+        /* Adjusted translation for wider switch */
+        input:checked + .slider:before {
+            -webkit-transform: translateX(88px);
+            -ms-transform: translateX(88px);
+            transform: translateX(88px);
+        }
+        .slider span {
+            z-index: 1; /* Ensure text is above slider */
+            user-select: none;
+            color: #C0C0C0; /* Default text color */
+            transition: color 0.3s ease;
+            flex-shrink: 0; /* Prevent text from shrinking */
+        }
+        /* Monthly text is active when unchecked, annual when checked */
+        .slider .annual-text {
+            margin-right: 5px; /* Adjust spacing between text labels */
+        }
+        .slider .monthly-text {
+            margin-left: 5px; /* Adjust spacing between text labels */
+        }
+        /* Color logic for toggle text based on checked state to match screenshot */
+        input:checked + .slider .annual-text { /* When checked, annual is active (white) */
+            color: white;
+        }
+        input:checked + .slider .monthly-text { /* When checked, monthly is inactive (gray) */
+            color: #C0C0C0;
+        }
+        input:not(:checked) + .slider .annual-text { /* When not checked, annual is inactive (gray) */
+            color: #C0C0C0;
+        }
+        input:not(:checked) + .slider .monthly-text { /* When not checked, monthly is active (white) */
+            color: white;
+        }
+
+
+        /* Footer Styling */
+        footer {
+            background-color: rgba(20, 20, 35, 0.9);
+            border-top: 1px solid rgba(70, 70, 90, 0.5);
+            color: #A0A0A0; /* Slightly darker gray for footer text */
+            margin-top: auto; /* Push footer to the bottom */
+        }
+        .footer-logo-text {
+            color: #A78BFA;
+            font-weight: 800;
+        }
+        footer a {
+            color: #C0C0C0;
+            transition: color 0.3s ease;
+        }
+        footer a:hover {
+            color: #93C5FD;
+        }
+
+        /* Specific classes for status messages */
+        #adminStatus.text-sm.italic { /* Simplified to apply to base status */
+            color: #B0B0B0; /* Light gray for general status */
+        }
+        #adminStatus.text-red-500 {
+            color: #F87171; /* Lighter red for errors */
+        }
+        #adminStatus.text-green-500 {
+            color: #6EE7B7; /* Lighter green for success */
+        }
+        
+        /* Clear data button */
+        button.text-sm.text-red-600 {
+            color: #EF4444; /* Brighter red for action */
+        }
+        button.text-sm.text-red-600:hover {
+            color: #DC2626;
+        }
+
+        /* Adjust Chart.js colors for dark theme */
+        .chartjs-render-monitor {
+            background-color: transparent !important; /* Ensure canvas background is transparent */
+        }
+        /* Added for PayPal Error Message Display */
+        .paypal-error-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #ffdddd;
+            color: #d8000c;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+            font-size: 0.9rem;
+            max-width: 300px;
+            text-align: center;
+            animation: fadeInOut 5s forwards;
+        }
+        /* Success message styling, extends paypal-error-message */
+        .paypal-success-message {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-20px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+
+        /* Styles for brand buttons (new) */
+        .brand-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            margin: 0.5rem;
+            background-color: rgba(60, 60, 90, 0.7);
+            color: #A78BFA; /* Purple text */
+            border: 1px solid rgba(139, 92, 246, 0.5); /* Purple border */
+            border-radius: 9999px; /* Pill shape */
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            flex-grow: 1; /* Allow buttons to grow and fill space */
+            justify-content: center; /* Center text in button */
+            min-width: 120px; /* Ensure a minimum width for buttons */
+        }
+        .brand-button:hover {
+            background-color: rgba(139, 92, 246, 0.2); /* Lighter purple background on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        }
+        .brand-button.active {
+            background-color: #A78BFA; /* Solid purple when active */
+            color: white;
+            box-shadow: 0 4px 10px rgba(139, 92, 246, 0.6);
+            transform: translateY(-1px);
+        }
+        .brand-button span {
+            margin-right: 0.5rem; /* Space between glyph and text */
+        }
+
+        /* Styles for snapshot boxes */
+        .snapshot-box {
+            background-color: rgba(25, 25, 40, 0.9);
+            border-radius: 1rem;
+            border: 1px solid rgba(70, 70, 90, 0.5);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
+            color: #E0E0E0;
+        }
+        .snapshot-box h3 {
+            color: #93C5FD;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        .snapshot-box h4 {
+            color: #A78BFA;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .snapshot-box ul {
+            list-style: none;
+            padding: 0;
+        }
+        .snapshot-box ul li {
+            margin-bottom: 0.4rem;
+            font-size: 0.95rem;
+            color: #C0C0C0;
+        }
+        .snapshot-box .close-button {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #F87171; /* Red close icon */
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .snapshot-box .close-button:hover {
+            color: #EF4444;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="py-4 px-8">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
+            <a href="index.html" class="text-2xl font-bold">🦍 FAA.ZONE™</a>
+            <nav class="flex flex-wrap justify-center md:justify-end items-center space-x-4 md:space-x-6 text-sm">
+                <a href="/">Home</a>
+                <a href="/pricing">Pricing & Plans 💰</a>
+                <a href="/products">Products</a>
+                <a href="/about">About Us ℹ️</a>
+                <a href="/contact">Contact Us 📧</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content p-6 md:p-12 flex-grow">
+        <header class="admin-main-header">
+            <h1 class="text-3xl font-extrabold">⚙️ Admin Portal</h1> <p class="text-sm mt-1">Corebrands management & AI logic deployment center.</p>
+        </header>
+
+        <nav class="admin-nav-scroll flex flex-wrap gap-x-4 gap-y-2 mb-8">
+            <a href="#" class="admin-nav-link" data-section="add-brand-section">➕ Add Brand & Subnodes</a>
+            <a href="#" class="admin-nav-link" data-section="global-index-section">📊 Global Index</a>
+            <a href="#" class="admin-nav-link" data-section="metrics-section">📈 Real-Time Metrics</a>
+            <a href="#" class="admin-nav-link" data-section="sector-view-section">🔍 Sector View</a>
+        </nav>
+
+
+        <section id="add-brand-section" class="admin-panel-card space-y-8">
+            <h2 class="text-2xl font-bold">Add New Brand & Subnodes</h2>
+            <p>Manually add new core brands and their associated subnodes to the FAA.ZONE ecosystem. This updates client-side data and pushes to backend.</p>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div>
+                    <label class="text-sm block font-medium mb-1">📂 Sector</label>
+                    <select id="sectorSelect" class="w-full border rounded p-2"></select>
+                </div>
+                <div>
+                    <label class="text-sm block font-medium mb-1">🏷 Brand Name</label>
+                    <input id="brandInput" class="w-full border rounded p-2" placeholder="e.g. OmniCastX">
+                </div>
+                <div>
+                    <label class="text-sm block font-medium mb-1">📌 Subnodes (comma-separated)</label>
+                    <input id="subnodesInput" class="w-full border rounded p-2" placeholder="e.g. VaultDrop, QRClaim">
+                </div>
+                <div class="flex items-end">
+                    <button id="addBrandBtn" class="cta-button w-full">
+                        ➕ Add Brand
+                    </button>
+                </div>
+            </div>
+            <p id="adminStatus" class="text-sm italic mt-4">Ready to receive input.</p>
+            <div class="mt-4">
+                <button id="clearAdminDataBtn" class="text-sm text-red-600 underline hover:text-red-800 transition">
+                    🗑 Clear Locally Added Admin Data (Client-Side)
+                </button>
+            </div>
+        </section>
+
+        <section id="global-index-section" class="admin-panel-card hidden">
+            <h2 class="text-2xl font-bold mb-4">📊 FAA.ZONE Global Index — Core Brands Overview</h2>
+            <p class="mb-4">A comprehensive list of all core brands within the FAA.ZONE ecosystem, including backend-synced data and client-side additions.</p>
+            <div class="overflow-x-auto snapshot-box">
+                <table class="min-w-full text-sm text-left">
+                    <thead class="table-header-style">
+                        <tr>
+                            <th class="px-4 py-2">Glyph</th>
+                            <th class="px-4 py-2">Sector</th>
+                            <th class="px-4 py-2">Core Brands</th>
+                            <th class="px-4 py-2">Total Nodes</th>
+                            <th class="px-4 py-2">Monthly Fee</th>
+                            <th class="px-4 py-2">Annual Fee</th>
+                            <th class="px-4 py-2">Payout Tier</th>
+                            <th class="px-4 py-2">Region</th>
+                            <th class="px-4 py-2">Inspect</th>
+                            <th class="px-4 py-2">Deploy</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-200" id="faaZoneIndexTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="metrics-section" class="admin-panel-card hidden">
+            <h2 class="text-2xl font-bold mb-6">📈 Real-Time FAA Pulse Metrics</h2>
+            <p class="mb-8">Live monitoring of key operational metrics across the ecosystem.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+                <div class="metric-card">
+                    <h3 class="font-semibold">🧠 Active Nodes</h3>
+                    <p class="text-3xl font-bold mt-2" id="activeNodesCount">0</p>
+                </div>
+                <div class="metric-card">
+                    <h3 class="font-semibold">🔐 Licenses Active</h3>
+                    <p class="text-3xl font-bold mt-2" id="licensesActiveCount">0</p>
+                </div>
+                <div class="metric-card">
+                    <h3 class="font-semibold">💾 Vault Deployments</h3>
+                    <p class="text-3xl font-bold mt-2" id="vaultDeploymentsCount">0</p>
+                </div>
+                <div class="metric-card">
+                    <h3 class="font-semibold">📥 Sync Logs</h3>
+                    <p class="text-3xl font-bold mt-2" id="syncLogsCount">0</p>
+                </div>
+                <div class="metric-card">
+                    <h3 class="font-semibold">Audit Runs</h3>
+                    <p class="text-3xl font-bold mt-2" id="auditsRunningCount">0</p>
+                </div>
+                <div class="metric-card">
+                    <h3 class="font-semibold">Signal Zones</h3>
+                    <p class="text-3xl font-bold mt-2" id="signalZonesCount">0</p>
+                </div>
+                <div class="metric-card">
+                    <h3 class="font-semibold">ScrollGrid Index</h3>
+                    <p class="text-3xl font-bold mt-2" id="scrollGridIndexCount">0</p>
+                </div>
+            </div>
+            <div class="w-full bg-white p-8 rounded-lg shadow-inner border h-96">
+                <h3 class="text-xl font-bold mb-4">FAA Scroll Pulse Monitor</h3>
+                <canvas id="pulseChart" class="w-full h-full"></canvas>
+            </div>
+        </section>
+
+        <section id="sector-view-section" class="admin-panel-card hidden">
+            <h2 class="text-2xl font-bold mb-6">🔍 Sector-Specific View & Snapshots</h2>
+            <p class="mb-8">Select a sector to view and manage its brands and subnodes, presented with the chosen product card aesthetic.</p>
+
+            <div class="mb-8 p-6 rounded-lg flex items-center justify-between mx-auto max-w-sm currency-converter-container">
+                <label for="sector-currency-select" class="font-medium text-sm">Display prices in:</label>
+                <select id="sector-currency-select" class="ml-4 p-2 border rounded-md text-sm">
+                    <option value="ZAR">ZAR (R)</option>
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                    <option value="GBP">GBP (£)</option>
+                </select>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-10">
+                <div class="col-span-full">
+                    <label class="text-sm block font-medium mb-1">Select Sector:</label>
+                    <select id="sectorViewSelect" class="w-full border rounded p-2"></select>
+                </div>
+            </div>
+            
+            <div id="dynamicSectorDashboard" class="space-y-10">
+                <p class="text-gray-400 col-span-full text-center mt-10">Select a sector to view its detailed dashboard.</p>
+            </div>
+            <div id="brandDetailsContainer" class="mt-8"></div>
+        </section>
+
+    </main>
+
+    <footer class="enhanced-footer text-center py-10 mt-16">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+                <div class="text-lg footer-logo-text">FAA.ZONE™</div>
+                <p class="text-sm">ScrollGrid · PulseTrade Certified · TreatyMesh Validated</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Privacy</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Terms</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">Contact</a>
+                </div>
+            </div>
+            <p class="text-xs mt-6">© 2025 Fruitful Holdings (Pty) Ltd. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://www.paypal.com/sdk/js?client-id=P-07F980334R518562XNBHLNJY&currency=ZAR&vault=true&intent=subscription"></script>
+
+    <script type="module">
+        document.addEventListener('DOMContentLoaded', async () => {
+            // First, load brands and other data from your local Express backend
+            await loadInitialBackendData(); 
+            // Then, fetch real (mock) PayPal Plan IDs from your Vercel PayPal API
+            await fetchPayPalPlanIDs(); 
+            // Fetch exchange rates
+            await fetchExchangeRates(); 
+    
+            populateSectorSelect();
+            populateSectorViewSelect();
+            
+            document.querySelectorAll('.admin-nav-link').forEach(link => {
+                link.addEventListener('click', (event) => {
+                    event.preventDefault(); 
+                    const sectionId = event.target.dataset.section;
+                    showAdminSection(sectionId, event.target);
+                });
+            });
+    
+            const initialNavLink = document.querySelector('.admin-nav-link[data-section="add-brand-section"]');
+            if (initialNavLink) {
+                showAdminSection('add-brand-section', initialNavLink);
+            }
+    
+            document.getElementById('addBrandBtn').addEventListener('click', addBrandToSector);
+            document.getElementById('clearAdminDataBtn').addEventListener('click', clearAdminAddedData);
+    
+            const sectorCurrencySelect = document.getElementById('sector-currency-select');
+            if (sectorCurrencySelect) {
+                sectorCurrencySelect.addEventListener('change', (event) => {
+                    const selectedCurrency = event.target.value;
+                    const sectorPriceDisplays = document.querySelectorAll('#dynamicSectorDashboard .price-display');
+                    updatePricesInSectorView(sectorPriceDisplays, selectedCurrency);
+                });
+            }
+    
+            calculateGlobalMetrics();
+            renderDynamicPulseChart();
+            window._pulseChartInterval = setInterval(updateDynamicPulseChart, 3000); 
+        });
+    
+        function showAdminSection(sectionId, clickedLink) {
+            document.querySelectorAll('section[id$="-section"]').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.admin-nav-scroll a').forEach(link => link.classList.remove('active'));
+    
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.remove('hidden');
+                if (clickedLink) {
+                    clickedLink.classList.add('active');
+                }
+            }
+        }
+    
+        function addBrandToSector() {
+            // Add brand logic here
+        }
+    
+        function clearAdminAddedData() {
+            // Clear data logic here
+        }
+    
+        function updatePricesInSectorView(priceSpans, selectedCurrency) {
+            // Update prices logic here
+        }
+    
+        function calculateGlobalMetrics() {
+            // Calculate metrics logic here
+        }
+    
+        function renderDynamicPulseChart() {
+            // Render chart logic here
+        }
+    
+        function updateDynamicPulseChart() {
+            // Update chart logic here
+        }
+    </script>me, clickedButton) { /* ... */ }
+
+
+            // --- Admin Panel Core Functions ---
+            async function loadInitialBackendData() {
+                try {
+                    // Fetch static brand data from your local Express server (server/server.js)
+                    const response = await fetch(`${BACKEND_LOCAL_SERVER_URL}/api/sectors`);
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch sectors from local backend: ${response.status} ${response.statusText}`);
+                    }
+                    const backendData = await response.json();
+                    
+                    // Merge backend data into clientAdminData (or a new unified data structure)
+                    // This ensures local changes and backend data are combined for display.
+                    for (const sectorKey in backendData) {
+                        if (sectorList[sectorKey]) { // Only process known sectors
+                            if (!clientAdminData[sectorKey]) {
+                                clientAdminData[sectorKey] = { brands: [] };
+                            }
+                            // Merge backend brands into clientAdminData, avoiding duplicates
+                            backendData[sectorKey].brands.forEach((bName, index) => {
+                                if (!clientAdminData[sectorKey].brands.some(cb => cb.name === bName)) {
+                                    clientAdminData[sectorKey].brands.push({ name: bName, subNodes: backendData[sectorKey].nodes[index] || [], details: {} });
+                                }
+                            });
+                        }
+                    } catch (err) {
+                        console.error("❌ Could not load initial backend data:", err);
+                        window.showTemporaryMessage(`🚨 Local Backend Error: ${err.message}. Ensure your 'server/server.js' is running on ${BACKEND_LOCAL_SERVER_URL}.`, 'error');
+                    }
+            try {
+                console.log("Initial backend data loaded and merged:", clientAdminData);
+            } catch (err) {
+                console.error("❌ Could not load initial backend data:", err);
+                window.showTemporaryMessage(`🚨 Local Backend Error: ${err.message}. Ensure your 'server/server.js' is running on ${BACKEND_LOCAL_SERVER_URL}.`, 'error');
+            }
+                                console.error("❌ Could not load initial backend data:", err);
+                                window.showTemporaryMessage(`🚨 Local Backend Error: ${err.message}. Ensure your 'server/server.js' is running on ${BACKEND_LOCAL_SERVER_URL}.`, 'error');
+                            }
+                        }
+                    }
+
+            function showAdminSection(sectionId, clickedLink) {
+                document.querySelectorAll('section[id$="-section"]').forEach(el => el.classList.add('hidden'));
+                document.querySelectorAll('.admin-nav-scroll a').forEach(link => link.classList.remove('active'));
+
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    section.classList.remove('hidden');
+                    if (clickedLink) {
+                        clickedLink.classList.add('active');
+                    }
+                }
+            }
+                document.querySelectorAll('section[id$="-section"]').forEach(el => el.classList.add('hidden'));
+                document.querySelectorAll('.admin-nav-scroll a').forEach(link => link.classList.remove('active'));
+
+                const section = document.getElementById(sectionId);
+                if (section) {
+                    section.classList.remove('hidden');
+                    if (clickedLink) {
+                        clickedLink.classList.add('active');
+                        currentActivePanelId = sectionId;
+                    }
+                    document.getElementById('brandDetailsContainer').innerHTML = '';
+                    if (activeBrandButton) {
+                        activeBrandButton.classList.remove('active');
+                        activeBrandButton = null;
+                    }
+
+                    if (sectionId === 'metrics-section') {
+                        if (!pulseChartInstance) {
+                            renderDynamicPulseChart();
+                        }
+                        if (!window._pulseChartInterval) {
+                            window._pulseChartInterval = setInterval(updateDynamicPulseChart, 3000);
+                        }
+                        calculateGlobalMetrics();
+                    } else {
+                        if (window._pulseChartInterval) {
+                            clearInterval(window._pulseChartInterval);
+                            window._pulseChartInterval = null;
+                        }
+                    }
+
+                    if (sectionId === 'global-index-section') {
+                        renderFaaZoneIndexTable();
+                        calculateGlobalMetrics();
+                    } else if (sectionId === 'add-brand-section') {
+                        populateSectorSelect();
+                        calculateGlobalMetrics();
+                        renderFaaZoneIndexTable(); 
+                    }
+                    else if (sectionId === 'sector-view-section') {
+                        populateSectorViewSelect();
+                        const sectorViewSelect = document.getElementById('sectorViewSelect');
+                        if (sectorViewSelect.value === '' && Object.keys(sectorList).filter(key => key !== 'admin-panel').length > 0) {
+                            sectorViewSelect.value = Object.keys(sectorList).filter(key => key !== 'admin-panel')[0];
+                            displaySectorSpecificProducts(sectorViewSelect.value);
+                        } else if (sectorViewSelect.value !== '') {
+                            displaySectorSpecificProducts(sectorViewSelect.value);
+                        }
+                    }
+                }
+            }
+            
+            function populateSectorSelect() {
+                const select = document.getElementById('sectorSelect');
+                if (!select) return;
+                select.innerHTML = ''; 
+                Object.entries(sectorList).forEach(([key, label]) => {
+                    if (key !== 'admin-panel') { 
+                        const option = document.createElement('option');
+                        option.value = key;
+                        option.textContent = label;
+                        select.appendChild(option);
+                    }
+                });
+            }
+            
+            function populateSectorViewSelect() {
+                const select = document.getElementById('sectorViewSelect');
+                if (!select) return;
+                select.innerHTML = '';
+
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = '--- Select a Sector ---';
+                select.appendChild(defaultOption);
+
+                Object.entries(sectorList).forEach(([key, label]) => {
+                    if (key !== 'admin-panel') {
+                        const option = document.createElement('option');
+                        option.value = key;
+                        option.textContent = label;
+                        select.appendChild(option);
+                    }
+                });
+
+                select.removeEventListener('change', handleSectorViewChange); 
+                select.addEventListener('change', handleSectorViewChange);
+            }
+
+            function handleSectorViewChange(event) {
+                const selectedSectorKey = event.target.value;
+                if (activeBrandButton) {
+                    activeBrandButton.classList.remove('active');
+                    activeBrandButton = null;
+                }
+                document.getElementById('brandDetailsContainer').innerHTML = '';
+
+                if (selectedSectorKey) {
+                    displaySectorSpecificProducts(selectedSectorKey);
+                } else {
+                    document.getElementById('dynamicSectorDashboard').innerHTML = '<p class="text-gray-400 col-span-full text-center mt-8">Select a sector to view its detailed dashboard.</p>';
+                }
+            }
+
+            async function addBrandToSector() {
+                const sectorSelect = document.getElementById("sectorSelect");
+                const brandInput = document.getElementById("brandInput");
+                const subnodesInput = document.getElementById("subnodesInput");
+                const adminStatus = document.getElementById("adminStatus");
+                const addBrandBtn = document.getElementById("addBrandBtn");
+
+                const sectorKey = sectorSelect.value;
+                const brandName = brandInput.value.trim();
+                const subnodesArray = subnodesInput.value.split(",").map(n => n.trim()).filter(Boolean);
+
+                if (!brandName || subnodesArray.length === 0) {
+                    adminStatus.textContent = "⚠️ Please fill in both brand name and at least one subnode.";
+                    adminStatus.classList.remove('text-green-500', 'text-blue-500');
+                    adminStatus.classList.add('text-red-500');
+                    addBrandBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                    addBrandBtn.classList.add('bg-red-500', 'hover:bg-red-600');
+                    setTimeout(() => {
+                        adminStatus.textContent = "Ready to receive input.";
+                        adminStatus.classList.remove('text-red-500');
+                        addBrandBtn.classList.remove('bg-red-500', 'hover:bg-red-600');
+                        addBrandBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+                    }, 3000);
+                    return;
+                }
+
+                adminStatus.textContent = `Attempting to add "${brandName}" to ${sectorList[sectorKey]} (via Backend)...`;
+                adminStatus.classList.remove('text-green-500', 'text-red-500');
+                adminStatus.classList.add('text-blue-500'); // Info color
+
+                try {
+                    // Send data to your local Express backend
+                    const response = await fetch(`${BACKEND_LOCAL_SERVER_URL}/api/sectors`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ sector: sectorKey, brand: brandName, subnodes: subnodesArray })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || `Backend error: ${response.status} ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Only add to clientAdminData if backend reports success (e.g., not a duplicate)
+                        if (!clientAdminData[sectorKey]) clientAdminData[sectorKey] = { brands: [] };
+                        clientAdminData[sectorKey].brands.push({ name: brandName, subNodes: subnodesArray, details: {} });
+                        localStorage.setItem("clientAdminData", JSON.stringify(clientAdminData));
+
+                        adminStatus.textContent = `✅ Added ${brandName} to ${sectorList[sectorKey]} (Backend & Client-Side).`;
+                        adminStatus.classList.remove('text-blue-500', 'text-red-500');
+                        adminStatus.classList.add('text-green-500');
+                        addBrandBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                        addBrandBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+                        addBrandBtn.innerHTML = '✔️ Added!';
+                    } else {
+                         adminStatus.textContent = `ℹ️ ${data.message}`; // E.g., "Brand already exists"
+                         adminStatus.classList.remove('text-green-500', 'text-red-500');
+                         adminStatus.classList.add('text-blue-500');
+                    }
+                    
+                    renderFaaZoneIndexTable(); // Re-render FAA Zone Index table
+                    calculateGlobalMetrics(); // Recalculate metrics
+                    if (currentActivePanelId === 'sector-view-section' && document.getElementById('sectorViewSelect').value === sectorKey) {
+                        displaySectorSpecificProducts(sectorKey); // Re-render sector view
+                    }
+
+                    brandInput.value = "";
+                    subnodesInput.value = "";
+
+                } catch (err) {
+                    console.error("❌ Error adding brand to backend:", err);
+                    adminStatus.textContent = `❌ Failed to add brand: ${err.message}. Is local server running?`;
+                    adminStatus.classList.remove('text-green-500', 'text-blue-500');
+                    adminStatus.classList.add('text-red-500');
+                    addBrandBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                    addBrandBtn.classList.add('bg-red-500', 'hover:bg-red-600');
+                    addBrandBtn.innerHTML = 'Failed!';
+                } finally {
+                    setTimeout(() => {
+                        adminStatus.textContent = "Ready to receive input.";
+                        adminStatus.classList.remove('text-green-500', 'text-red-500', 'text-blue-500');
+                        addBrandBtn.classList.remove('bg-green-500', 'hover:bg-green-600', 'bg-red-500', 'hover:bg-red-600');
+                        addBrandBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+                        addBrandBtn.innerHTML = '➕ Add Brand';
+                    }, 3000);
+                }
+            }
+            
+            function clearAdminAddedData() {
+                localStorage.removeItem("clientAdminData");
+                clientAdminData = {};
+                for (const sectorKey in sectorList) {
+                    clientAdminData[sectorKey] = { brands: [] }; 
+                }
+                renderFaaZoneIndexTable();
+                calculateGlobalMetrics();
+                document.getElementById('dynamicSectorDashboard').innerHTML = '<p class="text-gray-400 col-span-full text-center mt-8">Select a sector to view its detailed dashboard.</p>';
+                document.getElementById('brandDetailsContainer').innerHTML = '';
+
+                const adminStatus = document.getElementById("adminStatus");
+                adminStatus.textContent = "🗑️ Client-side admin data cleared.";
+                adminStatus.classList.remove('text-red-500');
+                adminStatus.classList.add('text-green-500');
+                setTimeout(() => { 
+                    adminStatus.textContent = "Ready to receive input.";
+                    adminStatus.classList.remove('text-green-500');
+                }, 3000);
+            }
+            
+            function toggleSubscriptionType(cardElement, isAnnualChecked) {
+                const priceSpan = cardElement.querySelector('.price-display');
+                const originalMonthlyPrice = parseFloat(priceSpan.dataset.originalMonthlyPrice);
+                const originalAnnualPrice = parseFloat(priceSpan.dataset.originalAnnualPrice);
+                const currentCurrency = priceSpan.dataset.currencyCode || BASE_CURRENCY; 
+
+                let newPrice;
+                let newBillingCycle;
+                let suffix;
+
+                if (isAnnualChecked) { 
+                    newPrice = originalAnnualPrice;
+                    newBillingCycle = "ANNUAL";
+                    suffix = "/ year";
+                } else { 
+                    newPrice = originalMonthlyPrice;
+                    newBillingCycle = "MONTHLY";
+                    suffix = "/ month";
+                }
+
+                let convertedPrice = newPrice;
+                if (currentCurrency !== BASE_CURRENCY && exchangeRates[currentCurrency]) {
+                    convertedPrice = newPrice * exchangeRates[currentCurrency];
+                }
+                
+                priceSpan.innerHTML = `${window.getCurrencySymbol(currentCurrency)}${convertedPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span class="text-xl text-gray-400">${suffix}</span>`;
+
+                const paypalButtonContainer = cardElement.querySelector('.paypal-button-container-dynamic');
+                if (paypalButtonContainer) {
+                    // Update the data attributes on the container
+                    paypalButtonContainer.dataset.amount = newPrice.toFixed(2); // Store original ZAR amount
+                    paypalButtonContainer.dataset.billingCycle = newBillingCycle;
+                    const basePlanName = paypalButtonContainer.dataset.itemName.replace(/<.*?>/g, '').trim();
+                    paypalButtonContainer.dataset.planKey = `${basePlanName}_${newBillingCycle}`;
+
+                    // Re-render the PayPal button for this specific card
+                    renderPayPalButtonsForContainer(paypalButtonContainer.id);
+                }
+            }
+
+            function generateMockBrandSnapshotData(sectorKey, brandName, explicitSubnodes = []) {
+                let subnodes = explicitSubnodes;
+                if (subnodes.length === 0) {
+                    const staticSectorBrands = ALL_BRANDS_DETAILS_BY_SECTOR[sectorKey] || [];
+                    const staticBrandEntry = staticSectorBrands.find(b => b.name === brandName);
+                    if (staticBrandEntry && staticBrandEntry.subNodes && staticBrandEntry.subNodes.length > 0) {
+                        subnodes = staticBrandEntry.subNodes;
+                    } else {
+                        subnodes = [`MockNode ${brandName.slice(0,3).toUpperCase()}A™`, `MockNode ${brandName.slice(0,3).toUpperCase()}B™`];
+                    }
+                }
+                
+                const sectorInfo = FAA_ZONE_INDEX_SUMMARY_DATA[sectorKey] || {};
+                const sectorDisplayName = sectorList[sectorKey] || sectorKey.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+                const baseId = brandName.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().substring(0, 5);
+                const randomNum = () => Math.floor(Math.random() * 9000) + 1000;
+                const randomPulse = () => (Math.random() * 50 + 50).toFixed(2); 
+                const randomDataVolume = () => (Math.random() * 100 + 10).toFixed(2); 
+                const randomLatency = () => (Math.random() * 50 + 10).toFixed(2); 
+                const randomActiveNodes = () => Math.floor(Math.random() * 1000) + 50;
+                const randomAuditDate = () => `2025-${(Math.floor(Math.random() * 12) + 1).toString().padStart(2, '0')}-${(Math.floor(Math.random() * 28) + 1).toString().padStart(2, '0')}`;
+                
+                const introVariations = [
+                    `a cutting-edge FAA.ZONE solution designed for the ${sectorDisplayName} sector. It seamlessly integrates with the global PulseGrid to deliver unparalleled performance and data integrity.`,
+                    `the premier FAA.ZONE platform, revolutionizing ${sectorDisplayName} operations. Leveraging the global PulseGrid, it offers robust data synchronization and superior efficiency.`,
+                    `an innovative FAA.ZONE protocol, specifically engineered for the demands of the ${sectorDisplayName} industry. Its deep integration with the PulseGrid ensures secure, real-time data flows and enhanced decision-making.`,
+                    `a powerful FAA.ZONE framework empowering the ${sectorDisplayName} sector with advanced automation and data management. It connects effortlessly to the PulseGrid for optimized workflow and compliance.`
+                ];
+                const randomIntro = introVariations[Math.floor(Math.random() * introVariations.length)];
+
+                const coreFeatures = [
+                    `Direct integration with FAA 🧾 Professional Services Mesh.`,
+                    `Advanced data sync with ${Array.isArray(subnodes) && subnodes.length > 0 ? subnodes[0] : 'core nodes'}.`,
+                    `Real-time compliance validation via VaultLink™ (${sectorKey} specific).`,
+                    `Scalable architecture for x${Math.ceil(Math.random() * 50) + 10} power expansion.`,
+                    `Predictive analytics module for ${brandName} performance.`,
+                    `API access for seamless interoperability.`
+                ];
+
+                const additionalFeaturesPool = [
+                    `Cross-sector data interoperability.`, `AI-driven anomaly detection and fraud prevention.`, `Self-optimizing node distribution for peak efficiency.`, `One-click regulatory reporting and audit trails.`, `Customizable dashboard and alert systems.`, `Secure multi-party computation support.`, `Dynamic resource allocation for fluctuating demands.`, `Blockchain-secured data provenance.`
+                ];
+
+                const selectedAdditionalFeatures = [];
+                const tempAdditionalFeatures = [...additionalFeaturesPool];
+                for (let i = 0; i < Math.floor(Math.random() * 3) + 3; i++) {
+                    if (tempAdditionalFeatures.length > 0) {
+                        const randomIndex = Math.floor(Math.random() * tempAdditionalFeatures.length);
+                        selectedAdditionalFeatures.push(tempAdditionalFeatures.splice(randomIndex, 1)[0]);
+                    }
+                }
+                
+                const allFeatures = [...coreFeatures, ...selectedAdditionalFeatures];
+
+                const baseMonthlyFee = parseFloat(sectorInfo.monthlyFee);
+                const annualDiscountRate = 0.15;
+
+                const pricingTiers = [
+                    {   
+                        name: "Starter Node",   
+                        monthlyAmount: baseMonthlyFee,   
+                        annualAmount: baseMonthlyFee * 12 * (1 - annualDiscountRate),
+                        description: "Ideal for small teams and pilot projects. Access essential features and secure basic data synchronization.",   
+                        benefits: SECTOR_TIER_PRICING.Starter.features
+                    },
+                    {   
+                        name: "Pro Grid",   
+                        monthlyAmount: baseMonthlyFee * 2.5,   
+                        annualAmount: baseMonthlyFee * 2.5 * 12 * (1 - annualDiscountRate),
+                        description: `Designed for growing firms needing advanced capabilities. Includes many core features and enhanced performance.`,   
+                        benefits: SECTOR_TIER_PRICING.Pro.features
+                    },
+                    {   
+                        name: "Enterprise Omni-Sync",   
+                        monthlyAmount: baseMonthlyFee * 5,   
+                        annualAmount: baseMonthlyFee * 5 * 12 * (1 - annualDiscountRate),
+                        description: "For large organizations requiring full VaultMesh access, custom integrations, and dedicated resources.",   
+                        benefits: SECTOR_TIER_PRICING.Enterprise.features
+                    }
+                ];
+
+                const mockData = {
+                    sectorGlyph: sectorInfo.glyph || '🌐',
+                    sectorName: sectorDisplayName,
+                    brandName: brandName,
+                    intro: randomIntro,
+                    keyFeatures: allFeatures,
+                    subnodes: subnodes,
+                    pricing: pricingTiers, 
+                    metadata: {
+                        productId: `${baseId}-${randomNum()}`,
+                        vaultId: `VAULT-${randomNum()}`,
+                        signalEchoLayer: `Layer ${Math.random() < 0.5 ? 'Alpha' : 'Beta'} v${(Math.random() * 5).toFixed(1)}`,
+                        deploymentZone: `Zone ${String.fromCharCode(65 + Math.floor(Math.random() * 5))} ${Math.floor(Math.random() * 10) + 1}`,
+                        securityRating: `FAA-SEC ${['A+', 'A', 'B+', 'B', 'C'].at(Math.floor(Math.random() * 5))}`,
+                        activeNodes: randomActiveNodes(),
+                        lastSync: randomAuditDate(),
+                        complianceStatus: Math.random() > 0.2 ? 'Active & Certified' : 'Pending Review'
+                    },
+                    realTimeMetrics: {
+                        currentPulseActivity: `${randomPulse()} pulses/sec`,
+                        dataVolumeProcessed: `${randomDataVolume()} TB`,
+                        latencyAverage: `${randomLatency()} ms`
+                    },
+                    vaultTraceEntries: [
+                        `#${randomNum()} - ${baseId} Pulse Tx - Confirmed`,
+                        `#${randomNum()} - ${sectorKey.slice(0,5).toUpperCase().replace(/[^A-Z0-9]/g, '')} Data Sync - Completed`,
+                        `#${randomNum()} - Node Activation Confirm - ${Math.random() > 0.5 ? 'Online' : 'Offline'}`,
+                        `#${randomNum()} - VaultTrace Audit - Passed`
+                    ]
+                };
+
+                return mockData;
+            }
+
+            function displayBrandDetails(sectorKey, brandName, clickedButton) {
+                const container = document.getElementById('brandDetailsContainer');
+                if (!container) {
+                    console.error("Brand details container not found!");
+                    return;
+                }
+
+                document.querySelectorAll('#sectorBrandButtons .brand-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                if (clickedButton) {
+                    clickedButton.classList.add('active');
+                    activeBrandButton = clickedButton;
+                }
+
+                let selectedBrand = null;
+                // Search in clientAdminData first (which includes backend data)
+                const combinedBrandsInSector = clientAdminData[sectorKey]?.brands || [];
+                selectedBrand = combinedBrandsInSector.find(b => b.name === brandName);
+
+                // If not found in combined, fallback to static (shouldn't be needed if backend/clientAdminData is unified)
+                if (!selectedBrand) {
+                    const staticBrands = ALL_BRANDS_DETAILS_BY_SECTOR[sectorKey] || [];
+                    selectedBrand = staticBrands.find(b => b.name === brandName);
+                }
+
+                const currentSubNodesForSnapshot = selectedBrand?.subNodes || [];
+                let brandSnapshotData = generateMockBrandSnapshotData(sectorKey, brandName, currentSubNodesForSnapshot);
+                
+                // If the selectedBrand has custom details, merge them
+                if (selectedBrand?.details && Object.keys(selectedBrand.details).length > 0) {
+                    brandSnapshotData = { 
+                        ...brandSnapshotData, 
+                        ...selectedBrand.details,
+                        metadata: { ...brandSnapshotData.metadata, ...(selectedBrand.details.metadata || {}) },
+                        realTimeMetrics: { ...brandSnapshotData.realTimeMetrics, ...(selectedBrand.details.realTimeMetrics || {}) },
+                        pricing: selectedBrand.details.pricing || brandSnapshotData.pricing,
+                        vaultTraceEntries: selectedBrand.details.vaultTraceEntries || brandSnapshotData.vaultTraceEntries
+                    };
+                }
+
+                const currentCurrency = document.getElementById('sector-currency-select').value;
+                const currencySymbol = getCurrencySymbol(currentCurrency);
+
+                let snapshotHtml = `
+                    <div class="admin-panel-card mt-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-2xl font-bold">${brandSnapshotData.sectorGlyph} FAA™ ${brandSnapshotData.sectorName.replace(/<.*?>/g, '')} Dashboard</h3>
+                            <button onclick="window.closeBrandDetails()" class="text-red-500 hover:text-red-700 font-semibold transition-colors">
+                                ❌ Close
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div class="lg:col-span-2 admin-panel-card !p-6">
+                                <h4 class="text-xl font-bold mb-4">${brandSnapshotData.brandName} Core Protocol Overview</h4>
+                                <p class="text-gray-400 mb-4">
+                                    ${brandSnapshotData.brandName}™ is ${brandSnapshotData.intro}
+                                </p>
+                                
+                                <h5 class="text-lg font-semibold mb-2 mt-4">🎛️ Key Features</h5>
+                                <ul class="list-disc list-inside text-gray-300 ml-4 mb-6">
+                                    ${brandSnapshotData.keyFeatures.map(f => `<li>${f}</li>`).join('')}
+                                </ul>
+
+                                <h5 class="text-lg font-semibold mb-2 mt-4">📌 Subnodes</h5>
+                                <ul class="list-disc list-inside text-gray-300 ml-4 mb-6">
+                                    ${brandSnapshotData.subnodes.map(n => `<li>${n}</li>`).join('')}
+                                </ul>
+
+                                <h5 class="text-lg font-semibold mb-2 mt-4">💳 Pricing Structure (Derived from Sector Tier Pricing)</h5>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                                    ${brandSnapshotData.pricing.map(tier => {
+                                        let displayMonthlyPrice = tier.monthlyAmount;
+                                        let displayAnnualPrice = tier.annualAmount;
+                                        let priceSuffix = "/ month";
+                                        let displayPrice = displayMonthlyPrice;
+
+                                        if (currentCurrency !== BASE_CURRENCY && exchangeRates[currentCurrency]) {
+                                            displayMonthlyPrice = displayMonthlyPrice * exchangeRates[currentCurrency];
+                                            displayAnnualPrice = displayAnnualPrice * exchangeRates[currentCurrency];
+                                            displayPrice = displayMonthlyPrice; 
+                                        }
+
+                                        const firstProductCard = document.querySelector('#dynamicSectorDashboard .product-card');
+                                        let isAnnualChecked = false;
+                                        if (firstProductCard) {
+                                            const toggleCheckbox = firstProductCard.querySelector('.toggle-switch input[type="checkbox"]');
+                                            if (toggleCheckbox) {
+                                                isAnnualChecked = toggleCheckbox.checked;
+                                            }
+                                        }
+
+                                        if (isAnnualChecked) {
+                                            displayPrice = displayAnnualPrice;
+                                            priceSuffix = "/ year";
+                                        }
+
+                                        return `
+                                            <div class="bg-gray-800 p-4 rounded-md border border-gray-700">
+                                                <h6 class="font-semibold text-blue-300">${tier.name}</h6>
+                                                <p class="text-xl font-bold text-blue-400 mt-1">
+                                                    ${currencySymbol}${displayPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} <span class="text-sm text-gray-400">${priceSuffix}</span>
+                                                </p>
+                                                <p class="text-gray-400 mt-2 text-xs">${tier.description}</p>
+                                                <ul class="text-xs text-gray-500 list-disc list-inside ml-3 mt-2">
+                                                    ${tier.benefits.map(b => `<li>${b}</li>`).join('')}
+                                                </ul>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+
+                            <div class="lg:col-span-1 admin-panel-card !p-6 space-y-4">
+                                <h4 class="text-xl font-bold mb-4">🔗 FAA Data & Compliance</h4>
+                                <ul class="list-none p-0 m-0 space-y-2 text-gray-300">
+                                    <li><span class="font-semibold text-blue-300">Product ID:</span> <code>${brandSnapshotData.metadata.productId}</code></li>
+                                    <li><span class="font-semibold text-blue-300">VaultID:</span> <code>${brandSnapshotData.metadata.vaultId}</code></li>
+                                    <li><span class="font-semibold text-blue-300">Signal Echo Layer:</span> <code>${brandSnapshotData.metadata.signalEchoLayer}</code></li>
+                                    <li><span class="font-semibold text-blue-300">Deployment Zone:</span> <code>${brandSnapshotData.metadata.deploymentZone}</code></li>
+                                    <li><span class="font-semibold text-blue-300">Security Rating:</span> <span class="font-bold text-green-500">${brandSnapshotData.metadata.securityRating}</span></li>
+                                    <li><span class="font-semibold text-blue-300">Active Nodes:</span> <code>${brandSnapshotData.metadata.activeNodes.toLocaleString()}</code></li>
+                                    <li><span class="font-semibold text-blue-300">Last Audit:</span> <code>${brandSnapshotData.metadata.lastSync}</code></li>
+                                    <li><span class="font-semibold text-blue-300">Compliance Status:</span> <span class="font-bold text-green-500">${brandSnapshotData.metadata.complianceStatus}</span></li>
+                                </ul>
+
+                                <h5 class="text-lg font-semibold mb-2 mt-4">📊 Real-Time Metrics</h5>
+                                <ul class="list-none p-0 m-0 space-y-2 text-gray-300">
+                                    <li><span class="font-semibold text-blue-300">Current Pulse Activity:</span> ${brandSnapshotData.realTimeMetrics.currentPulseActivity}</li>
+                                    <li><span class="font-semibold text-blue-300">Data Volume Processed (24h):</span> ${brandSnapshotData.realTimeMetrics.dataVolumeProcessed}</li>
+                                    <li><span class="font-semibold text-blue-300">Latency Average:</span> ${brandSnapshotData.realTimeMetrics.latencyAverage}</li>
+                                </ul>
+
+                                <h5 class="text-lg font-semibold mb-2 mt-4">🧾 VaultTrace™ Ledger Entries</h5>
+                                <ul class="list-disc list-inside text-gray-300 ml-4 space-y-1">
+                                    ${brandSnapshotData.vaultTraceEntries.map(entry => `<li><code>${entry}</code></li>`).join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML = snapshotHtml;
+                container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            window.closeBrandDetails = function() {
+                document.getElementById('brandDetailsContainer').innerHTML = '';
+                if (activeBrandButton) {
+                    activeBrandButton.classList.remove('active');
+                    activeBrandButton = null;
+                }
+            };
+
+
+            function displaySectorSpecificProducts(sectorKey) {
+                const container = document.getElementById('dynamicSectorDashboard');
+                if (!container) {
+                    console.error("Dynamic sector dashboard container not found!");
+                    return;
+                }
+                container.innerHTML = ''; 
+                document.getElementById('brandDetailsContainer').innerHTML = ''; 
+
+                const sectorDispName = sectorList[sectorKey] || sectorKey.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                const sectorDataForPricing = FAA_ZONE_INDEX_SUMMARY_DATA[sectorKey];
+                
+                // Get brands from clientAdminData (which now includes backend data)
+                const allBrandsForDisplay = clientAdminData[sectorKey]?.brands || [];
+
+                if (!sectorDataForPricing || allBrandsForDisplay.length === 0) {
+                    container.innerHTML = `<p class="text-gray-400 col-span-full text-center mt-8">No detailed data or brands available for this sector yet.</p>`;
+                    return;
+                }
+
+                const baseMonthlyFee = parseFloat(String(sectorDataForPricing.monthlyFee).replace('$', '').replace(',', ''));
+                const annualDiscountRate = 0.15; 
+
+                const products = [
+                    {
+                        name: `${sectorDispName.replace(/<.*?>/g, '')} Starter Package`,
+                        monthlyAmount: baseMonthlyFee,
+                        annualAmount: (baseMonthlyFee * 12 * (1 - annualDiscountRate)),
+                        tier: "Starter"
+                    },
+                    {
+                        name: `${sectorDispName.replace(/<.*?>/g, '')} Pro Package`,
+                        monthlyAmount: (baseMonthlyFee * 2.5),
+                        annualAmount: (baseMonthlyFee * 2.5 * 12 * (1 - annualDiscountRate)),
+                        tier: "Pro", featured: true
+                    },
+                    {
+                        name: `${sectorDispName.replace(/<.*?>/g, '')} Enterprise Package`,
+                        monthlyAmount: (baseMonthlyFee * 5),
+                        annualAmount: (baseMonthlyFee * 5 * 12 * (1 - annualDiscountRate)), 
+                        tier: "Enterprise"
+                    }
+                ];
+
+                let pricingHtml = `<h2 class="text-2xl font-bold mb-6 mt-10">Pricing for ${sectorDispName}</h2><div class="grid grid-cols-1 md:grid-cols-3 gap-8">`;
+                products.forEach(product => {
+                    const tierInfo = SECTOR_TIER_PRICING[product.tier];
+                    if (!tierInfo) return;
+
+                    // Generate a unique ID for the PayPal button container for each product card
+                    const paypalButtonContainerId = `paypal-button-container-${sectorKey}-${product.tier}`;
+
+                    pricingHtml += `
+                        <div class="col-span-1">
+                            <div class="product-card p-6 md:p-8 ${product.featured ? 'featured' : ''}">
+                                <div>
+                                    <h3 class="text-2xl font-bold mb-4">${product.name}</h3>
+                                    <p class="text-gray-400 mb-6">Unlock powerful features for ${product.tier} success.</p>
+                                    
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" onchange="window.toggleSubscriptionType(this.closest('.product-card'), this.checked)">
+                                        <span class="slider">
+                                            <span class="monthly-text">Monthly</span>
+                                            <span class="annual-text">Annual (15% off)</span>
+                                        </span>
+                                    </label>
+
+                                    <div class="mb-8">
+                                        <span class="text-5xl font-extrabold ${product.featured ? 'text-blue-400' : 'text-gray-100'} price-display"
+                                            data-original-monthly-price="${product.monthlyAmount.toFixed(2)}"
+                                            data-original-annual-price="${product.annualAmount.toFixed(2)}"
+                                            data-currency-symbol="R"
+                                            data-currency-code="ZAR"> 
+                                            R${parseFloat(product.monthlyAmount).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                                            <span class="text-xl text-gray-400">/ month</span>
+                                        </span>
+                                    </div>
+                                    <ul class="feature-list mb-8">
+                                        ${tierInfo.features.map(f => `
+                                            <li><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>${f}</li>
+                                        `).join('')}
+                                    </ul>
+                                </div>
+                                <div id="${paypalButtonContainerId}" 
+                                     class="paypal-button-container-dynamic"
+                                     data-item-name="${product.name}"
+                                     data-amount="${product.monthlyAmount.toFixed(2)}" 
+                                     data-item-description="${product.name} - Monthly Subscription"
+                                     data-billing-cycle="MONTHLY"
+                                     data-plan-key="${product.name.replace(/<.*?>/g, '').trim().replace(/\s/g, '_')}_MONTHLY">
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                pricingHtml += `</div>`;
+                container.innerHTML += pricingHtml;
+
+                // Section for Tier-Specific Metrics
+                let tierMetricsHtml = `<div class="admin-panel-card mt-20">
+                    <h3 class="text-2xl font-bold mb-4">Tier-Specific Metrics for ${sectorDispName}</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">`;
+                
+                products.forEach(product => {
+                    const tierMetrics = SECTOR_TIER_PRICING[product.tier].monthlyMetrics;
+                    if (!tierMetrics) return;
+
+                    tierMetricsHtml += `
+                        <div class="metric-card">
+                            <h4 class="font-semibold text-xl mb-2">${product.name} Metrics</h4>
+                            <ul class="list-none p-0 m-0 space-y-1">
+                                ${Object.entries(tierMetrics).map(([key, value]) => `
+                                    <li><span class="font-medium text-gray-300">${key}:</span> <span class="text-purple-300">${value}</span></li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    `;
+                });
+                tierMetricsHtml += `</div></div>`;
+                container.innerHTML += tierMetricsHtml;
+
+                // Section for Brands and Subnodes (NEW INTERACTIVE DISPLAY)
+                let brandsAndSnapshotHtml = `
+                    <div class="admin-panel-card mt-20">
+                        <h3 class="text-2xl font-bold mb-4">Brands in ${sectorDispName}</h3>
+                        <p class="mb-4 text-gray-400">Click a brand to see its detailed snapshot and associated subnodes.</p>
+                        <div id="sectorBrandButtons" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-8">
+                `;
+
+                allBrandsForDisplay.forEach(brand => {
+                    brandsAndSnapshotHtml += `
+                        <button class="brand-button" data-sector-key="${sectorKey}" data-brand-name="${brand.name}">
+                            ${brand.name}
+                        </button>
+                    `;
+                });
+
+                brandsAndSnapshotHtml += `
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += brandsAndSnapshotHtml;
+
+                // Attach event listeners to the newly created brand buttons
+                document.querySelectorAll('#sectorBrandButtons .brand-button').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const clickedSectorKey = event.target.dataset.sectorKey;
+                        const clickedBrandName = event.target.dataset.brandName;
+                        displayBrandDetails(clickedSectorKey, clickedBrandName, event.target);
+                    });
+                });
+
+                // Apply currency conversion to the newly rendered price displays
+                const sectorPriceDisplays = container.querySelectorAll('.price-display');
+                const sectorCurrencySelect = document.getElementById('sector-currency-select');
+                if (sectorCurrencySelect && typeof window.getCurrencySymbol === 'function' && typeof exchangeRates !== 'undefined') {
+                    updatePricesInSectorView(sectorPriceDisplays, sectorCurrencySelect.value);
+                } else {
+                    console.warn("Currency converter or its dependencies not fully initialized for sector view.");
+                }
+
+                // IMPORTANT: Render PayPal buttons AFTER the HTML for product cards is in the DOM
+                document.querySelectorAll('.paypal-button-container-dynamic').forEach(containerDiv => {
+                    renderPayPalButtonsForContainer(containerDiv.id);
+                });
+            }
+
+
+            // --- Global Metrics & Chart Functions ---
+            function calculateGlobalMetrics() {
+                let tempActiveNodes = 0;
+                let tempLicensesActive = 0;
+                let tempVaultDeployments = 0;
+                let tempSyncLogs = 0;
+                let tempAuditsRunning = 0;
+                let tempSignalZones = 0;
+                let tempScrollGridIndex = 0;
+
+                // Use clientAdminData as the source for counts (it now includes merged backend data)
+                for (const sectorKey in clientAdminData) {
+                    if (sectorKey === 'admin-panel' || !sectorList[sectorKey]) continue; 
+
+                    const brandsInSector = clientAdminData[sectorKey]?.brands || [];
+
+                    const totalCoreBrands = brandsInSector.length;
+                    const totalNodes = brandsInSector.flatMap(brand => brand.subNodes || []).length;
+                    
+                    tempActiveNodes += totalCoreBrands;
+                    tempLicensesActive += totalCoreBrands * 2; 
+                    tempVaultDeployments += totalCoreBrands * 1.5; 
+                    tempSyncLogs += totalCoreBrands * 5; 
+                    tempAuditsRunning += Math.ceil(totalCoreBrands / 10); 
+                    tempSignalZones += Math.floor(totalCoreBrands / 3); 
+                    tempScrollGridIndex += (totalCoreBrands + totalNodes);
+                }
+                
+                currentGlobalMetrics.activeNodes = tempActiveNodes;
+                currentGlobalMetrics.licensesActive = tempLicensesActive;
+                currentGlobalMetrics.vaultDeployments = Math.round(tempVaultDeployments);
+                currentGlobalMetrics.syncLogs = tempSyncLogs;
+                currentGlobalMetrics.auditsRunning = tempAuditsRunning;
+                currentGlobalMetrics.signalZones = tempSignalZones;
+                currentGlobalMetrics.scrollGridIndex = tempScrollGridIndex;
+
+                document.getElementById("activeNodesCount").textContent = currentGlobalMetrics.activeNodes.toLocaleString();
+                document.getElementById("licensesActiveCount").textContent = currentGlobalMetrics.licensesActive.toLocaleString();
+                document.getElementById("vaultDeploymentsCount").textContent = currentGlobalMetrics.vaultDeployments.toLocaleString();
+                document.getElementById("syncLogsCount").textContent = currentGlobalMetrics.syncLogs.toLocaleString();
+                const auditsRunningEl = document.getElementById("auditsRunningCount");
+                if(auditsRunningEl) auditsRunningEl.textContent = currentGlobalMetrics.auditsRunning.toLocaleString(); 
+                const signalZonesEl = document.getElementById("signalZonesCount");
+                if(signalZonesEl) signalZonesEl.textContent = currentGlobalMetrics.signalZones.toLocaleString(); 
+                const scrollGridIndexEl = document.getElementById("scrollGridIndexCount");
+                if(scrollGridIndexEl) scrollGridIndexEl.textContent = currentGlobalMetrics.scrollGridIndex.toLocaleString(); 
+            }
+
+            function renderDynamicPulseChart() {
+                const ctxEl = document.getElementById("pulseChart");
+                if (!ctxEl) { console.error("Canvas element for pulseChart not found!"); return; }
+                const ctx = ctxEl.getContext("2d");
+
+                if (pulseChartInstance) { pulseChartInstance.destroy(); }
+                
+                calculateGlobalMetrics(); 
+                chartDataPoints.activeNodes = Array(10).fill(currentGlobalMetrics.activeNodes);
+                chartDataPoints.licensesActive = Array(10).fill(currentGlobalMetrics.licensesActive);
+                chartDataPoints.vaultDeployments = Array(10).fill(currentGlobalMetrics.vaultDeployments);
+
+
+                pulseChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: [...chartTimeLabels], 
+                        datasets: [
+                            {
+                                label: 'Active Nodes',
+                                data: [...chartDataPoints.activeNodes],
+                                borderColor: '#60A5FA', 
+                                backgroundColor: 'rgba(96, 165, 250, 0.1)',
+                                borderWidth: 2, tension: 0.3, fill: true, pointRadius: 2, pointHoverRadius: 4
+                            },
+                            {
+                                label: 'Licenses Active',
+                                data: [...chartDataPoints.licensesActive],
+                                borderColor: '#34D399', 
+                                backgroundColor: 'rgba(52, 211, 153, 0.1)',
+                                borderWidth: 2, tension: 0.3, fill: true, pointRadius: 2, pointHoverRadius: 4
+                            },
+                            {
+                                label: 'Vault Deployments',
+                                data: [...chartDataPoints.vaultDeployments],
+                                borderColor: '#FCD34D', 
+                                backgroundColor: 'rgba(252, 211, 77, 0.1)',
+                                borderWidth: 2, tension: 0.3, fill: true, pointRadius: 2, pointHoverRadius: 4
+                            }
+                        ]
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        animation: { duration: 500 }, 
+                        plugins: { 
+                            legend: { display: true, position: 'top', labels: { color: "#C0C0C0" } },
+                            tooltip: { mode: 'index', intersect: false }
+                        }, 
+                        scales: { 
+                            y: { beginAtZero: true, ticks: { color: "#A0A0A0" }, title: { display: true, text: 'Count', color: '#C0C0C0'}}, 
+                            x: { ticks: { color: "#A0A0A0" }, title: {display: true, text: 'Time (Updates every 3s)', color: '#C0C0C0'} } 
+                        } 
+                    }
+                });
+            }
+
+            function updateDynamicPulseChart() {
+                if (!pulseChartInstance) return;
+                
+                calculateGlobalMetrics(); 
+
+                chartDataPoints.activeNodes.shift();
+                chartDataPoints.licensesActive.shift();
+                chartDataPoints.vaultDeployments.shift();
+
+                // Add some variance for dynamic effect
+                chartDataPoints.activeNodes.push(currentGlobalMetrics.activeNodes + (Math.random() * 100 - 50)); 
+                chartDataPoints.licensesActive.push(currentGlobalMetrics.licensesActive + (Math.random() * 20 - 10));
+                chartDataPoints.vaultDeployments.push(currentGlobalMetrics.vaultDeployments + (Math.random() * 5 - 2));
+                
+                pulseChartInstance.data.datasets[0].data = [...chartDataPoints.activeNodes];
+                pulseChartInstance.data.datasets[1].data = [...chartDataPoints.licensesActive];
+                pulseChartInstance.data.datasets[2].data = [...chartDataPoints.vaultDeployments];
+                
+                pulseChartInstance.update();
+            }
+
+            async function renderFaaZoneIndexTable() {
+                const tableBody = document.getElementById("faaZoneIndexTableBody");
+                if (!tableBody) {
+                    console.error("FAA Zone Index table body not found.");
+                    return;
+                }
+                tableBody.innerHTML = '<tr><td colspan="10" class="text-center py-4">Loading data...</td></tr>'; 
+
+                // Use clientAdminData for table rendering as it's now the merged source of truth
+                // No need to fetch /api/sectors again here, as loadInitialBackendData already did it.
+                // If the table needs to reflect real-time backend changes without a full page reload,
+                // you'd either poll the backend or use websockets.
+                
+                tableBody.innerHTML = ''; // Clear loading state
+
+                const sectorsToDisplay = Object.keys(FAA_ZONE_INDEX_SUMMARY_DATA);
+                
+                sectorsToDisplay.sort((a, b) => {
+                    const nameA = sectorList[a] || a;
+                    const nameB = sectorList[b] || b;
+                    return nameA.localeCompare(nameB);
+                });
+
+                sectorsToDisplay.forEach(sectorKey => {
+                    const summary = FAA_ZONE_INDEX_SUMMARY_DATA[sectorKey];
+                    if (!summary) { 
+                        console.warn(`Summary data missing for sector: ${sectorKey} in FAA_ZONE_INDEX_SUMMARY_DATA`);
+                        return; 
+                    }
+                    const displayName = sectorList[sectorKey] || sectorKey.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+                    // Get counts from the unified clientAdminData
+                    const brandsInThisSector = clientAdminData[sectorKey]?.brands || [];
+                    const totalCoreBrands = brandsInThisSector.length;
+                    const totalNodes = brandsInThisSector.flatMap(brand => brand.subNodes || []).length;
+
+                    const row = tableBody.insertRow();
+                    row.className = 'table-row-style'; 
+                    
+                    row.innerHTML = `
+                        <td class="table-cell-padding text-xl">${summary.glyph}</td>
+                        <td class="table-cell-padding font-semibold">${displayName}</td>
+                        <td class="table-cell-padding">${totalCoreBrands}</td>
+                        <td class="table-cell-padding">${totalNodes}</td>
+                        <td class="table-cell-padding">R${parseFloat(summary.monthlyFee).toFixed(2)}</td>
+                        <td class="table-cell-padding">R${parseFloat(summary.annualFee).toFixed(2)}</td>
+                        <td class="table-cell-padding">${summary.payoutTier}</td>
+                        <td class="table-cell-padding">${summary.region}</td>
+                        <td class="table-cell-padding">
+                            <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs inspect-button"
+                                data-sector-key="${sectorKey}" data-action="inspect">
+                                Inspect
+                            </button>
+                        </td>
+                        <td class="table-cell-padding">
+                            <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs cta-button deploy-button"
+                                data-sector-key="${sectorKey}" data-action="deploy">
+                                Deploy Plan
+                            </button>
+                        </td>
+                    `;
+                });
+
+                document.querySelectorAll('#faaZoneIndexTableBody .inspect-button').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const sectorKey = event.target.dataset.sectorKey;
+                        const navLink = document.querySelector(`.admin-nav-scroll a[data-section="sector-view-section"]`);
+                        if (navLink) {
+                            showAdminSection('sector-view-section', navLink);
+                            const sectorViewSelect = document.getElementById('sectorViewSelect');
+                            sectorViewSelect.value = sectorKey;
+                            displaySectorSpecificProducts(sectorKey);
+                        }
+                    });
+                });
+
+                document.querySelectorAll('#faaZoneIndexTableBody .deploy-button').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const sectorKey = event.target.dataset.sectorKey;
+                        // For "Deploy Plan" from Global Index, we'll try to deploy all tiers.
+                        // The backend will handle the actual PayPal API calls for each.
+                        deploySectorPlanToPayPal(sectorKey, event); 
+                    });
+                });
+            }
+
+            // --- Currency Converter Logic (already defined in global scope, just ensure proper references) ---
+            function fetchExchangeRates() { /* ... (already defined and working) ... */ }
+            function getCurrencySymbol(currencyCode) { /* ... (already defined and working) ... */ }
+            function updatePricesInSectorView(priceSpans, selectedCurrency) { /* ... (already defined and working) ... */ }
+
+
+            // --- PayPal Related Functions for Admin Portal (Deploy Plan & Subscribe Now) ---
+
+            // This function uses your Vercel serverless function to get PayPal Plan IDs.
+            // These IDs are essential for rendering PayPal buttons.
+            async function fetchPayPalPlanIDs() {
+                console.log("Fetching PayPal Plan IDs from Vercel API...");
+                window.showTemporaryMessage("Fetching PayPal Plan IDs...", "info");
+                try {
+                    // Call your Vercel serverless function
+                    const response = await fetch(`${PAYPAL_API_VERCEL_URL}?action=get-plans`);
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch PayPal plans from Vercel API: ${response.status} ${response.statusText}`);
+                    }
+                    const data = await response.json();
+                    Object.assign(paypalPlanIDs, data); // Populate the global paypalPlanIDs object
+                    console.log("PayPal Plan IDs fetched:", paypalPlanIDs);
+                    window.showTemporaryMessage("PayPal Plan IDs loaded successfully.", "success");
+                } catch (error) {
+                    console.error("Error fetching PayPal Plan IDs from Vercel API:", error);
+                    window.showTemporaryMessage(`Error fetching PayPal plans: ${error.message}. Ensure Vercel function is deployed.`, "error");
+                    // Optionally disable PayPal buttons if plans can't be fetched
+                    document.querySelectorAll('.paypal-button-container-dynamic').forEach(container => {
+                        container.innerHTML = '<p class="text-red-500 text-xs">PayPal unavailable. Error fetching plans.</p>';
+                    });
+                }
+            }
+
+            // This function is for the "Deploy Plan" button in the Global Index table.
+            // It calls your Vercel serverless function to *create* or *manage* PayPal plans.
+            async function deploySectorPlanToPayPal(sectorKey, event) {
+                const deployButton = event.target;
+                deployButton.disabled = true;
+                deployButton.textContent = 'Deploying...';
+                deployButton.classList.remove('bg-green-500', 'hover:bg-green-600');
+                deployButton.classList.add('bg-gray-400');
+
+                if (YOUR_PAYPAL_PRODUCT_ID.includes('YOUR_')) {
+                    window.showTemporaryMessage('PayPal Product ID is not configured. Cannot deploy plans.', 'error');
+                    console.error('PayPal Product ID is not configured. Please replace YOUR_STATIC_PAYPAL_PRODUCT_ID_HERE in the JavaScript.');
+                    deployButton.disabled = false;
+                    deployButton.textContent = 'Deploy Plan';
+                    deployButton.classList.remove('bg-gray-400');
+                    deployButton.classList.add('bg-green-500', 'hover:bg-green-600');
+                    return;
+                }
+
+                const sectorData = FAA_ZONE_INDEX_SUMMARY_DATA[sectorKey];
+                const sectorDisplayName = sectorList[sectorKey];
+
+                if (!sectorData) {
+                    window.showTemporaryMessage(`Pricing data not found for sector: ${sectorKey}. Cannot deploy plans.`, 'error');
+                    console.error(`Pricing data not found for sector: ${sectorKey}`);
+                    deployButton.disabled = false;
+                    deployButton.textContent = 'Deploy Plan';
+                    deployButton.classList.remove('bg-gray-400');
+                    deployButton.classList.add('bg-green-500', 'hover:bg-green-600');
+                    return;
+                }
+
+                const annualDiscount = 0.15; // 15% discount
+
+                // Prepare plan details for all tiers (Starter, Pro, Enterprise)
+                const plansToCreate = [];
+                for (const tierName in SECTOR_TIER_PRICING) {
+                    const baseMonthlyFee = parseFloat(String(sectorData.monthlyFee).replace('$', '').replace(',', ''));
+                    const multiplier = SECTOR_TIER_PRICING[tierName].multiplier;
+
+                    // Monthly Plan
+                    plansToCreate.push({
+                        name: `${sectorDisplayName.replace(/<.*?>/g, '').trim()} ${tierName} Package - Monthly`,
+                        description: `${sectorDisplayName.replace(/<.*?>/g, '').trim()} ${tierName} Monthly Plan`,
+                        frequency: 'MONTH',
+                        intervalCount: 1,
+                        amount: (baseMonthlyFee * multiplier).toFixed(2),
+                        currency: 'ZAR', // Ensure this matches your PayPal account currency
+                        tierName: tierName, // Custom field for easier identification
+                        billingCycleType: 'MONTHLY'
+                    });
+
+                    // Annual Plan
+                    plansToCreate.push({
+                        name: `${sectorDisplayName.replace(/<.*?>/g, '').trim()} ${tierName} Package - Annual`,
+                        description: `${sectorDisplayName.replace(/<.*?>/g, '').trim()} ${tierName} Annual Plan`,
+                        frequency: 'YEAR',
+                        intervalCount: 1,
+                        amount: (baseMonthlyFee * multiplier * 12 * (1 - annualDiscount)).toFixed(2),
+                        currency: 'ZAR',
+                        tierName: tierName,
+                        billingCycleType: 'ANNUAL'
+                    });
+                }
+
+                try {
+                    // Call your Vercel serverless function to create plans
+                    const response = await fetch(`${PAYPAL_API_VERCEL_URL}?action=create-plans-for-sector`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            productId: YOUR_PAYPAL_PRODUCT_ID,
+                            plans: plansToCreate // Pass the array of plan details
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        let successMessage = `Successfully deployed PayPal plans for ${sectorDisplayName}!`;
+                        window.showTemporaryMessage(successMessage, 'success');
+                        console.log("Deployed Plans (LIVE/Sandbox):", result.createdPlans);
+                        
+                        // After successful creation, refetch plan IDs to update local cache
+                        await fetchPayPalPlanIDs();
+
+                        deployButton.textContent = 'Deployed ✔️';
+                        deployButton.classList.remove('bg-gray-400');
+                        deployButton.classList.add('bg-green-700');
+                    } else {
+                        window.showTemporaryMessage(`Failed to deploy plans for ${sectorDisplayName}: ${result.error || 'Unknown error'}. Check console.`, 'error');
+                        console.error('Plan deployment error (LIVE/Sandbox):', result);
+                        deployButton.textContent = 'Deploy Failed ❌';
+                        deployButton.classList.remove('bg-gray-400');
+                        deployButton.classList.add('bg-red-500');
+                    }
+                } catch (error) {
+                    window.showTemporaryMessage(`An error occurred while deploying plans: ${error.message}. Check console.`, 'error');
+                    console.error('Error deploying PayPal plans (LIVE/Sandbox):', error);
+                    deployButton.textContent = 'Deploy Failed ❌';
+                    deployButton.classList.remove('bg-gray-400');
+                    deployButton.classList.add('bg-red-500');
+                } finally {
+                    setTimeout(() => {
+                        deployButton.disabled = false;
+                        deployButton.textContent = 'Deploy Plan';
+                        deployButton.classList.remove('bg-green-700', 'bg-red-500');
+                        deployButton.classList.add('bg-green-500', 'hover:bg-green-600');
+                    }, 5000);
+                }
+            }
+
+            // Renders a PayPal button into a specific container
+            function renderPayPalButtonsForContainer(containerId) {
+                const container = document.getElementById(containerId);
+                if (!container) {
+                    console.error(`PayPal button container with ID ${containerId} not found.`);
+                    return;
+                }
+
+                // Clear any existing PayPal buttons in the container to prevent duplicates
+                container.innerHTML = ''; 
+
+                const itemName = container.dataset.itemName;
+                const billingCycle = container.dataset.billingCycle;
+                const planKey = container.dataset.planKey; // e.g., "Agriculture & Biotech Starter Package_MONTHLY"
+                
+                const planId = paypalPlanIDs[planKey]; // Get the planId from the fetched global map
+
+                if (!planId || planId.includes('YOUR_')) {
+                    console.warn(`PayPal Plan ID not found or is a placeholder for planKey: ${planKey}. Showing disabled button.`);
+                    // Display a fallback button or message if planId is not ready
+                    container.innerHTML = `
+                        <button disabled class="cta-button w-full bg-gray-600 cursor-not-allowed">
+                            Plan Not Ready (Admin Deploy)
+                        </button>`;
+                    return;
+                }
+
+                // Render the PayPal button using the SDK
+                paypal.Buttons({
+                    style: {
+                        shape: 'rect',
+                        color: 'gold', 
+                        layout: 'vertical',
+                        label: 'subscribe', 
+                        height: 48 
+                    },
+                    createSubscription: function(data, actions) {
+                        console.log(`Creating subscription with PayPal SDK for plan_id: ${planId}`);
+                        window.showTemporaryMessage(`Initiating PayPal subscription...`, "info");
+                        // This returns the subscription ID to PayPal which then redirects.
+                        return actions.subscription.create({
+                            plan_id: planId // Use the actual PayPal Plan ID
+                        });
+                    },
+                    onApprove: function(data, actions) {
+                        // This callback fires after the user approves the subscription on PayPal's site.
+                        // You MUST send data.subscriptionID to your backend for verification and fulfillment.
+                        console.log('Subscription Approved:', data);
+                        window.showTemporaryMessage(`Subscription for ${itemName} approved! ID: ${data.subscriptionID}`, "success");
+                        
+                        // Send confirmation to your Vercel serverless function
+                        fetch(`${PAYPAL_API_VERCEL_URL}?action=create-subscription-backend`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                planId: planId, // The PayPal Plan ID
+                                itemName: itemName,
+                                billingCycle: billingCycle,
+                                subscriptionID: data.subscriptionID, // The actual PayPal Subscription ID
+                                orderID: data.orderID, // May be available
+                                payerID: data.payerID,
+                                // Add any other relevant user/session data here
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(backendResponse => {
+                            console.log('Backend confirmation of subscription:', backendResponse);
+                            if (backendResponse.success) {
+                                window.showTemporaryMessage('Subscription successfully recorded and activated!', 'success');
+                            } else {
+                                window.showTemporaryMessage(`Backend record failed: ${backendResponse.message || 'Unknown error'}`, 'error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error confirming subscription with backend:', error);
+                            window.showTemporaryMessage('Subscription approved, but failed to confirm with your system. Contact support.', 'error');
+                        });
+                    },
+                    onCancel: function(data) {
+                        console.log('PayPal subscription cancelled by user:', data);
+                        window.showTemporaryMessage('PayPal subscription cancelled.', "info");
+                    },
+                    onError: function(err) {
+                        console.error('PayPal Buttons Error:', err);
+                        window.showTemporaryMessage(`PayPal payment failed: ${err.message || "An unknown error occurred."}`, "error");
+                    }
+                }).render(container); // Render the button into the specified container
+            }
+
+
+            // --- DOMContentLoaded Initialization ---
+            document.addEventListener('DOMContentLoaded', async () => {
+                // First, load brands and other data from your local Express backend
+                await loadInitialBackendData(); 
+                // Then, fetch real (mock) PayPal Plan IDs from your Vercel PayPal API
+                await fetchPayPalPlanIDs(); 
+                // Fetch exchange rates
+                await fetchExchangeRates(); 
+
+                populateSectorSelect();
+                populateSectorViewSelect();
+                
+                document.querySelectorAll('.admin-nav-link').forEach(link => {
+                    link.addEventListener('click', (event) => {
+                        event.preventDefault(); 
+                        const sectionId = event.target.dataset.section;
+                        showAdminSection(sectionId, event.target);
+                    });
+                });
+
+                const initialNavLink = document.querySelector('.admin-nav-link[data-section="add-brand-section"]');
+            if (initialNavLink) {
+                showAdminSection('add-brand-section', initialNavLink);
+            }
+
+            document.getElementById('addBrandBtn').addEventListener('click', addBrandToSector);
+            document.getElementById('clearAdminDataBtn').addEventListener('click', clearAdminAddedData);
+
+            const sectorCurrencySelect = document.getElementById('sector-currency-select');
+            if (sectorCurrencySelect) {
+                sectorCurrencySelect.addEventListener('change', (event) => {
+                    const selectedCurrency = event.target.value;
+                    const sectorPriceDisplays = document.querySelectorAll('#dynamicSectorDashboard .price-display');
+                    updatePricesInSectorView(sectorPriceDisplays, selectedCurrency);
+                });
+            }
+
+            calculateGlobalMetrics();
+            renderDynamicPulseChart();
+            window._pulseChartInterval = setInterval(updateDynamicPulseChart, 3000); 
+        });
+
+        function showAdminSection(sectionId, clickedLink) {
+            document.querySelectorAll('section[id$="-section"]').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.admin-nav-scroll a').forEach(link => link.classList.remove('active'));
+
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.classList.remove('hidden');
+                if (clickedLink) {
+                    clickedLink.classList.add('active');
+                }
+            }
+        }
+
+        function addBrandToSector() {
+            // Add brand logic here
+        }
+
+        function clearAdminAddedData() {
+            // Clear data logic here
+        }
+
+        function updatePricesInSectorView(priceSpans, selectedCurrency) {
+            // Update prices logic here
+        }
+
+        function calculateGlobalMetrics() {
+            // Calculate metrics logic here
+        }
+
+        function renderDynamicPulseChart() {
+            // Render chart logic here
+        }
+
+        function updateDynamicPulseChart() {
+            // Update chart logic here
+        }
+        });
+</script>
+</body>
+</html>

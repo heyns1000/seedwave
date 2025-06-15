@@ -801,11 +801,11 @@
         function clearAdminAddedData() {
             // Clear data logic here
         }
-    
+            // Clear data logic here
         function updatePricesInSectorView(priceSpans, selectedCurrency) {
             // Update prices logic here
         }
-    
+        function updatePricesInSectorView(priceSpans, selectedCurrency) {
         function calculateGlobalMetrics() {
             // Calculate metrics logic here
         }
@@ -813,11 +813,17 @@
         function renderDynamicPulseChart() {
             // Render chart logic here
         }
+        }
+        function updateDynamicPulseChart() {
+            // Update chart logic here
+        }
+            // Render chart logic here
+
     
         function updateDynamicPulseChart() {
             // Update chart logic here
         }
-    </script>me, clickedButton) { /* ... */ }
+  
 
 
             // --- Admin Panel Core Functions ---
@@ -844,6 +850,8 @@
                                 }
                             });
                         }
+                    try {
+                        // Add the code that should be inside the try block here
                     } catch (err) {
                         console.error("❌ Could not load initial backend data:", err);
                         window.showTemporaryMessage(`🚨 Local Backend Error: ${err.message}. Ensure your 'server/server.js' is running on ${BACKEND_LOCAL_SERVER_URL}.`, 'error');
@@ -857,8 +865,8 @@
                                 console.error("❌ Could not load initial backend data:", err);
                                 window.showTemporaryMessage(`🚨 Local Backend Error: ${err.message}. Ensure your 'server/server.js' is running on ${BACKEND_LOCAL_SERVER_URL}.`, 'error');
                             }
-                        }
-                    }
+                        
+                    
 
             function showAdminSection(sectionId, clickedLink) {
                 document.querySelectorAll('section[id$="-section"]').forEach(el => el.classList.add('hidden'));
@@ -922,7 +930,7 @@
                         }
                     }
                 }
-            }
+        
             
             function populateSectorSelect() {
                 const select = document.getElementById('sectorSelect');
@@ -2093,7 +2101,7 @@
         function updateDynamicPulseChart() {
             // Update chart logic here
         }
-        });
+    
 </script>
 </body>
 </html>

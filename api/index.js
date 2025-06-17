@@ -1,4 +1,4 @@
-/ api/index.js - Consolidated Vercel Backend for FAA.ZONE™ Admin Portal
+// api/index.js - Consolidated Vercel Backend for FAA.ZONE™ Admin Portal
 
 const express = require('express');
 const cors = require('cors');

@@ -7,11 +7,20 @@
     "start": "vercel dev",
     "deploy": "vercel --prod"
   },
-  "keywords": ["faa", "seedwave", "admin", "portal", "serverless", "zoho", 
-"vercel"],
+  "keywords": [
+    "faa",
+    "seedwave",
+    "admin",
+    "portal",
+    "serverless",
+    "zoho",
+    "vercel",
+    "paypal"
+  ],
   "author": "Heyns Schoeman",
   "license": "Apache-2.0",
   "dependencies": {
+    "@paypal/checkout-server-sdk": "^1.0.3",
     "axios": "^1.6.8",
     "cookie-parser": "^1.4.6",
     "express": "^4.19.2",

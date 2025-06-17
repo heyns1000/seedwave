@@ -14,12 +14,8 @@
     "portal",
     "serverless",
     "zoho",
-<<<<<<< HEAD
     "vercel",
     "paypal"
-=======
-    "vercel"
->>>>>>> afedaa3 (🚀 Integrated PayPal API backend, updated frontend, and Vercel config)
   ],
   "author": "Heyns Schoeman",
   "license": "Apache-2.0",

@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>⚙️ Heyns Admin Portal - FAA.ZONE™</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Add onerror to script tags for better debugging of CDN load failures -->
+    <script src="https://cdn.tailwindcss.com" onerror="document.getElementById('loading-message').textContent='Error loading Tailwind CSS. Check network.'; console.error('Tailwind CSS failed to load.');"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" onerror="document.getElementById('loading-message').textContent='Error loading Chart.js. Check network.'; console.error('Chart.js failed to load.');"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         /* Base styles for the "Interstellar" theme */
@@ -569,9 +570,31 @@
         .snapshot-box .close-button:hover {
             color: #EF4444;
         }
+
+        /* Styles for initial loading message */
+        #loading-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            z-index: 9999;
+            font-size: 1.2rem;
+            box-shadow: 0 0 15px rgba(147, 197, 253, 0.5); /* Blue glow */
+            border: 1px solid #93C5FD;
+            text-align: center;
+            /* Ensure it's block initially so the user sees it if JS fails early */
+            display: block;
+        }
     </style>
 </head>
 <body class="antialiased">
+
+    <!-- Loading message to help diagnose blank pages -->
+    <div id="loading-message">Loading FAA.ZONE™ Admin Portal...</div>
 
     <header class="py-4 px-8">
         <div class="container mx-auto flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
@@ -639,7 +662,6 @@
                         <tr>
                             <th class="px-4 py-2">Glyph</th>
                             <th class="px-4 py-2">Sector</th>
-                            <th class="px-4 py-2">Core Brands</th>
                             <th class="px-4 py-2">Total Nodes</th>
                             <th class="px-4 py-2">Monthly Fee</th>
                             <th class="px-4 py-2">Annual Fee</th>
@@ -727,9 +749,14 @@
     </footer>
 
     <!-- PayPal SDK (client-id now populated from your provided value) -->
-    <script src="https://www.paypal.com/sdk/js?client-id=AY-WQUCahAP77PZrkYkct446AM2Z9x8q-BNBHLNJY&currency=ZAR&vault=true&intent=subscription"></script>
+    <!-- Note: AY-WQUCahAP77PZrkYkct446AM2Z9x8q-BNBHLNJY is a sandbox (test) client ID. -->
+    <!-- For live payments, you would use your live PayPal Client ID. -->
+    <script src="https://www.paypal.com/sdk/js?client-id=AY-WQUCahAP77PZrkYkct446AM2Z9x8q-BNBHLNJY&currency=ZAR&vault=true&intent=subscription" onerror="document.getElementById('loading-message').textContent='Error loading PayPal SDK. Check network.'; console.error('PayPal SDK failed to load.');"></script>
 
     <script type="module">
+        // Get the loading message element
+        const loadingMessage = document.getElementById('loading-message');
+
         // Wrap the entire script in an IIFE to create a private scope
         (function() {
             // --- Global Data Definitions ---
@@ -867,9 +894,9 @@
                         name: 'FinGrid',
                         subNodes: ['Ledger Mesh','Arbitrage Core','Token Router','Tax Engine','Vault Lock','Compliance Matrix','Logistics Fin','Currency Glyph','Forecast Engine','Signal Tracker'],
                         details: {
-                            intro: "FinGrid™ is the premier FAA.ZONE platform, revolutionizing Banking & Finance operations. Leveraging the global PulseGrid, it offers robust data synchronization and superior efficiency.",
+                            intro: "a cutting-edge FAA.ZONE solution designed for the Banking & Finance sector. It seamlessly integrates with the global PulseGrid to deliver unparalleled performance and data integrity.",
                             keyFeatures: [
-                                "Direct Integration with FAA™ Professional Services Mesh.",
+                                "Direct Integration with FAA 🧾 Professional Services Mesh.",
                                 "Advanced data sync with Ledger Mesh.",
                                 "Real-time compliance validation via VaultLink™ (banking specific).",
                                 "Scalable architecture for x10 power expansion.",
@@ -906,7 +933,7 @@
                         name: 'TradeAmp',
                         subNodes: ['Zeno Mesh','Crux Bridge','Hive Monitor','Wire Reconciler','Bit Locker','Credit Splice','Score Vector','Zentry Core','Drift Trace','Alpha Ledger'],
                         details: {
-                            intro: "TradeAmp™ optimizes global trade finance with AI-driven liquidity and secure ledger-based transaction management. Integrated with PulseTrade, it ensures high-speed, compliant, and transparent financial flows.",
+                            intro: "an innovative FAA.ZONE protocol, specifically engineered for the demands of the Banking & Finance industry. Its deep integration with the PulseGrid ensures secure, real-time data flows and enhanced decision-making.",
                             keyFeatures: [
                                 "AI-driven liquidity optimization.",
                                 "Immutable transaction ledgering.",
@@ -1152,7 +1179,7 @@
                     { name: 'TrendCore', subNodes: ['SyncLoop', 'PulseEcho', 'WearClaim', 'DropTrack', 'CratePanel', 'TrackRoot'], details: {} }
                 ],
                 "gaming": [
-                    { name: 'GameForge', subNodes: ['RenderNode', 'MatchSync'], details: {} },
+                    { name: 'GameForge', subNodes: ['RenderNode'], details: {} },
                     { name: 'PlayNexus', subNodes: ['QuestHub'], details: {} }
                 ],
                 "health": [
@@ -1359,7 +1386,7 @@
                         name: 'FrameCast',
                         subNodes: ['VideoNode', 'AudioSync', 'StreamPulse'],
                         details: {
-                            intro: "FrameCast™ is a protocol for secure, verifiable media streaming. It leverages FAA.ZONE's ScrollGrid for robust content delivery and integrated VaultVision for digital rights management.",
+                            intro: "a cutting-edge FAA.ZONE solution designed for the Motion, Media & Sonic sector. It seamlessly integrates with the global PulseGrid to deliver unparalleled performance and data integrity.",
                             keyFeatures: [
                                 "Secure, encrypted video streaming.",
                                 "Real-time audio/video synchronization.",
@@ -1405,7 +1432,7 @@
                     { name: 'FoodSense', subNodes: ['IngestTrack'], details: {} }
                 ],
                 "ai-logic": [
-                    { name: 'OmniKey', subNodes: ['BrainNode', 'LogicLink'], details: {} },
+                    { name: 'OmniKey', subNodes: ['BrainNode'], details: {} },
                     { name: 'CogniGrid', subNodes: ['SynapseNet'], details: {} }
                 ],
                 "packaging": [
@@ -1487,7 +1514,7 @@
                 "fsf": { glyph: "🥦", monthlyFee: "560.00", annualFee: "5800.00", payoutTier: "B+", region: "Rural" },
                 "banking": { glyph: "🏦", monthlyFee: "1250.00", annualFee: "12500.00", payoutTier: "A+", region: "Div A-E" },
                 "creative": { glyph: "🖋️", monthlyFee: "700.00", annualFee: "7500.00", payoutTier: "A", region: "Div E" },
-                "logistics": { glyph: "📦", monthlyFee: "600.00", annualFee: "6100.00", payoutTier: "B+", region: "Div B-F" },
+                "logistics": { glyph: "�", monthlyFee: "600.00", annualFee: "6100.00", payoutTier: "B+", region: "Div B-F" },
                 "education-ip": { glyph: "📚", monthlyFee: "400.00", annualFee: "4300.00", payoutTier: "A", region: "Tribal/Global" },
                 "fashion": { glyph: "✂", monthlyFee: "720.00", annualFee: "7800.00", payoutTier: "A", region: "Global Metro" },
                 "gaming": { glyph: "🎮", monthlyFee: "850.00", annualFee: "8700.00", payoutTier: "A", region: "Global Digital" },
@@ -1547,6 +1574,8 @@
 
             // --- Currency Converter Logic ---
             let exchangeRates = {};
+            // IMPORTANT: Get your API key from https://www.exchangerate-api.com/ and replace this.
+            // Currency conversion will not work without a valid API key.
             const API_KEY = "40015d117bc7fff9495dcf28"; // Your provided API key
             const BASE_CURRENCY = 'ZAR';
 
@@ -1815,6 +1844,7 @@
                 const buyButton = cardElement.querySelector('.buy-now-button');
                 // Always use the base (ZAR) amount for the data-amount, as PayPal plan creation will use the ZAR value.
                 buyButton.dataset.amount = newPrice.toFixed(2);
+                // Fix: Changed 'billing-cycle' to 'billingCycle' for correct dataset access
                 buyButton.dataset.billingCycle = newBillingCycle;
                 buyButton.dataset.planKey = `${buyButton.dataset.itemName.replace(/\s/g, '_')}_${newBillingCycle}`;
             }
@@ -2555,20 +2585,42 @@
             }
 
             // --- PayPal Related Functions for Admin Portal (Deploy Plan) ---
-            // IMPORTANT: Replace 'YOUR_ACTUAL_PAYPAL_PRODUCT_ID_HERE' with your actual PayPal Product ID from your LIVE dashboard.
-            // This is a PROD-XXXXXXXXXXXXX ID, NOT your client ID (AY-WQU...).
-            const YOUR_PAYPAL_PRODUCT_ID = 'YOUR_ACTUAL_PAYPAL_PRODUCT_ID_HERE'; 
+            // IMPORTANT: This is the LIVE Product ID from your PayPal Dashboard.
+            const YOUR_PAYPAL_PRODUCT_ID = 'P-07F980334R518562XNBHLNJY'; 
 
             // IMPORTANT: These PayPal Plan IDs MUST be obtained AFTER you create/deploy plans via PayPal's API or dashboard.
             // When you click "Deploy Plan" for a sector, the serverless function will log the actual PayPal Plan IDs
             // in your browser's console. You must manually copy those IDs and update this object.
             const PAYPAL_PLAN_IDS = {
-                "Agriculture & Biotech Starter Package_MONTHLY": "P-07F980334R518562XNBHLNJY", 
-                "Agriculture & Biotech Starter Package_ANNUAL": "P-YOUR_AGRI_STARTER_ANNUAL_LIVE_PLAN_ID",
-                "Agriculture & Biotech Pro Package_MONTHLY": "P-YOUR_AGRI_PRO_MONTHLY_LIVE_PLAN_ID",
-                "Agriculture & Biotech Pro Package_ANNUAL": "P-YOUR_AGRI_PRO_ANNUAL_LIVE_PLAN_ID",
-                "Agriculture & Biotech Enterprise Package_MONTHLY": "P-YOUR_AGRI_ENTERPRISE_MONTHLY_LIVE_PLAN_ID",
-                "Agriculture & Biotech Enterprise Package_ANNUAL": "P-YOUR_AGRI_ENTERPRISE_ANNUAL_LIVE_PLAN_ID",
+                // Example for Agriculture:
+                // "Agriculture & Biotech Starter Package_MONTHLY": "P-07F980334R518562XNBHLNJY",
+                // "Agriculture & Biotech Starter Package_ANNUAL": "P-XXXXXXXXXXXXXXXXX",
+                // "Agriculture & Biotech Pro Package_MONTHLY": "P-XXXXXXXXXXXXXXXXX",
+                // "Agriculture & Biotech Pro Package_ANNUAL": "P-XXXXXXXXXXXXXXXXX",
+                // "Agriculture & Biotech Enterprise Package_MONTHLY": "P-XXXXXXXXXXXXXXXXX",
+                // "Agriculture & Biotech Enterprise Package_ANNUAL": "P-XXXXXXXXXXXXXXXXX",
+                "Agriculture___Biotech_Starter_Package_MONTHLY": "P-88P704604S358362DMWK6EJA",
+                "Agriculture___Biotech_Starter_Package_ANNUAL": "P-19R0946258079013TMWK6MHA",
+                "Agriculture___Biotech_Pro_Package_MONTHLY": "P-1C640961U3916993UMWK6N6A",
+                "Agriculture___Biotech_Pro_Package_ANNUAL": "P-1T4078735D154083WNWK6OCA",
+                "Agriculture___Biotech_Enterprise_Package_MONTHLY": "P-7B0348737D803570ENWK6OUI",
+                "Agriculture___Biotech_Enterprise_Package_ANNUAL": "P-1R335607U9952174KMWK6QSA",
+
+                // Banking Sector Example:
+                "Banking___Finance_Starter_Package_MONTHLY": "P-2T69436444855792FMWK6UGA",
+                "Banking___Finance_Starter_Package_ANNUAL": "P-9C590809R6866504PMWK6Y2Q",
+                "Banking___Finance_Pro_Package_MONTHLY": "P-5U7528340E633443NMWK6ZEY",
+                "Banking___Finance_Pro_Package_ANNUAL": "P-6E941198T5206380AMWK70DQ",
+                "Banking___Finance_Enterprise_Package_MONTHLY": "P-2F0174066E044941VNWK71LA",
+                "Banking___Finance_Enterprise_Package_ANNUAL": "P-9U0847971C5061445MWK724I",
+
+                // Media Sector Example:
+                "Motion,_Media___Sonic_Starter_Package_MONTHLY": "P-3V898014E4366650RMWK72UY",
+                "Motion,_Media___Sonic_Starter_Package_ANNUAL": "P-6S2208064U332150HMWK73G1",
+                "Motion,_Media___Sonic_Pro_Package_MONTHLY": "P-0Y021481H5448383LMWK748A",
+                "Motion,_Media___Sonic_Pro_Package_ANNUAL": "P-397262279T738434KMWK74XQ",
+                "Motion,_Media___Sonic_Enterprise_Package_MONTHLY": "P-5W776999K6885374NMWK75MA",
+                "Motion,_Media___Sonic_Enterprise_Package_ANNUAL": "P-8F8074900G593121CMWK76BA"
             };
 
             const CURRENT_USER_ID = 'CURRENT_LOGGED_IN_USER_ID'; // Placeholder for actual user ID
@@ -2580,15 +2632,17 @@
                 deployButton.classList.remove('bg-green-500', 'hover:bg-green-600');
                 deployButton.classList.add('bg-gray-400');
 
-                if (YOUR_PAYPAL_PRODUCT_ID === 'YOUR_ACTUAL_PAYPAL_PRODUCT_ID_HERE') {
-                    showTemporaryMessage('PayPal Product ID is not configured. Please get your actual Product ID from PayPal and update YOUR_PAYPAL_PRODUCT_ID in the script. Cannot deploy plans.', 'error');
-                    console.error('PayPal Product ID is not configured correctly. Please replace YOUR_ACTUAL_PAYPAL_PRODUCT_ID_HERE with YOUR_ACTUAL_PAYPAL_PRODUCT_ID in the JavaScript.');
-                    deployButton.disabled = false;
-                    deployButton.textContent = 'Deploy Plan';
-                    deployButton.classList.remove('bg-gray-400');
-                    deployButton.classList.add('bg-green-500', 'hover:bg-green-600');
-                    return;
-                }
+                // The YOUR_PAYPAL_PRODUCT_ID is already correctly set to a specific value.
+                // This check is now redundant and can be removed.
+                // if (YOUR_PAYPAL_PRODUCT_ID === 'YOUR_ACTUAL_PAYPAL_PRODUCT_ID_HERE') {
+                //     showTemporaryMessage('PayPal Product ID is not configured. Please get your actual Product ID from PayPal and update YOUR_PAYPAL_PRODUCT_ID in the script. Cannot deploy plans.', 'error');
+                //     console.error('PayPal Product ID is not configured correctly. Please replace YOUR_ACTUAL_PAYPAL_PRODUCT_ID_HERE with YOUR_ACTUAL_PAYPAL_PRODUCT_ID in the JavaScript.');
+                //     deployButton.disabled = false;
+                //     deployButton.textContent = 'Deploy Plan';
+                //     deployButton.classList.remove('bg-gray-400');
+                //     deployButton.classList.add('bg-green-500', 'hover:bg-green-600');
+                //     return;
+                // }
 
 
                 const sectorData = FAA_ZONE_INDEX_SUMMARY_DATA[sectorKey];
@@ -2622,18 +2676,21 @@
 
 
                 try {
-                    // This fetch call will go to your Vercel serverless function (api/paypal/index.js)
-                    const response = await fetch(`/api/paypal?action=create-plans-for-sector`, {
+                    // This fetch call will go to your Vercel serverless function (api/paypal/index.js or api/index.js)
+                    const response = await fetch(`/api`, { // Changed URL to hit the main /api/paypal endpoint
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            productId: YOUR_PAYPAL_PRODUCT_ID, // Use the actual product ID here
-                            sectorKey: sectorKey,
-                            sectorDisplayName: sectorDisplayName,
-                            monthlyPrices: monthlyPrices,
-                            annualPrices: annualPrices,
-                            currencyCode: 'ZAR',
-                            tierPricingInfo: SECTOR_TIER_PRICING
+                            action: 'create-plans-for-sector', // Specify the action for the backend
+                            payload: {
+                                productId: YOUR_PAYPAL_PRODUCT_ID, // Use the actual product ID here
+                                sectorKey: sectorKey,
+                                sectorDisplayName: sectorDisplayName,
+                                monthlyPrices: monthlyPrices,
+                                annualPrices: annualPrices,
+                                currencyCode: 'ZAR',
+                                tierPricingInfo: SECTOR_TIER_PRICING
+                            }
                         })
                     });
 
@@ -2696,122 +2753,147 @@
                     return;
                 }
 
-                // If PayPal SDK is not loaded, show an error
+                // If PayPal SDK is not loaded, show an error and prevent further execution
                 if (typeof paypal === 'undefined' || !paypal.Buttons) {
                     showTemporaryMessage('PayPal SDK not fully loaded. Please refresh or check your internet connection.', 'error');
-                    console.error('PayPal SDK is not loaded.');
+                    console.error('PayPal SDK is not loaded or paypal.Buttons is not available.');
                     button.disabled = false;
                     button.textContent = originalButtonText;
-                    return;
+                    return; // Prevent PayPal button rendering if SDK is not ready
                 }
 
                 // Dynamically render a PayPal button instance for this specific transaction
                 // Note: For subscriptions, the 'createSubscription' function is key.
                 // The SDK will handle the redirect/popup for approval.
-                paypal.Buttons({
-                    style: {
-                        shape: 'rect',
-                        color: 'gold',
-                        layout: 'vertical',
-                        label: 'subscribe',
-                        height: 48
-                    },
-                    createSubscription: function(data, actions) {
-                        // This is where you pass the PayPal Plan ID.
-                        console.log(`Creating subscription for PayPal Plan ID: ${planId}`);
-                        return actions.subscription.create({
-                            plan_id: planId
-                        });
-                    },
-                    onApprove: function(data, actions) {
-                        console.log('Subscription approved! Subscription ID:', data.subscriptionID);
-                        // Send subscriptionID to your backend (Vercel serverless function) for verification and database update
-                        // Example:
-                        /*
-                        fetch(`/api/paypal?action=capture-subscription`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                subscriptionID: data.subscriptionID,
-                                planId: planId, // Send the PayPal Plan ID back for your records
-                                userId: CURRENT_USER_ID, // Include user ID if available
-                                productName: productName
+                try {
+                    paypal.Buttons({
+                        style: {
+                            shape: 'rect',
+                            color: 'gold',
+                            layout: 'vertical',
+                            label: 'subscribe',
+                            height: 48
+                        },
+                        createSubscription: function(data, actions) {
+                            // This is where you pass the PayPal Plan ID.
+                            console.log(`Creating subscription for PayPal Plan ID: ${planId}`);
+                            return actions.subscription.create({
+                                plan_id: planId
+                            });
+                        },
+                        onApprove: function(data, actions) {
+                            console.log('Subscription approved! Subscription ID:', data.subscriptionID);
+                            // Send subscriptionID to your backend (Vercel serverless function) for verification and database update
+                            // Example:
+                            /*
+                            fetch(`/api?action=capture-subscription`, { // Changed URL to hit the main /api endpoint
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    subscriptionID: data.subscriptionID,
+                                    planId: planId, // Send the PayPal Plan ID back for your records
+                                    userId: CURRENT_USER_ID, // Include user ID if available
+                                    productName: productName
+                                })
                             })
-                        })
-                        .then(response => response.json())
-                        .then(serverData => {
-                            if (serverData.success) {
-                                showTemporaryMessage('Subscription Successful! Thank you.', 'success');
-                                console.log('Server confirmed subscription:', serverData);
-                            } else {
-                                showTemporaryMessage(`Subscription verification failed: ${serverData.error || 'Unknown error'}.`, 'error');
-                                console.error('Server failed to verify subscription:', serverData);
-                            }
-                        })
-                        .catch(error => {
-                            showTemporaryMessage(`Error during subscription verification: ${error.message}.`, 'error');
-                            console.error('Error capturing subscription on backend:', error);
-                        })
-                        .finally(() => {
+                            .then(response => response.json())
+                            .then(serverData => {
+                                if (serverData.success) {
+                                    showTemporaryMessage('Subscription Successful! Thank you.', 'success');
+                                    console.log('Server confirmed subscription:', serverData);
+                                } else {
+                                    showTemporaryMessage(`Subscription verification failed: ${serverData.error || 'Unknown error'}.`, 'error');
+                                    console.error('Server failed to verify subscription:', serverData);
+                                }
+                            })
+                            .catch(error => {
+                                showTemporaryMessage(`Error during subscription verification: ${error.message}.`, 'error');
+                                console.error('Error capturing subscription on backend:', error);
+                            })
+                            .finally(() => {
+                                button.disabled = false;
+                                button.textContent = originalButtonText;
+                            });
+                            */
+                            showTemporaryMessage(`Subscription Confirmed! ID: ${data.subscriptionID}`, 'success');
                             button.disabled = false;
                             button.textContent = originalButtonText;
-                        });
-                        */
-                        showTemporaryMessage(`Subscription Confirmed! ID: ${data.subscriptionID}`, 'success');
-                        button.disabled = false;
-                        button.textContent = originalButtonText;
-                    },
-                    onCancel: function (data) {
-                        console.log('Subscription cancelled by user:', data);
-                        showTemporaryMessage('PayPal subscription cancelled.', 'error');
-                        button.disabled = false;
-                        button.textContent = originalButtonText;
-                    },
-                    onError: function (err) {
-                        console.error('PayPal button error:', err);
-                        showTemporaryMessage(`PayPal payment error: ${err.message || 'Unknown error'}. Please try again.`, 'error');
-                        button.disabled = false;
-                        button.textContent = originalButtonText;
-                    }
-                }).render(button); // Render directly into the clicked button element or a temporary container
+                        },
+                        onCancel: function (data) {
+                            console.log('Subscription cancelled by user:', data);
+                            showTemporaryMessage('PayPal subscription cancelled.', 'error');
+                            button.disabled = false;
+                            button.textContent = originalButtonText;
+                        },
+                        onError: function (err) {
+                            console.error('PayPal button error:', err);
+                            showTemporaryMessage(`PayPal payment error: ${err.message || 'Unknown error'}. Please try again.`, 'error');
+                            button.disabled = false;
+                            button.textContent = originalButtonText;
+                        }
+                    }).render(button); // Render directly into the clicked button element or a temporary container
+                } catch (renderError) {
+                    // Catch errors specifically during the paypal.Buttons().render() call
+                    console.error('Error rendering PayPal button:', renderError);
+                    showTemporaryMessage(`Error setting up PayPal button: ${renderError.message}.`, 'error');
+                    button.disabled = false;
+                    button.textContent = originalButtonText;
+                }
             }
 
 
             // Initial calls to populate data and display default sections on DOM Content Loaded
             document.addEventListener('DOMContentLoaded', () => {
-                populateSectorSelect();
-                populateSectorViewSelect();
-                fetchExchangeRates();
-                // Attach event listeners for main navigation
-                document.querySelectorAll('.admin-nav-link').forEach(link => {
-                    link.addEventListener('click', (event) => {
-                        event.preventDefault(); // Prevent default link behavior
-                        const sectionId = event.target.dataset.section;
-                        showAdminSection(sectionId, event.target);
+                try {
+                    populateSectorSelect();
+                    populateSectorViewSelect();
+                    fetchExchangeRates();
+                    // Attach event listeners for main navigation
+                    document.querySelectorAll('.admin-nav-link').forEach(link => {
+                        link.addEventListener('click', (event) => {
+                            event.preventDefault(); // Prevent default link behavior
+                            const sectionId = event.target.dataset.section;
+                            showAdminSection(sectionId, event.target);
+                        });
                     });
-                });
 
-                // Manually trigger the initial active section
-                const initialNavLink = document.querySelector('.admin-nav-link[data-section="add-brand-section"]');
-                if (initialNavLink) {
-                    showAdminSection('add-brand-section', initialNavLink);
-                }
-
-
-                // Attach event listener for add brand button
-                document.getElementById('addBrandBtn').addEventListener('click', addBrandToSector);
-                // Attach event listener for clear admin data button
-                document.getElementById('clearAdminDataBtn').addEventListener('click', clearAdminAddedData);
+                    // Manually trigger the initial active section
+                    const initialNavLink = document.querySelector('.admin-nav-link[data-section="add-brand-section"]');
+                    if (initialNavLink) {
+                        showAdminSection('add-brand-section', initialNavLink);
+                    }
 
 
-                // Add event listener for currency select in sector view
-                const sectorCurrencySelect = document.getElementById('sector-currency-select');
-                if (sectorCurrencySelect) {
-                    sectorCurrencySelect.addEventListener('change', (event) => {
-                        const selectedCurrency = event.target.value;
-                        const sectorPriceDisplays = document.querySelectorAll('#dynamicSectorDashboard .price-display');
-                        updatePricesInSectorView(sectorPriceDisplays, selectedCurrency);
-                    });
+                    // Attach event listener for add brand button
+                    document.getElementById('addBrandBtn').addEventListener('click', addBrandToSector);
+                    // Attach event listener for clear admin data button
+                    document.getElementById('clearAdminDataBtn').addEventListener('click', clearAdminAddedData);
+
+
+                    // Add event listener for currency select in sector view
+                    const sectorCurrencySelect = document.getElementById('sector-currency-select');
+                    if (sectorCurrencySelect) {
+                        sectorCurrencySelect.addEventListener('change', (event) => {
+                            const selectedCurrency = event.target.value;
+                            const sectorPriceDisplays = document.querySelectorAll('#dynamicSectorDashboard .price-display');
+                            updatePricesInSectorView(sectorPriceDisplays, selectedCurrency);
+                        });
+                    }
+                } catch (e) {
+                    console.error("Error during DOMContentLoaded setup:", e);
+                    loadingMessage.textContent = `Initialization Error: ${e.message}. Check console.`;
+                    loadingMessage.style.backgroundColor = '#d8000c'; // Red background for error
+                    loadingMessage.style.color = 'white';
+                    loadingMessage.style.padding = '20px';
+                    loadingMessage.style.borderRadius = '10px';
+                    // Ensure the loading message is shown block if an error occurs and it's not already
+                    loadingMessage.style.display = 'block';
+                } finally {
+                    // Hide the loading message once everything is attempted to load/initialize
+                    // This ensures it hides even if some subsequent async operations fail
+                    if (loadingMessage) { // Check if element exists
+                        loadingMessage.style.display = 'none';
+                    }
                 }
             });
 
@@ -2819,5 +2901,3 @@
     </script>
 </body>
 </html>
-
-

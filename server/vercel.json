@@ -1,0 +1,92 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/login",
+      "destination": "/public/login.html"
+    },
+    {
+      "source": "/admin",
+      "destination": "/public/admin-panel.html"
+    },
+    {
+      "source": "/signup",
+      "destination": "/public/signup.html"
+    },
+    {
+      "source": "/unauthorized",
+      "destination": "/public/unauthorized.html"
+    },
+    {
+      "source": "/quick-view",
+      "destination": "/public/quick-view.html"
+    },
+    {
+      "source": "/licensing",
+      "destination": "/public/licensing.html"
+    },
+    {
+      "source": "/clause-index",
+      "destination": "/public/clause-index.html"
+    },
+    {
+      "source": "/scrollmap",
+      "destination": "/public/scrollmap.html"
+    },
+    {
+      "source": "/node-status",
+      "destination": "/public/node-status.html"
+    },
+    {
+      "source": "/pulse-monitor",
+      "destination": "/public/pulse-monitor.html"
+    },
+    {
+      "source": "/sector-grid",
+      "destination": "/public/sector-grid.html"
+    },
+    {
+      "source": "/ecosystem-dashboard",
+      "destination": "/public/ecosystem-dashboard.html"
+    },
+    {
+      "source": "/access-portal",
+      "destination": "/public/access-portal.html"
+    },
+    {
+      "source": "/sector-:slug",
+      "destination": "/public/sector-:slug.html"
+    },
+    {
+      "source": "/",
+      "destination": "/public/login.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/public/$1"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,PUT,DELETE,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "X-Requested-With, Content-Type, Accept" }
+      ]
+    }
+  ],
+  "builds": [
+    {
+      "src": "api/index.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "public/**/*",
+      "use": "@vercel/static"
+    }
+  ]
+}

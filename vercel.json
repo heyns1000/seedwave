@@ -2,7 +2,11 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
+<<<<<<< HEAD
       "destination": "/api"
+=======
+      "destination": "/api/index.js"
+>>>>>>> afedaa3 (🚀 Integrated PayPal API backend, updated frontend, and Vercel config)
     },
     {
       "source": "/login",
@@ -10,7 +14,11 @@
     },
     {
       "source": "/admin",
+<<<<<<< HEAD
       "destination": "/public/admin-portal.html"
+=======
+      "destination": "/public/admin-panel.html"
+>>>>>>> afedaa3 (🚀 Integrated PayPal API backend, updated frontend, and Vercel config)
     },
     {
       "source": "/signup",
@@ -78,5 +86,18 @@
         { "key": "Access-Control-Allow-Headers", "value": "X-Requested-With, Content-Type, Accept" }
       ]
     }
+<<<<<<< HEAD
+=======
+  ],
+  "builds": [
+    {
+      "src": "api/index.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "public/**/*",
+      "use": "@vercel/static"
+    }
+>>>>>>> afedaa3 (🚀 Integrated PayPal API backend, updated frontend, and Vercel config)
   ]
 }

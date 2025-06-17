@@ -1,13 +1,15 @@
-// server.js
+// /api/index.js - Your REAL Vercel Backend
 const express = require('express');
-const cors = require('cors'); // Required for cross-origin requests
+const cors = require('cors');
+const paypal = require('@paypal/checkout-server-sdk');
+
 const app = express();
-const port = 3000; // You can choose any available port
 
-app.use(cors()); // Enable CORS for all routes
-app.use(express.json()); // To parse JSON request bodies
+// Middleware
+app.use(cors()); // Allows your frontend to call this backend
+app.use(express.json());
 
-// --- Mock Data Definitions (from your Admin Panel, but now on backend) ---
+// --- YOUR DATA DEFINITIONS (LIVES ON THE BACKEND) ---
 const sectorList = {
     "agriculture": "🌱 Agriculture & Biotech", "fsf": "🥦 Food, Soil & Farming",
     "banking": "🏦 Banking & Finance", "creative": "🖋️ Creative Tech",
@@ -28,107 +30,115 @@ const sectorList = {
 };
 
 const FAA_ZONE_INDEX_SUMMARY_DATA = {
-    "agriculture": { glyph: "🌱", monthlyFee: "550.00", annualFee: "5500.00", payoutTier: "B+", region: "Global Rural" },
-    "fsf": { glyph: "🥦", monthlyFee: "560.00", annualFee: "5800.00", payoutTier: "B+", region: "Rural" },
-    "banking": { glyph: "🏦", monthlyFee: "1250.00", annualFee: "12500.00", payoutTier: "A+", region: "Div A-E" },
-    "creative": { glyph: "🖋️", monthlyFee: "700.00", annualFee: "7500.00", payoutTier: "A", region: "Div E" },
-    "logistics": { glyph: "📦", monthlyFee: "600.00", annualFee: "6100.00", payoutTier: "B+", region: "Div B-F" },
-    "education-ip": { glyph: "📚", monthlyFee: "400.00", annualFee: "4300.00", payoutTier: "A", region: "Tribal/Global" },
-    "fashion": { glyph: "✂", monthlyFee: "720.00", annualFee: "7800.00", payoutTier: "A", region: "Global Metro" },
-    "gaming": { glyph: "🎮", monthlyFee: "850.00", annualFee: "8700.00", payoutTier: "A", region: "Global Digital" },
-    "health": { glyph: "🧠", monthlyFee: "550.00", annualFee: "5800.00", payoutTier: "B", region: "Div F" },
-    "housing": { glyph: "🏗️", monthlyFee: "620.00", annualFee: "6400.00", payoutTier: "B+", region: "Div A-F" },
-    "justice": { glyph: "⚖", monthlyFee: "950.00", annualFee: "9800.00", payoutTier: "A", region: "Global Legal" },
-    "knowledge": { glyph: "📖", monthlyFee: "580.00", annualFee: "6100.00", payoutTier: "B+", region: "Global Archives" },
-    "micromesh": { glyph: "☰", monthlyFee: "650.00", annualFee: "6800.00", payoutTier: "B+", region: "Local/Regional" },
-    "media": { glyph: "🎬", monthlyFee: "750.00", annualFee: "7700.00", payoutTier: "A", region: "Creative" },
-    "nutrition": { glyph: "✿", monthlyFee: "500.00", annualFee: "5300.00", payoutTier: "B+", region: "Global" },
-    "ai-logic": { glyph: "🧠", monthlyFee: "1100.00", annualFee: "11200.00", payoutTier: "A+", region: "Global" },
-    "packaging": { glyph: "📦", monthlyFee: "680.00", annualFee: "7000.00", payoutTier: "B", region: "Div B" },
-    "quantum": { glyph: "✴️", monthlyFee: "1350.00", annualFee: "13800.00", payoutTier: "A+", region: "Global Research" },
-    "ritual": { glyph: "☯", monthlyFee: "700.00", annualFee: "7500.00", payoutTier: "A", region: "Div C" },
-    "saas": { glyph: "🔑", monthlyFee: "1000.00", annualFee: "10300.00", payoutTier: "A", region: "Global" },
-    "trade": { glyph: "🧺", monthlyFee: "900.00", annualFee: "9200.00", payoutTier: "A+", region: "Div A-F" },
-    "utilities": { glyph: "🔋", monthlyFee: "750.00", annualFee: "7800.00", payoutTier: "B+", region: "Div A-Z" },
-    "voice": { glyph: "🎙️", monthlyFee: "630.00", annualFee: "6600.00", payoutTier: "B", region: "Global" },
-    "webless": { glyph: "📡", monthlyFee: "800.00", annualFee: "8200.00", payoutTier: "A", region: "Div D-G" },
-    "nft": { glyph: "🔁", monthlyFee: "1250.00", annualFee: "12800.00", payoutTier: "A", region: "FAA IP" },
-    "education-youth": { glyph: "🎓", monthlyFee: "420.00", annualFee: "4500.00", payoutTier: "A", region: "Global Youth" },
-    "zerowaste": { glyph: "♻️", monthlyFee: "450.00", annualFee: "4800.00", payoutTier: "B", region: "Global" },
-    "professional": { glyph: "🧾", monthlyFee: "1150.00", annualFee: "11800.00", payoutTier: "A", region: "Global" },
-    "payroll-mining": { glyph: "🪙", monthlyFee: "1050.00", annualFee: "10800.00", payoutTier: "A+", region: "Global Finance" },
-    "mining": { glyph: "⛏️", monthlyFee: "1600.00", annualFee: "19000.00", payoutTier: "A+", region: "Global Resources" },
-    "wildlife": { glyph: "🦁", monthlyFee: "400.00", annualFee: "4200.00", payoutTier: "B", region: "Conservation Zones" }
+    "agriculture": { monthlyFee: "550.00" }, "fsf": { monthlyFee: "560.00" },
+    "banking": { monthlyFee: "1250.00" }, "creative": { monthlyFee: "700.00" },
+    "logistics": { monthlyFee: "600.00" }, "education-ip": { monthlyFee: "400.00" },
+    "fashion": { monthlyFee: "720.00" }, "gaming": { monthlyFee: "850.00" },
+    "health": { monthlyFee: "550.00" }, "housing": { monthlyFee: "620.00" },
+    "justice": { monthlyFee: "950.00" }, "knowledge": { monthlyFee: "580.00" },
+    "micromesh": { monthlyFee: "650.00" }, "media": { monthlyFee: "750.00" },
+    "nutrition": { monthlyFee: "500.00" }, "ai-logic": { monthlyFee: "1100.00" },
+    "packaging": { monthlyFee: "680.00" }, "quantum": { monthlyFee: "1350.00" },
+    "ritual": { monthlyFee: "700.00" }, "saas": { monthlyFee: "1000.00" },
+    "trade": { monthlyFee: "900.00" }, "utilities": { monthlyFee: "750.00" },
+    "voice": { monthlyFee: "630.00" }, "webless": { monthlyFee: "800.00" },
+    "nft": { monthlyFee: "1250.00" }, "education-youth": { monthlyFee: "420.00" },
+    "zerowaste": { monthlyFee: "450.00" }, "professional": { monthlyFee: "1150.00" },
+    "payroll-mining": { monthlyFee: "1050.00" }, "mining": { monthlyFee: "1600.00" },
+    "wildlife": { monthlyFee: "400.00" }
 };
 
-const SECTOR_TIER_PRICING = {
-    "Starter": { multiplier: 1 },
-    "Pro": { multiplier: 2.5 },
-    "Enterprise": { multiplier: 5 }
-};
+// --- REAL PAYPAL API SETUP ---
+// Using your LIVE credentials.
+const liveClientId = "BAAThS_oBJJ22PM5R1nVJpXoSl9c3si7TJ3ICJBTht_PAFcRprbXkTv4_wqrG37kkAjUcv3tKBOxnUGQ98";
+const liveClientSecret = "EFSS4mbIMZ6Q3ijOGCjqA9i4b3dzHULkCEV9jKAAHO9_fbO2aP9YCGRV9ekZaHqT2zSZL6Svrn-WyhIs";
+const liveProductId = "P-07F980334R518562XNBHLNJY";
 
-// --- Mock Database for PayPal Plan IDs ---
-const MOCK_PAYPAL_PLAN_DATABASE = {}; // In a real app, this would be a database
+const environment = new paypal.core.LiveEnvironment(liveClientId, liveClientSecret);
+const client = new paypal.core.PayPalHttpClient(environment);
 
-// Generate mock plan IDs and store them in the mock database
-function generateAndStoreMockPlanIDs() {
-    const annualDiscount = 0.15; // 15% discount for annual plans
-    for (const sectorKey in FAA_ZONE_INDEX_SUMMARY_DATA) {
-        const sectorDisplayName = sectorList[sectorKey];
-        const baseMonthlyFee = parseFloat(FAA_ZONE_INDEX_SUMMARY_DATA[sectorKey].monthlyFee);
 
-        for (const tierName in SECTOR_TIER_PRICING) {
-            const tier = SECTOR_TIER_PRICING[tierName];
-            const commonProductName = `${sectorDisplayName.replace(/<.*?>/g, '')} ${tierName} Package`;
-            
-            // Monthly Plan
-            const monthlyPlanKey = `${commonProductName}_MONTHLY`;
-            // In a real scenario, you'd call PayPal API here and get a real P-ID
-            const monthlyPlanId = `P-MOCK${sectorKey.toUpperCase().substring(0,3)}${tierName.toUpperCase().substring(0,3)}MT${Math.floor(Math.random() * 99999).toString().padStart(5, '0')}`;
-            MOCK_PAYPAL_PLAN_DATABASE[monthlyPlanKey] = monthlyPlanId;
+// --- API ENDPOINTS ---
 
-            // Annual Plan
-            const annualPlanKey = `${commonProductName}_ANNUAL`;
-            // In a real scenario, you'd call PayPal API here and get a real P-ID
-            const annualPlanId = `P-MOCK${sectorKey.toUpperCase().substring(0,3)}${tierName.toUpperCase().substring(0,3)}AN${Math.floor(Math.random() * 99999).toString().padStart(5, '0')}`;
-            MOCK_PAYPAL_PLAN_DATABASE[annualPlanKey] = annualPlanId;
-        }
+// This handles requests to /api/paypal/plans
+app.get('/api/paypal/plans', async (req, res) => {
+    try {
+        const allPlans = await listPayPalPlans();
+        res.status(200).json(allPlans);
+    } catch (error) {
+        console.error("PayPal API Error (Get Plans):", error.message);
+        res.status(error.statusCode || 500).json({ error: error.message });
     }
-    // Override Agri Starter Monthly with the real one you created
-    MOCK_PAYPAL_PLAN_DATABASE["🌱 Agriculture & Biotech Starter Package_MONTHLY"] = 'P-07F980334R518562XNBHLNJY';
-    console.log("Mock PayPal Plan IDs generated and stored.");
+});
+
+// This handles requests to /api/paypal/create-plans
+app.post('/api/paypal/create-plans', async (req, res) => {
+    try {
+        const { sectorKey } = req.body;
+        const sectorData = FAA_ZONE_INDEX_SUMMARY_DATA[sectorKey];
+        if (!sectorData) {
+            return res.status(404).json({ error: "Sector data not found on server."});
+        }
+        
+        const baseMonthlyFee = parseFloat(sectorData.monthlyFee);
+        const annualDiscount = 0.15;
+        const payload = {
+            sectorDisplayName: sectorList[sectorKey],
+            monthlyPrices: { "Starter": baseMonthlyFee, "Pro": baseMonthlyFee * 2.5, "Enterprise": baseMonthlyFee * 5 },
+            annualPrices: { "Starter": (baseMonthlyFee * 12 * (1 - annualDiscount)), "Pro": (baseMonthlyFee * 2.5 * 12 * (1 - annualDiscount)), "Enterprise": (baseMonthlyFee * 5 * 12 * (1 - annualDiscount))},
+            currencyCode: 'ZAR'
+        };
+
+        const createdPlans = await createAllPlansForSector(payload);
+        res.status(201).json({ success: true, createdPlans });
+    } catch (error) {
+        console.error("PayPal API Error (Create Plans):", error.message);
+        res.status(error.statusCode || 500).json({ error: error.message, details: error.details || {} });
+    }
+});
+
+
+// --- PAYPAL API FUNCTIONS ---
+
+async function createAllPlansForSector(payload) {
+    const { sectorDisplayName, monthlyPrices, annualPrices, currencyCode } = payload;
+    const planCreationPromises = [];
+
+    const createPlanRequest = (tier, billingCycle, amount) => {
+        const planName = `${sectorDisplayName.replace('🌱', '').trim()} ${tier} Package (${billingCycle})`;
+        const request = new paypal.catalog.PlansCreateRequest();
+        request.prefer("return=representation");
+        request.requestBody({
+            product_id: liveProductId,
+            name: planName,
+            status: "ACTIVE",
+            billing_cycles: [{
+                frequency: { interval_unit: billingCycle === 'MONTHLY' ? 'MONTH' : 'YEAR', interval_count: 1 },
+                tenure_type: "REGULAR",
+                sequence: 1,
+                total_cycles: 0,
+                pricing_scheme: { fixed_price: { value: amount.toFixed(2), currency_code: currencyCode } }
+            }],
+            payment_preferences: { auto_bill_outstanding: true }
+        });
+        return client.execute(request);
+    };
+
+    for (const tier in monthlyPrices) planCreationPromises.push(createPlanRequest(tier, 'MONTHLY', monthlyPrices[tier]));
+    for (const tier in annualPrices) planCreationPromises.push(createPlanRequest(tier, 'ANNUAL', annualPrices[tier]));
+
+    const responses = await Promise.all(planCreationPromises);
+    return responses.map(res => res.result);
 }
 
-generateAndStoreMockPlanIDs(); // Generate on server start
+async function listPayPalPlans() {
+    const request = new paypal.catalog.PlansListRequest();
+    request.productId(liveProductId);
+    request.pageSize(20);
+    const response = await client.execute(request);
+    return response.result.plans;
+}
 
-// --- API Endpoints ---
-
-// Endpoint to fetch all generated PayPal Plan IDs
-app.get('/api/paypal/plans', (req, res) => {
-    res.json(MOCK_PAYPAL_PLAN_DATABASE);
-});
-
-// Mock endpoint for creating plans (if 'Deploy Plan' were to hit this)
-// In a real app, this would integrate with PayPal's API
-app.post('/api/paypal/create-plans', (req, res) => {
-    // This would receive sector data, call PayPal API, and store real IDs
-    console.log('Received request to create plans:', req.body.sectorDisplayName);
-    // Simulate success
-    res.json({ message: `Plans for ${req.body.sectorDisplayName} mocked as deployed.`, createdPlans: MOCK_PAYPAL_PLAN_DATABASE });
-});
-
-// Mock endpoint for creating a subscription
-// In a real app, this would integrate with PayPal's API and return an approveUrl
-app.post('/api/paypal/create-subscription', (req, res) => {
-    console.log('Received request to create subscription for plan:', req.body.planId);
-    // Simulate PayPal's approveUrl
-    const mockApproveUrl = `https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=EC-${Math.random().toString(36).substring(2, 15).toUpperCase()}`;
-    res.json({ approveUrl: mockApproveUrl });
-});
-
-// Start the server
-app.listen(port, () => {
-    console.log(`Mock PayPal backend listening at http://localhost:${port}`);
-    console.log(`Access PayPal Plan IDs at http://localhost:${port}/api/paypal/plans`);
-});
+// Export the app for Vercel
+module.exports = app;
 

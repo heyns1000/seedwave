@@ -1,121 +1,131 @@
+/**
+ * ===================================================================================
+ * Vercel Serverless Function for REAL PayPal API Integration
+ * ===================================================================================
+ * This file IS your backend. It handles all secure communication with the PayPal API.
+ * It is designed to be deployed to Vercel.
+ *
+ * --- IMPORTANT SECURITY NOTE ---
+ * For a live production environment, these credentials should NOT be hardcoded.
+ * They should be stored as Environment Variables in your Vercel project settings.
+ */
+
+// These packages must be listed in your package.json
+const paypal = require('@paypal/checkout-server-sdk');
 const express = require('express');
-const path = require('path');
-const session = require('express-session');
-const cookieParser = require('cookie-parser');
-const axios = require('axios');
 
 const app = express();
+app.use(express.json());
 
-// Middleware for parsing request bodies
-app.use(express.json()); // To parse JSON bodies
-app.use(express.urlencoded({ extended: true })); // To parse URL-encoded bodies
+// --- PayPal API Environment Setup ---
+// Using the LIVE credentials you provided.
+const liveClientId = "BAAThS_oBJJ22PM5R1nVJpXoSl9c3si7TJ3ICJBTht_PAFcRprbXkTv4_wqrG37kkAjUcv3tKBOxnUGQ98";
+const liveClientSecret = "EFSS4mbIMZ6Q3ijOGCjqA9i4b3dzHULkCEV9jKAAHO9_fbO2aP9YCGRV9ekZaHqT2zSZL6Svrn-WyhIs";
+const liveProductId = "P-07F980334R518562XNBHLNJY"; // Your Agri & Biotech Product ID
 
-app.use(cookieParser());
+const environment = new paypal.core.LiveEnvironment(liveClientId, liveClientSecret);
+const client = new paypal.core.PayPalHttpClient(environment);
 
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'a_placeholder_secret_CHANGE_THIS_IN_PRODUCTION', // Set this in Vercel env vars!
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: process.env.NODE_ENV === 'production',
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000,
-        domain: process.env.NODE_ENV === 'production' ? '.faa.zone' : undefined
+/**
+ * --- Main API Router ---
+ * Your vercel.json rewrites /api/* to this file.
+ * The router below handles specific paths like /api/paypal/plans.
+ */
+app.post('/api/paypal', async (req, res) => {
+    const { action, payload } = req.body;
+
+    console.log(`Backend received action: ${action}`);
+
+    try {
+        if (action === 'create-plans-for-sector') {
+            const createdPlans = await createAllPlansForSector(payload);
+            res.status(201).json({ success: true, message: 'Plans created successfully', createdPlans });
+        } else {
+            res.status(400).json({ success: false, error: 'Invalid action specified.' });
+        }
+    } catch (error) {
+        console.error(`PayPal API Error for action "${action}":`, error.message);
+        const statusCode = error.statusCode || 500;
+        const message = error.message || 'An internal server error occurred.';
+        res.status(statusCode).json({ success: false, error: message, details: error.details || {} });
     }
-}));
-
-// Serve static files from the 'public' directory one level up
-app.use(express.static(path.join(__dirname, '..', 'public')));
-
-// API Endpoint for basic health check
-app.get('/api/hello', (req, res) => {
-    res.status(200).json({ message: 'Hello from Seedwave API Gateway!' });
 });
 
-// API Endpoint to check user session status
-app.get('/api/auth/check-session', (req, res) => {
-    if (req.session.user && req.session.user.isAuthenticated) {
-        res.json({
-            isAuthenticated: true,
-            user: {
-                email: req.session.user.email,
-                role: req.session.user.role
+app.get('/api/paypal/plans', async (req, res) => {
+    try {
+        const allPlans = await listPayPalPlans();
+        res.status(200).json(allPlans);
+    } catch (error) {
+        console.error(`PayPal API Error for getting plans:`, error.message);
+        const statusCode = error.statusCode || 500;
+        const message = error.message || 'An internal server error occurred.';
+        res.status(statusCode).json({ success: false, error: message });
+    }
+});
+
+
+/**
+ * Creates all 6 subscription plans for a sector by making REAL calls to the PayPal API.
+ */
+async function createAllPlansForSector(payload) {
+    const { sectorDisplayName, monthlyPrices, annualPrices, currencyCode } = payload;
+    const planCreationPromises = [];
+
+    const createPlanRequest = (tier, billingCycle, amount) => {
+        const planName = `${sectorDisplayName.replace('🌱', '').trim()} ${tier} Package (${billingCycle})`;
+        const requestId = `plan-${Date.now()}-${Math.random()}`; // Unique ID for idempotency
+
+        const request = new paypal.catalog.PlansCreateRequest();
+        request.prefer("return=representation");
+        request.payPalRequestId(requestId);
+        request.requestBody({
+            product_id: liveProductId,
+            name: planName,
+            description: `${billingCycle} subscription for the ${tier} tier.`,
+            status: "ACTIVE",
+            billing_cycles: [{
+                frequency: { interval_unit: billingCycle === 'MONTHLY' ? 'MONTH' : 'YEAR', interval_count: 1 },
+                tenure_type: "REGULAR",
+                sequence: 1,
+                total_cycles: 0,
+                pricing_scheme: {
+                    fixed_price: { value: amount.toFixed(2), currency_code: currencyCode }
+                }
+            }],
+            payment_preferences: {
+                auto_bill_outstanding: true,
+                setup_fee_failure_action: "CANCEL",
+                payment_failure_threshold: 3
             }
         });
-    } else {
-        // Line previously caused error - now corrected to be single line
-        res.status(401).json({ isAuthenticated: false, message: 'Not authenticated.' });
+        return client.execute(request);
+    };
+
+    for (const tier in monthlyPrices) {
+        planCreationPromises.push(createPlanRequest(tier, 'MONTHLY', monthlyPrices[tier]));
     }
-});
-
-// API Endpoint for user logout
-app.get('/api/auth/logout', (req, res) => {
-    req.session.destroy(err => {
-        if (err) {
-            return res.status(500).json({ message: 'Could not log out.', error: err.message });
-        }
-        res.clearCookie('connect.sid', {
-            domain: process.env.NODE_ENV === 'production' ? '.faa.zone' : undefined,
-            path: '/'
-        });
-        res.json({ message: 'Logged out successfully.' });
-    });
-});
-
-// API Endpoint for Zoho OAuth login initiation
-app.get('/api/auth/zoho-login', (req, res) => {
-    const ZOHO_CLIENT_ID = process.env.ZOHO_CLIENT_ID;
-    const ZOHO_REDIRECT_URI = process.env.ZOHO_REDIRECT_URI;
-    const ZOHO_ACCOUNTS_URL = 'https://accounts.zoho.com';
-
-    // Store returnTo URL in session for after Zoho callback
-    if (req.query.returnTo) {
-        req.session.returnTo = req.query.returnTo;
-    } else {
-        req.session.returnTo = '/admin-portal.html'; // Default redirect
+    for (const tier in annualPrices) {
+        planCreationPromises.push(createPlanRequest(tier, 'ANNUAL', annualPrices[tier]));
     }
 
-    const scope = 'aaaserver.profile.READ'; // Define required Zoho scope
+    const responses = await Promise.all(planCreationPromises);
+    return responses.map(response => ({
+        name: response.result.name,
+        id: response.result.id,
+        status: response.result.status
+    }));
+}
 
-    // Construct the Zoho OAuth authorization URL
-    const authUrl = `${ZOHO_ACCOUNTS_URL}/oauth/v2/auth?` +
-                    `scope=${encodeURIComponent(scope)}&` +
-                    `client_id=${ZOHO_CLIENT_ID}&` +
-                    `response_type=code&` +
-                    `redirect_uri=${encodeURIComponent(ZOHO_REDIRECT_URI)}&` +
-                    `access_type=offline`;
+/**
+ * Lists all active subscription plans from your PayPal account.
+ */
+async function listPayPalPlans() {
+    const request = new paypal.catalog.PlansListRequest();
+    request.productId(liveProductId);
+    request.pageSize(20);
+    const response = await client.execute(request);
+    return response.result.plans;
+}
 
-    res.redirect(authUrl); // Redirect user to Zoho for authentication
-});
-
-// API Endpoint for Zoho OAuth callback (Line 90 starts here)
-app.get('/api/auth/zoho/callback', async (req, res) => {
-    const code = req.query.code;
-    const redirectUrl = req.session.returnTo || '/admin-portal.html';
-
-    if (!code) {
-        console.error('Zoho Callback: Authorization code missing.');
-        // Line previously caused error - now corrected to be single line
-        return res.status(400).send('Authentication failed: Authorization code missing.');
-    }
-
-    // The rest of your Zoho callback logic (axios calls, token exchange, session update) would go here
-    // Example placeholder:
-    try {
-        // You would typically exchange the code for access/refresh tokens here
-        // using axios to Zoho's token endpoint.
-        // const tokenResponse = await axios.post(`${ZOHO_ACCOUNTS_URL}/oauth/v2/token`, { ... });
-
-        // For now, let's simulate success and redirect
-        req.session.user = { isAuthenticated: true, email: 'test@example.com', role: 'admin' };
-        res.redirect(redirectUrl);
-
-    } catch (error) {
-        console.error('Error during Zoho token exchange:', error.message);
-        res.status(500).send('Authentication failed: Error exchanging Zoho token.');
-    }
-});
-
-
-// Export the Express app for Vercel Serverless Functions
-module.exports = app
+// Export the Express app for Vercel
+module.exports = app;

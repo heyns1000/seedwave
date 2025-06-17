@@ -4,21 +4,23 @@
  * ===================================================================================
  * This file IS your backend. It handles all secure communication with the PayPal API.
  * It is designed to be deployed to Vercel.
- *
- * --- IMPORTANT SECURITY NOTE ---
- * For a live production environment, these credentials should NOT be hardcoded.
- * They should be stored as Environment Variables in your Vercel project settings.
  */
 
 // These packages must be listed in your package.json
 const paypal = require('@paypal/checkout-server-sdk');
 const express = require('express');
+const cors = require('cors'); // Added for cross-origin requests
 
 const app = express();
+
+// --- Middleware Setup ---
+app.use(cors()); // Allows your frontend to call this backend
 app.use(express.json());
+
 
 // --- PayPal API Environment Setup ---
 // Using the LIVE credentials you provided.
+// For production, these should be stored as Environment Variables in Vercel.
 const liveClientId = "BAAThS_oBJJ22PM5R1nVJpXoSl9c3si7TJ3ICJBTht_PAFcRprbXkTv4_wqrG37kkAjUcv3tKBOxnUGQ98";
 const liveClientSecret = "EFSS4mbIMZ6Q3ijOGCjqA9i4b3dzHULkCEV9jKAAHO9_fbO2aP9YCGRV9ekZaHqT2zSZL6Svrn-WyhIs";
 const liveProductId = "P-07F980334R518562XNBHLNJY"; // Your Agri & Biotech Product ID

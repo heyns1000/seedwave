@@ -78,7 +78,7 @@ const FAA_ZONE_INDEX_SUMMARY_DATA = {
     "quantum": { glyph: "✴️", monthlyFee: "1350.00", annualFee: "13800.00", payoutTier: "A+", region: "Global Research" },
     "ritual": { glyph: "☯", monthlyFee: "700.00", annualFee: "7500.00", payoutTier: "A", region: "Div C" },
     "saas": { glyph: "🔑", monthlyFee: "1000.00", annualFee: "10300.00", payoutTier: "A", region: "Global" },
-    "trade": { glyph: "🧺", monthlyFee: "900.00", annualFee: "9200.00", payoutTier: "A+", region: "Div A-F" },
+    "trade": { glyph: "�", monthlyFee: "900.00", annualFee: "9200.00", payoutTier: "A+", region: "Div A-F" },
     "utilities": { glyph: "🔋", monthlyFee: "750.00", annualFee: "7800.00", payoutTier: "B+", region: "Div A-Z" },
     "voice": { glyph: "🎙️", monthlyFee: "630.00", annualFee: "6600.00", payoutTier: "B", region: "Global" },
     "webless": { glyph: "📡", monthlyFee: "800.00", annualFee: "8200.00", payoutTier: "A", region: "Div D-G" },
@@ -494,6 +494,9 @@ app.post('/api', async (req, res) => {
         return res.status(500).json({ error: 'Internal server error or API issue.', details: error.message });
     }
 });
+
+// IMPORTANT: This line is crucial for Vercel to recognize and serve your Express app
+module.exports = app;
 
 // For local testing, you might want to uncomment the listen block,
 // but for Vercel serverless functions, this is not needed as Vercel handles the listening.

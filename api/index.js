@@ -488,6 +488,9 @@ app.post('/api', async (req, res) => {
     }
 });
 
+// IMPORTANT: This line is crucial for Vercel to recognize and serve your Express app
+module.exports = app;
+
 // For local testing, you might want to uncomment the listen block,
 // but for Vercel serverless functions, this is not needed as Vercel handles the listening.
 /*

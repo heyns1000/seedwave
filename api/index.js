@@ -375,8 +375,9 @@ app.post('/api', async (req, res) => {
                     subscriber: mockSubscriber,
                     application_context: {
                         // IMPORTANT: These URLs must point to your actual live frontend URLs
-                        return_url: process.env.FRONTEND_URL ? `${process.env.FRONTEND_URL}/subscription-success` : 'https://seedwave.faa.zone/admin-panel.co.za/subscription-success',
-                        cancel_url: process.env.FRONTEND_URL ? `${process.env.FRONTEND_URL}/subscription-cancel` : 'https://seedwave.faa.zone/admin-panel.co.za/subscription-cancel',
+                        // Corrected: changed .co.za to .html
+                        return_url: process.env.FRONTEND_URL ? `${process.env.FRONTEND_URL}/subscription-success.html` : 'https://seedwave.faa.zone/admin-panel.html/subscription-success.html',
+                        cancel_url: process.env.FRONTEND_URL ? `${process.env.FRONTEND_URL}/subscription-cancel.html` : 'https://seedwave.faa.zone/admin-panel.html/subscription-cancel.html',
                         brand_name: 'FAA.ZONE™',
                         locale: 'en-ZA',
                         shipping_preference: 'NO_SHIPPING_ADDRESS' // Adjust as needed based on your product

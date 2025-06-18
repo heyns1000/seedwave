@@ -2,7 +2,7 @@
 
 const express = require('express');
 const cors = require('cors');
-const fetch = require('node-fetch'); // Required for direct PayPal API calls
+// REMOVED DIRECT REQUIRE: const fetch = require('node-fetch'); // This caused ERR_REQUIRE_ESM
 const crypto = require('crypto'); // Built-in Node.js module, used for webhook verification
 const cookieParser = require('cookie-parser');
 const session = require('express-session'); // Ensure this is only imported once
@@ -147,6 +147,9 @@ async function generateAccessToken() {
         throw new Error("PayPal Client Secret not configured. Cannot generate access token.");
     }
 
+    // Dynamic import for fetch is required because node-fetch v3+ is an ESM
+    const { default: fetch } = await import('node-fetch');
+
     const auth = Buffer.from(`${process.env.PAYPAL_LIVE_CLIENT_ID}:${process.env.PAYPAL_LIVE_CLIENT_SECRET}`).toString('base64');
     const tokenUrl = `${PAYPAL_API_BASE_URL}/v1/oauth2/token`;
 
@@ -188,6 +191,9 @@ async function callPayPalApi(endpoint, method = 'GET', body = null, accessToken)
     if (body) {
         config.body = JSON.stringify(body);
     }
+
+    // Dynamic import for fetch is required because node-fetch v3+ is an ESM
+    const { default: fetch } = await import('node-fetch');
 
     const response = await fetch(`${PAYPAL_API_BASE_URL}${endpoint}`, config);
     const responseBody = await response.json();
@@ -451,7 +457,7 @@ app.post('/api', async (req, res) => {
                     if (!verifyResponse.ok || verificationResult.verification_status !== 'SUCCESS') {
                         console.warn("Webhook signature verification FAILED:", verificationResult);
                         console.warn("Received Webhook Event (Verification Failed):", JSON.stringify(webhookEvent, null, 2));
-                        return res.status(403).json({ status: verificationResult.verification_status, message: 'Webhook signature verification failed.' });
+                        return res.status(403).json({ status: verificationResult.verification_status, message: 'Webhook verification failed.' });
                     }
 
                     // If verification SUCCESS, process the webhook event
@@ -487,9 +493,6 @@ app.post('/api', async (req, res) => {
         return res.status(500).json({ error: 'Internal server error or API issue.', details: error.message });
     }
 });
-
-// IMPORTANT: This line is crucial for Vercel to recognize and serve your Express app
-module.exports = app;
 
 // For local testing, you might want to uncomment the listen block,
 // but for Vercel serverless functions, this is not needed as Vercel handles the listening.

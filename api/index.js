@@ -273,8 +273,8 @@ app.post('/api', async (req, res) => {
 
                 // Define plans based on tiers (Starter, Pro, Enterprise) for both monthly and annual
                 for (const tierName of ["Starter", "Pro", "Enterprise"]) {
-                    const monthlyPlanName = `${sectorDisplayName} ${tierName} Package (Monthly)`;
-                    const annualPlanName = `${sectorDisplayName} ${tierName} Package (Annual)`;
+                    const monthlyPlanName = `${sectorDisplayName} ${tierName} Package (Monthly) v2.0`; // Added v2.0
+                    const annualPlanName = `${sectorDisplayName} ${tierName} Package (Annual) v2.0`; // Added v2.0
                     const tierInfo = SECTOR_TIER_PRICING[tierName]; // Get description from backend's SECTOR_TIER_PRICING
                     const description = tierInfo ? tierInfo.description : `${tierName} tier subscription.`;
 

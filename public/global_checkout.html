@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌐 VaultMesh™ | AgroChain™ Core Protocol Overview - MindLift™ Theme</title>
+    <script
+      src="https://www.paypal.com/sdk/js?client-id=BAAGdPecRsf6dw_nIrWqUen0GdW0UsBZapp1Gn62xkPdD-Vqc-4lqWAidKK8LOObXux8pHJGjXknZoar6Q&components=hosted-buttons&disable-funding=venmo&currency=USD">
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Base Styles - Consistent with FAA.zone theme, optimized for product page */
+        :root {
+            --text-color-light: #1d1d1f;
+            --text-color-dark: #f5f5f7;
+            --bg-color-light: #f5f5f7;
+            --bg-color-dark: #1a1a1c;
+            --card-bg-light: #ffffff;
+            --card-bg-dark: #2a2a2e;
+            --border-color-light: #e8e8ed;
+            --border-color-dark: #3a3a3e;
+            --primary-color: #0071e3; /* Apple Blue */
+            --mindlift-color: #7B68EE; /* MediumPurple for MindLift theme */
+            --mindlift-accent-color: #9370DB; /* Brighter purple */
+            --muted-text-light: #6e6e73;
+            --muted-text-dark: #a0a0a5;
+
+            /* New: Custom colors for Pro and Enterprise cards */
+            --pro-card-bg-light: #f0e6fa; /* Light purple for Pro light mode */
+            --pro-card-bg-dark: #3c3c42; /* Darker grey for Pro dark mode */
+            --pro-border-light: #c2a7e7;
+            --pro-border-dark: #5c5c63;
+            --pro-button-color: #8A2BE2; /* BlueViolet for Pro button */
+            --pro-button-hover-color: #6A1FB8; /* Darker BlueViolet */
+
+            --enterprise-card-bg-light: #e6f0ff; /* Very light blue for Enterprise light mode */
+            --enterprise-card-bg-dark: #222225; /* Even darker grey for Enterprise dark mode */
+            --enterprise-border-light: #a0c3ff;
+            --enterprise-border-dark: #4a4a50;
+            --enterprise-button-color: #483D8B; /* DarkSlateBlue for Enterprise button */
+            --enterprise-button-hover-color: #382D7B; /* Darker DarkSlateBlue */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .light-mode {
+            background-color: var(--bg-color-light);
+            color: var(--text-color-light);
+        }
+
+        .dark-mode {
+            background-color: var(--bg-color-dark);
+            color: var(--text-color-dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header styles removed as the header element is removed */
+
+        /* Section Styling */
+        .section-padding {
+            padding: 80px 20px;
+            background-color: var(--card-bg-light);
+            border-bottom: 1px solid var(--border-color-light);
+            border-top: 1px solid var(--border-color-light);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .dark-mode .section-padding {
+            background-color: var(--card-bg-dark);
+            border-bottom-color: var(--border-color-dark);
+            border-top-color: var(--border-color-dark);
+        }
+        .section-padding:last-of-type {
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 50px;
+            color: var(--text-color-light);
+            transition: color 0.3s ease;
+        }
+        .dark-mode .section-title {
+            color: var(--text-color-dark);
+        }
+
+        /* MindLift Specific Styles for Hero */
+        .mindlift-hero {
+            text-align: center;
+            padding: 100px 20px;
+            background: linear-gradient(135deg, var(--mindlift-color) 0%, var(--mindlift-accent-color) 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            margin: 20px auto; /* Centered with margin */
+            max-width: 1200px; /* Constrain width like container */
+            box-shadow: 0 10px 30px rgba(123, 104, 238, 0.4);
+        }
+        .mindlift-hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            letter-spacing: -0.05em;
+            color: white;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+        }
+        .mindlift-hero p {
+            font-size: 1.5rem;
+            max-width: 900px;
+            margin: 0 auto 40px;
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .mindlift-hero .cta-button {
+            background-color: white;
+            color: var(--mindlift-color);
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .mindlift-hero .cta-button:hover {
+            background-color: #f0f0f0;
+            color: var(--mindlift-accent-color);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Feature Grid Layout */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        .feature-card {
+            background-color: var(--card-bg-light);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color-light);
+            text-align: left;
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .dark-mode .feature-card {
+            background-color: var(--card-bg-dark);
+            border-color: var(--border-color-dark);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .feature-card .icon {
+            font-size: 2.5rem;
+            color: var(--mindlift-color);
+            margin-bottom: 15px;
+        }
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-color-light);
+        }
+        .dark-mode .feature-card h3 {
+            color: var(--text-color-dark);
+        }
+        .feature-card p {
+            font-size: 1rem;
+            color: var(--muted-text-light);
+            line-height: 1.6;
+        }
+        .dark-mode .feature-card p {
+            color: var(--muted-text-dark);
+        }
+        .feature-card ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 15px;
+        }
+        .feature-card ul li {
+            font-size: 0.95rem;
+            color: var(--muted-text-light);
+            margin-bottom: 5px;
+        }
+        .dark-mode .feature-card ul li {
+            color: var(--muted-text-dark);
+        }
+        .feature-card ul li strong {
+            color: var(--text-color-light);
+        }
+        .dark-mode .feature-card ul li strong {
+            color: var(--text-color-dark);
+        }
+
+        /* Pricing Section */
+        .pricing-section {
+            padding: 80px 20px;
+            text-align: center;
+        }
+        .dark-mode .pricing-section {
+            background-color: var(--bg-color-dark);
+        }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Wider cards */
+            gap: 30px;
+            margin-top: 50px;
+            align-items: start;
+            justify-content: center; /* Center the grid items */
+        }
+        .pricing-card {
+            background-color: var(--card-bg-light);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color-light);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+            height: 100%; /* Ensure cards fill their grid cell height */
+            text-align: left; /* Align content to the left within the card */
+            max-width: 450px; /* Cap max width for very large screens */
+            margin: 0 auto; /* Center individual cards within their grid cells */
+        }
+        .dark-mode .pricing-card {
+            background-color: var(--card-bg-dark);
+            border-color: var(--border-color-dark);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        .dark-mode .pricing-card:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+        .pricing-card.highlight {
+            border-color: var(--mindlift-color);
+            box-shadow: 0 8px 25px rgba(123, 104, 238, 0.3);
+            transform: translateY(-8px);
+        }
+        .pricing-card.highlight .price-button {
+            background-color: var(--mindlift-color);
+        }
+        .pricing-card.highlight .price-button:hover {
+            background-color: var(--mindlift-accent-color);
+        }
+
+        /* Specific styles for Pro Card */
+        .pricing-card.pro-card {
+            background-color: var(--pro-card-bg-light);
+            border-color: var(--pro-border-light);
+        }
+        .dark-mode .pricing-card.pro-card {
+            background-color: var(--pro-card-dark);
+            border-color: var(--pro-border-dark);
+        }
+        .pricing-card.pro-card .price-button {
+            background-color: var(--pro-button-color);
+        }
+        .pricing-card.pro-card .price-button:hover {
+            background-color: var(--pro-button-hover-color);
+        }
+        .pricing-card.pro-card .price {
+             color: var(--pro-button-color); /* Match price color to button for consistency */
+        }
+        .dark-mode .pricing-card.pro-card .price {
+             color: var(--pro-button-color);
+        }
+
+        /* Specific styles for Enterprise Card */
+        .pricing-card.enterprise-card {
+            background-color: var(--enterprise-card-bg-light);
+            border-color: var(--enterprise-border-light);
+        }
+        .dark-mode .pricing-card.enterprise-card {
+            background-color: var(--enterprise-card-dark);
+            border-color: var(--enterprise-border-dark);
+        }
+        .pricing-card.enterprise-card .price-button {
+            background-color: var(--enterprise-button-color);
+        }
+        .pricing-card.enterprise-card .price-button:hover {
+            background-color: var(--enterprise-button-hover-color);
+        }
+        .pricing-card.enterprise-card .price {
+             color: var(--enterprise-button-color); /* Match price color to button for consistency */
+        }
+        .dark-mode .pricing-card.enterprise-card .price {
+             color: var(--enterprise-button-color);
+        }
+
+
+        .pricing-card h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--text-color-light);
+            text-align: center; /* Center heading within the card */
+        }
+        .dark-mode .pricing-card h3 {
+            color: var(--text-color-dark);
+        }
+        .pricing-card .price {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-align: center; /* Center price within the card */
+            /* Removed fixed color to use custom card colors */
+        }
+        .dark-mode .pricing-card .price {
+            /* Removed fixed color to use custom card colors */
+        }
+        .pricing-card .price-description {
+            font-size: 0.95rem;
+            color: var(--muted-text-light);
+            margin-bottom: 15px;
+            text-align: center; /* Center description within the card */
+        }
+        .dark-mode .pricing-card .price-description {
+            color: var(--muted-text-dark);
+        }
+        .pricing-card ul {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+            text-align: left; /* Keep list items left-aligned */
+            width: 100%;
+            flex-grow: 1; /* Allow list to take available space */
+        }
+        .pricing-card ul li {
+            font-size: 0.95rem;
+            color: var(--muted-text-light);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        .dark-mode .pricing-card ul li {
+            color: var(--muted-text-dark);
+        }
+        .pricing-card ul li i {
+            color: var(--mindlift-color);
+            margin-right: 10px;
+        }
+        .dark-mode .pricing-card ul li i {
+            color: var(--mindlift-accent-color); /* Ensure icons are visible in dark mode */
+        }
+        /* Override checkmark icon color for Pro/Enterprise cards */
+        .pricing-card.pro-card ul li i {
+            color: var(--pro-button-color);
+        }
+        .pricing-card.enterprise-card ul li i {
+            color: var(--enterprise-button-color);
+        }
+
+        /* Style for the direct URL link, made to look like a button */
+        /* Note: This styling is applied to the raw URL text,
+           not a distinct button element or div. */
+        .direct-url-text {
+            display: block; /* To make it take its own line */
+            text-align: center; /* To center the text */
+            color: blue; /* Default link color, can be styled */
+            text-decoration: underline; /* Default link underline, can be styled */
+            margin-top: 15px; /* Spacing below content */
+            word-break: break-all; /* Break long URLs */
+        }
+
+
+        /* Disclaimer Section */
+        .disclaimer-section {
+            background-color: var(--bg-color-light);
+            padding: 40px 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #cc0000;
+            border-top: 1px solid var(--border-color-light);
+            margin-top: 40px;
+        }
+        .dark-mode .disclaimer-section {
+            background-color: var(--bg-color-dark);
+            border-top-color: var(--border-color-dark);
+        }
+        .disclaimer-section p strong {
+            font-weight: 700;
+        }
+
+
+        /* Metadata Metrics Section */
+        .metadata-metrics-section {
+            background-color: var(--card-bg-light);
+            padding: 80px 20px;
+            text-align: center;
+        }
+        .dark-mode .metadata-metrics-section {
+            background-color: var(--card-bg-dark);
+        }
+        .metadata-metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        .metadata-card {
+            background-color: var(--bg-color-light);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color-light);
+            text-align: left;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+        }
+        .dark-mode .metadata-card {
+            background-color: var(--bg-color-dark);
+            border-color: var(--border-color-dark);
+            box-shadow: 0 1px 5px rgba(0,0,0,0.15);
+        }
+        .metadata-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        .dark-mode .metadata-card h3 {
+            color: var(--text-color-dark);
+        }
+        .metadata-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .metadata-card ul li {
+            font-size: 0.95rem;
+            color: var(--muted-text-light);
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        .dark-mode .metadata-card ul li {
+            color: var(--muted-text-dark);
+        }
+        .metadata-card ul li strong {
+            color: var(--text-color-light);
+        }
+        .dark-mode .metadata-card ul li strong {
+            color: var(--text-color-dark);
+        }
+
+        /* Footer */
+        .main-footer {
+            background-color: var(--card-bg-light);
+            border-top: 1px solid var(--border-color-light);
+            padding: 40px 0;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            margin-top: auto;
+        }
+        .dark-mode .main-footer {
+            background-color: var(--card-bg-dark);
+            border-top-color: var(--border-color-dark);
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .footer-brand {
+            flex: 1 1 300px;
+        }
+
+        .footer-brand .logo {
+            margin-bottom: 15px;
+        }
+
+        .copyright {
+            font-size: 0.8rem;
+            color: var(--muted-text-light);
+            line-height: 1.4;
+            transition: color 0.3s ease;
+        }
+        .dark-mode .copyright {
+            color: var(--muted-text-dark);
+        }
+
+        .footer-links {
+            display: flex;
+            flex: 2 1 500px;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-column {
+            flex: 1 1 150px;
+        }
+
+        .footer-column h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--text-color-light);
+            transition: color 0.3s ease;
+        }
+        .dark-mode .footer-column h4 {
+            color: var(--text-color-dark);
+        }
+
+        .footer-column ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-column a {
+            text-decoration: none;
+            font-size: 0.9rem;
+            color: var(--muted-text-light);
+            margin-bottom: 8px;
+            display: block;
+            transition: color 0.3s ease;
+        }
+        .footer-column a:hover {
+            color: var(--primary-color);
+        }
+        .dark-mode .footer-column a {
+            color: var(--muted-text-dark);
+        }
+        .dark-mode .footer-column a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .main-nav {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: var(--card-bg-light);
+                border-bottom: 1px solid var(--border-color-light);
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+                padding: 20px 0;
+                z-index: 999;
+            }
+            .dark-mode .main-nav {
+                background-color: var(--card-bg-dark);
+                border-bottom-color: var(--border-color-dark);
+            }
+            .main-nav.active {
+                display: flex;
+            }
+            .nav-list {
+                flex-direction: column;
+                text-align: center;
+                width: 100%;
+            }
+            .nav-list li {
+                width: 100%;
+            }
+            .nav-list a {
+                display: block;
+                padding: 10px 0;
+            }
+            .nav-actions {
+                flex-direction: column;
+                gap: 10px;
+                width: 100%;
+                padding-top: 10px;
+                border-top: 1px solid var(--border-color-light);
+            }
+            .dark-mode .nav-actions {
+                border-top-color: var(--border-color-dark);
+            }
+            .nav-actions .cta-button {
+                width: calc(100% - 40px);
+                margin: 0 20px;
+                text-align: center;
+            }
+
+            .hamburger-menu {
+                display: block;
+            }
+
+            .mindlift-hero h1 {
+                font-size: 3rem;
+            }
+            .mindlift-hero p {
+                font-size: 1.2rem;
+            }
+            .section-title {
+                font-size: 1.8rem;
+            }
+            .pricing-grid {
+                /* On smaller screens, allow all cards to be full width */
+                grid-template-columns: 1fr;
+            }
+            .metadata-metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <section id="overview" class="mindlift-hero">
+            <div class="container">
+                <h1>VaultMesh™ | AgroChain™ Core Protocol</h1>
+                <p>AgroChain™ is a powerful FAA.zone™ framework empowering the Agriculture & Biotech sector with advanced automation and data management. It connects effortlessly to the PulseGrid™ for optimized workflow and compliance.</p>
+                <a href="#pricing" class="cta-button">View Pricing &rarr;</a>
+            </div>
+        </section>
+
+        <section id="features" class="section-padding">
+            <div class="container">
+                <h2 class="section-title">Key Features</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-link icon"></i>
+                        <h3>Direct Integration</h3>
+                        <p>Direct integration with FAA 🧾 Professional Services Mes</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-sync-alt icon"></i>
+                        <h3>Advanced Data Sync</h3>
+                        <p>Real-time data synchronization with YieldNode™ for up-to-t</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-shield-alt icon"></i>
+                        <h3>Real-time Compliance</h3>
+                        <p>Ensure robust regulatory adherence with VaultLink™ (agric</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-expand-arrows-alt icon"></i>
+                        <h3>Scalable Architecture</h3>
+                        <p>Unleash massive scalability for x21 power expansion, ens</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-chart-line icon"></i>
+                        <h3>Predictive Analytics</h3>
+                        <p>Leverage our advanced predictive analytics module for Agro</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-puzzle-piece icon"></i>
+                        <h3>Open API Access</h3>
+                        <p>Gain full API access for seamless interoperability, allowin</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-lock icon"></i>
+                        <h3>Blockchain Security</h3>
+                        <p>Benefit from immutable, blockchain-secured data provenanc</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-file-invoice icon"></i>
+                        <h3>One-click Reporting</h3>
+                        <p>Generate comprehensive regulatory reports and detailed au</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-network-wired icon"></i>
+                        <h3>Self-optimizing Nodes</h3>
+                        <p>Achieve peak operational efficiency with intelligent, self</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-brain icon"></i>
+                        <h3>Secure Multi-party Computation</h3>
+                        <p>Enable secure, collaborative data analysis with multiple st</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-padding">
+            <div class="container">
+                <h2 class="section-title">Why Trust 🌐 VaultMesh™?</h2>
+                <p class="text-lg mb-4 max-w-2xl mx-auto" style="color: var(--muted-text-light);">
+                    At <strong>VaultMesh™</strong>, we are the architects of the core infrastructure that powers the entire FAA.zone™ ecosystem. Our purpose is to provide a <strong>robust, immutable, and universally accessible fabric</strong> for critical information and distributed processes, enabling global compliance, efficiency, and innovation across heavily regulated sectors.
+                </p>
+                <p class="text-lg mb-4 max-w-2xl mx-auto" style="color: var(--muted-text-light);">
+                    We specialize in <strong>Decentralized Data Integrity</strong>, <strong>Secure Data Orchestration</strong>, and building <strong>Scalable & Resilient Infrastructure</strong>. Our solutions offer <strong>Verifiable Trust & Identity</strong> and comprehensive <strong>Compliance & Audit Trails</strong>.
+                </p>
+                <div class="text-center mt-6">
+                    <p class="text-lg font-semibold" style="color: var(--text-color-light);">Built on principles by:</p>
+                    <p class="text-xl font-bold mt-1" style="color: var(--mindlift-color);">Heyns Schoeman™</p>
+                    <p class="text-md" style="color: var(--muted-text-light);">Founder | FAA Global™ | FAA.zone™ 🌍<br>"Sustain. Protect. Empower."</p>
+                    <a href="vaultmesh-about-us-page.html" class="cta-button">Learn More About Us</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-padding">
+            <div class="container">
+                <h2 class="section-title">VaultMesh™ Subnodes</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-seedling icon"></i>
+                        <h3>YieldNode™</h3>
+                        <p>Specialized nodes for optimizing agricultural yield data processing, ensuring maximum productivity and resource utilization.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-search-location icon"></i>
+                        <h3>SoilScan™</h3>
+                        <p>Advanced subnode for granular soil analysis and real-time environmental data collection, enabling precision agriculture.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-bug icon"></i>
+                        <h3>PestDetect™</h3>
+                        <p>Intelligent detection and tracking of agricultural pests with AI-driven insights, minimizing crop damage and chemical use.</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-barcode icon"></i>
+                        <h3>CropTrace™</h3>
+                        <p>Comprehensive traceability for crop origin and lifecycle management, providing transparent, farm-to-fork insights for consumers and regulators.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="metadata-metrics-section section-padding">
+            <div class="container">
+                <h2 class="section-title">FAA Metadata & Real-Time Metrics</h2>
+                <div class="metadata-metrics-grid">
+                    <div class="metadata-card">
+                        <h3>FAA Metadata & Compliance</h3>
+                        <ul>
+                            <li><strong>Product ID:</strong> AGROC-2537</li>
+                            <li><strong>VaultID:</strong> VAULT-9869</li>
+                            <li><strong>Signal Echo Layer:</strong> Layer Beta v4.3</li>
+                            <li><strong>Deployment Zone:</strong> Zone E 8</li>
+                            <li><strong>Security Rating:</strong> FAA-SEC B+</li>
+                            <li><strong>Active Nodes:</strong> 493</li>
+                            <li><strong>Last Audit:</strong> 2025-08-04</li>
+                            <li><strong>Compliance Status:</strong> Active & Certified</li>
+                        </ul>
+                    </div>
+                    <div class="metadata-card">
+                        <h3>Real-Time Metrics Overview</h3>
+                        <ul>
+                            <li><strong>Current Pulse Activity:</strong> 65.08 pulses/sec</li>
+                            <li><strong>Data Volume Processed (24h):</strong> 108.02 TB</li>
+                            <li><strong>Latency Average:</strong> 40.82 ms</li>
+                        </ul>
+                        <h4 style="margin-top: 20px; font-size: 1.2rem; color: var(--text-color-light);">VaultTrace™ Ledger Entries:</h4>
+                        <ul>
+                            <li>#7756 - AGROC Pulse Tx - Confirmed</li>
+                            <li>#6954 - AGRIC Data Sync - Completed</li>
+                            <li>#7848 - Node Activation Confirm - Offline</li>
+                            <li>#3206 - VaultTrace™ Audit - Passed</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pricing" class="pricing-section section-padding">
+            <div class="container">
+                <h2 class="section-title">Flexible Pricing for Every Operation</h2>
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <h3>🌱 Agriculture & Biotech Starter Package</h3>
+                        <p class="price">$30.52</p>
+                        <p class="price-description">
+                            Unlock powerful features for Starter success.
+                        </p>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> Basic API Access</li>
+                            <li><i class="fas fa-check-circle"></i> Standard Analytics Dashboard</li>
+                            <li><i class="fas fa-check-circle"></i> Community Support</li>
+                            <li><i class="fas fa-check-circle"></i> Up to 5 Users</li>
+                            <li><i class="fas fa-check-circle"></i> 50 GB Data Storage</li>
+                        </ul>
+                        <div class="quantity-selector">
+                            <label for="starter-quantity">Quantity:</label>
+                            <select id="starter-quantity">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+                        <div id="paypal-container-EMWGPGHNN8Y8E"></div>
+                        <script>
+                          paypal.HostedButtons({
+                            hostedButtonId: "EMWGPGHNN8Y8E",
+                          }).render("#paypal-container-EMWGPGHNN8Y8E")
+                        </script>
+                    </div>
+
+                    <div class="pricing-card highlight pro-card">
+                        <h3>🌱 Agriculture & Biotech Pro Package</h3>
+                        <p class="price">$76.30</p>
+                        <p class="price-description">
+                            Unlock powerful features for Pro success.
+                        </p>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> Advanced API Access</li>
+                            <li><i class="fas fa-check-circle"></i> Premium Analytics & Reporting</li>
+                            <li><i class="fas fa-check-circle"></i> Dedicated Priority Support</li>
+                            <li><i class="fas fa-check-circle"></i> Unlimited Users</li>
+                            <li><i class="fas fa-check-circle"></i> Custom Data Integrations</li>
+                        </ul>
+                        <div class="quantity-selector">
+                            <label for="pro-quantity">Quantity:</label>
+                            <select id="pro-quantity">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+                        <div id="paypal-container-QGU3ZUQCMD49Q"></div>
+                        <script>
+                          paypal.HostedButtons({
+                            hostedButtonId: "QGU3ZUQCMD49Q",
+                          }).render("#paypal-container-QGU3ZUQCMD49Q")
+                        </script>
+                    </div>
+
+                    <div class="pricing-card enterprise-card">
+                        <h3>🌱 Agriculture & Biotech Enterprise Package</h3>
+                        <p class="price">$152.60</p>
+                        <p class="price-description">
+                            Unlock powerful features for Enterprise success.
+                        </p>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> All Business Package Features</li>
+                            <li><i class="fas fa-check-circle"></i> Dedicated Account Manager</li>
+                            <li><i class="fas fa-check-circle"></i> 24/7 Phone Support</li>
+                            <li><i class="fas fa-check-circle"></i> Enhanced Custom Integrations</li>
+                            <li><i class="fas fa-check-circle"></i> On-site Training & Setup</li>
+                        </ul>
+                        <div class="quantity-selector">
+                            <label for="enterprise-quantity">Quantity:</label>
+                            <select id="enterprise-quantity">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                            </select>
+                        </div>
+                        <div id="paypal-container-9C88S44F93M5J"></div>
+                        <script>
+                          paypal.HostedButtons({
+                            hostedButtonId: "9C88S44F93M5J",
+                          }).render("#paypal-container-9C88S44F93M5J")
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="disclaimer-section">
+            <div class="container">
+                <p><strong>Disclaimer:</strong> This page is a static HTML demonstration. It does NOT process any real financial transactions, exchange real currency, or interact with live payment gateways or cryptocurrency networks. All displayed prices, rates, and transaction statuses are simulated for illustrative purposes only. Do NOT enter any real personal or financial information. For actual FAA.zone™ services and transactions, please refer to our official and secure platforms.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container footer-content">
+            <div class="logo">
+                <span class="logo-faa">FAA.zone™</span> / <span class="logo-buildnest">VaultMesh™</span>
+            </div>
+            <p class="copyright">&copy; 2025 Fruitful Holdings (Pty) Ltd. All systems, symbols, and brand echoes protected by the Omni Present Copyright™.</p>
+        </div>
+        <div class="footer-links">
+            <div class="footer-column">
+                <h4>BuildNest™</h4>
+                <ul>
+                    <li><a href="index.html#features">Features</a></li>
+                    <li><a href="index.html#use-cases">Use Cases</a></li>
+                    <li><a href="index.html#pricing">Pricing</a></li>
+                    <li><a href="plotvault.html">Modules</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>FAA.zone™</h4>
+                <ul>
+                    <li><a href="about-faa.html">About FAA Systems™</a></li>
+                    <li><a href="index.html">Omni Grid™</a></li>
+                    <li><a href="baobab-archive.html">Baobab Archive™</li>
+                    <li><a href="compliance.html">Compliance</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Connect</h4>
+                <ul>
+                    <li><a href="contact-support.html">Contact Support</a></li>
+                    <li><a href="partner-program.html">Partner Program</a></li>
+                    <li><a href="developer-api.html">Developer API</a></li>
+                    <li><a href="legal-privacy.html">Legal & Privacy</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Quantity selector logic (remains as is)
+            const quantitySelects = document.querySelectorAll('.quantity-selector select');
+            quantitySelects.forEach(select => {
+                select.addEventListener('change', (event) => {
+                    const selectedQuantity = event.target.value;
+                    console.log(`Selected quantity: ${selectedQuantity}`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

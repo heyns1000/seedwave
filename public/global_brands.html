@@ -163,32 +163,47 @@
             z-index: 1;
         }
 
+        /* Discover button with new styling and embedded canvas */
         .hero-cta-button {
             display: inline-flex;
             align-items: center;
+            justify-content: center; /* Center content horizontally */
             gap: 10px;
-            padding: 1rem 2.5rem;
-            background: linear-gradient(45deg, #007bff, #0056b3); /* Blue gradient */
-            color: white;
+            padding: 0.5rem 1.5rem; /* Reduced padding for more compact button */
+            background-color: #ffffff; /* White background */
+            color: var(--page-text-dark); /* Black text */
             text-decoration: none;
-            border-radius: 9999px; /* Fully rounded */
+            border-radius: 1rem; /* Rounded corners */
             font-weight: 700;
             font-size: 1.1rem;
-            box-shadow: 0 5px 20px rgba(0, 123, 255, 0.4);
-            transition: all 0.3s ease-in-out;
-            opacity: 1; /* Always visible now */
-            animation: none; /* Remove initial animations as text is gone */
-            border: 1px solid rgba(0, 123, 255, 0.5);
-            margin-bottom: 2rem; /* Space between button and grid */
-            position: relative; /* Ensure it's above the grid but below header */
-            z-index: 20; /* Higher than grid but lower than header */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* Softer shadow */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--page-border-light); /* Light border */
+            
+            width: 280px; /* Fixed width to align with blocks below */
+            margin: 0 auto 2rem auto; /* Centered with bottom margin */
+            position: relative;
+            z-index: 20;
+            height: 60px; /* Fixed height for the button */
+            overflow: hidden; /* Hide overflow from canvas */
         }
         .hero-cta-button:hover {
-            background: linear-gradient(45deg, #0056b3, #007bff); /* Inverted gradient */
-            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.6);
-            transform: translateY(-5px) scale(1.02);
-            border-color: rgba(0, 123, 255, 0.8);
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
         }
+        .hero-cta-button .button-text {
+            position: relative;
+            z-index: 2; /* Ensure text is above canvas */
+        }
+        .hero-cta-button canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1; /* Below text */
+        }
+
 
         /* General Section Styling (for content below hero) */
         section {
@@ -294,7 +309,7 @@
             justify-content: center;
             text-decoration: none;
             color: var(--page-text-dark);
-            margin: 0; /* Remove negative margins */
+            margin: 0; /* No negative margins */
             width: auto; /* Auto width within grid */
         }
         .master-brand-block:hover {
@@ -312,24 +327,35 @@
 
         /* Node.js Pulse Graph Blocks */
         #node-pulse-sections {
-            padding-top: 0; /* No top padding for seamless transition from master brands */
-            padding-left: 0; /* Section itself has no padding */
-            padding-right: 0; /* Section itself has no padding */
-            background-color: black; /* Ensure solid black background for the section itself */
-            border-top: none; /* Remove border top here, grid border handles it */
+            padding-top: 6rem; /* Restore top padding to match other sections */
+            padding-bottom: 6rem; /* Restore bottom padding to match other sections */
+            padding-left: 2rem; /* Restore padding to section */
+            padding-right: 2rem; /* Restore padding to section */
+            background-color: var(--page-bg-light); /* Restore white background for the section */
+            border-top: 1px solid var(--page-border-light); /* Restore border top */
+            position: relative; /* For the absolute positioning of the black container */
+            overflow: hidden; /* Hide anything that goes outside */
         }
+
+        /* The black block for the Node.js pulse graph */
+        .node-pulse-container-wrapper { /* New wrapper for the black block */
+            background-color: #000000; /* Solid black background for this entire block */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Subtle shadow */
+            border-radius: 1rem; /* Rounded corners for the black block */
+            padding: 1rem; /* Padding inside the black block for the grid */
+            max-width: 1200px; /* Max width, centered */
+            margin: 0 auto;
+            position: relative; /* For relative positioning of titles if needed */
+        }
+
         .node-pulse-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 columns for B&W graph */
+            grid-template-columns: repeat(3, 1fr); /* 3 columns */
             gap: 1rem; /* RESTORED GAP between canvases */
-            max-width: 1200px; /* Limit width */
-            margin: 0 auto; /* Center the grid */
-            border-radius: 0; /* No rounded corners */
-            overflow: hidden; /* Ensure content stays within borders */
-            background-color: #000000; /* Black background for the entire grid area */
-            box-shadow: none; /* No shadow from grid container */
-            border: none; /* No border from grid container */
+            width: 100%; /* Full width of its wrapper */
             height: 250px; /* Fixed height for the entire grid */
+            /* No borders/shadows/radius here, handled by wrapper */
+            margin: 0; /* No margin */
         }
 
         .node-pulse-block {
@@ -337,9 +363,9 @@
             position: relative; /* For canvas positioning */
             height: 100%; /* Fill parent grid item height */
             overflow: hidden;
-            border-radius: 0; /* No rounded corners */
-            border-left: none; /* Remove vertical white lines between blocks */
-            border-right: none; /* Remove vertical white lines between blocks */
+            border-radius: 0; /* No rounded corners on individual blocks */
+            border-left: none; /* No internal borders (rely on gap) */
+            border-right: none; /* No internal borders (rely on gap) */
             box-sizing: border-box; /* Include padding/border in element's total width/height */
         }
         /* No specific border for first/last child now, as all are border-none */
@@ -460,8 +486,9 @@
     <main>
         <section class="hero-section" id="pulse">
             <!-- Text content removed -->
-            <a href="homepage.html" class="hero-cta-button">
-                Discover the Future <i class="fas fa-arrow-right"></i>
+            <a href="homepage.html" class="hero-cta-button" id="discover-button">
+                <span class="button-text">Discover the Future</span>
+                <canvas id="button-arrow-canvas"></canvas>
             </a>
             <div class="hero-pulse-grid">
                 <div class="pulse-container">
@@ -485,7 +512,7 @@
             </div>
         </section>
 
-        <!-- Operational Pillars - now solid blocks without internal borders/shadows -->
+        <!-- Operational Pillars - now with rounded blocks and proper gaps -->
         <section id="operational-pillars" class="py-16 px-6 text-center">
             <div class="operational-blocks-grid">
                 <div class="operational-block">
@@ -500,7 +527,7 @@
             </div>
         </section>
 
-        <!-- Master License Brands Section - now solid blocks without internal borders/shadows -->
+        <!-- Master License Brands Section - now with rounded blocks and proper gaps -->
         <section id="master-brands" class="py-16 px-6 text-center">
             <h2 class="text-4xl font-bold mb-8">Seedwave™ Global Master License Brands</h2>
             <div class="art-typo-container">
@@ -520,7 +547,7 @@ Seedwave™:
                           Driving Collective Impact.
 </pre>
             </div>
-            <!-- Master Brand Blocks - now solid without internal borders/shadows -->
+            <!-- Master Brand Blocks - now with rounded blocks and proper gaps -->
             <div class="mt-12 operational-blocks-grid master-brand-blocks-grid">
                 <a href="https://samfox.faa.zone" target="_blank" class="master-brand-block">
                     <h3>Samfox™</h3>
@@ -538,21 +565,23 @@ Seedwave™:
         <!-- Node.js Infiltration Pulse Section with three distinct canvases -->
         <section id="node-pulse-sections" class="py-16 px-0 text-center">
             <h2 class="text-4xl font-bold mb-8">Node.js Infiltration Pulse</h2>
-            <div class="node-pulse-grid">
-                <!-- Samfox™ Node Pulse -->
-                <div class="node-pulse-block">
-                    <h3>Samfox™ Node Pulse</h3>
-                    <canvas id="canvas-samfox-node-pulse"></canvas>
-                </div>
-                <!-- Seedwave™ Node Pulse -->
-                <div class="node-pulse-block">
-                    <h3>Seedwave™ Node Pulse</h3>
-                    <canvas id="canvas-seedwave-node-pulse"></canvas>
-                </div>
-                <!-- FAA.ZONE™ Node Pulse -->
-                <div class="node-pulse-block">
-                    <h3>FAA.ZONE™ Node Pulse</h3>
-                    <canvas id="canvas-faa-zone-node-pulse"></canvas>
+            <div class="node-pulse-container-wrapper">
+                <div class="node-pulse-grid">
+                    <!-- Samfox™ Node Pulse -->
+                    <div class="node-pulse-block">
+                        <h3>Samfox™ Node Pulse</h3>
+                        <canvas id="canvas-samfox-node-pulse"></canvas>
+                    </div>
+                    <!-- Seedwave™ Node Pulse -->
+                    <div class="node-pulse-block">
+                        <h3>Seedwave™ Node Pulse</h3>
+                        <canvas id="canvas-seedwave-node-pulse"></canvas>
+                    </div>
+                    <!-- FAA.ZONE™ Node Pulse -->
+                    <div class="node-pulse-block">
+                        <h3>FAA.ZONE™ Node Pulse</h3>
+                        <canvas id="canvas-faa-zone-node-pulse"></canvas>
+                    </div>
                 </div>
             </div>
             <p class="text-sm text-page-muted-text mt-4 max-w-2xl mx-auto">
@@ -594,6 +623,19 @@ Seedwave™:
             speed: 0.8 // Speed of the graph scroll
         };
 
+        // New: Discover Button Noodle Arrow Canvas Object
+        const discoverButtonArrow = {
+            canvas: document.getElementById('button-arrow-canvas'),
+            ctx: null,
+            time: 0,
+            animationId: null,
+            knittingDepth: 0.4, // Deeper loops for button arrow
+            knittingFrequency: 0.08, // More frequent loops
+            speed: 0.03, // Slower for a distinct feel
+            color: 'white', // White arrow
+            lineWidth: 1.5 // Thinner line
+        };
+
 
         // Initialize contexts and start animation loops for each canvas
         function initCanvases() {
@@ -602,6 +644,13 @@ Seedwave™:
                 headerPulse.ctx = headerPulse.canvas.getContext('2d');
                 resizeHeaderPulseCanvas();
                 startHeaderPulseAnimation();
+            }
+
+            // Initialize discover button arrow canvas
+            if (discoverButtonArrow.canvas) {
+                discoverButtonArrow.ctx = discoverButtonArrow.canvas.getContext('2d');
+                resizeCanvas(discoverButtonArrow.canvas); // Use generic resize for now
+                startDiscoverButtonArrowAnimation();
             }
 
             for (const key in canvases) {
@@ -615,8 +664,10 @@ Seedwave™:
 
         // Resize individual canvas elements
         function resizeCanvas(canvas) {
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
+            if (canvas) { /* Check if canvas exists before accessing properties */
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+            }
         }
 
         // Resize header pulse canvas
@@ -630,6 +681,9 @@ Seedwave™:
         // Handle window resize for all canvases
         window.addEventListener('resize', () => {
             resizeHeaderPulseCanvas(); // Resize header pulse
+            if (discoverButtonArrow.canvas) {
+                resizeCanvas(discoverButtonArrow.canvas);
+            }
             for (const key in canvases) {
                 if (canvases[key].canvas) {
                     resizeCanvas(canvases[key].canvas);
@@ -657,7 +711,13 @@ Seedwave™:
                 data.shift();
             }
 
-            // Draw the pulse line
+            // Draw the pulse line with knitting effect for header
+            const headerKnittingDepth = canvas.height * 0.15; // Deeper loops for header
+            const headerKnittingFrequency = 0.3; // More frequent loops
+            const headerLoopSpeed = 0.05; // Adjust loop speed for header pulse
+
+            headerPulse.time += headerLoopSpeed;
+
             ctx.beginPath();
             ctx.strokeStyle = 'rgba(0, 227, 147, 0.9)'; // Lime green glow
             ctx.lineWidth = 1.5;
@@ -667,7 +727,15 @@ Seedwave™:
             const pointWidth = canvas.width / (maxDataPoints - 1);
             for (let i = 0; i < data.length; i++) {
                 const x = i * pointWidth;
-                const y = canvas.height - (data[i] / valueRange) * canvas.height; // Invert Y for graph
+                const yBase = canvas.height - (data[i] / valueRange) * canvas.height;
+                const yLoop = Math.sin((x / canvas.width) * Math.PI * 8 + headerPulse.time * 5) * headerKnittingDepth; // Loop effect
+                const y = yBase + yLoop;
+
+                const phase = ((x / canvas.width) * Math.PI * 8 + headerPulse.time * 5) % (Math.PI * 2);
+                let alphaMod = Math.sin(phase);
+                alphaMod = Math.max(0, alphaMod);
+                ctx.globalAlpha = alphaMod * 0.7 + 0.3; // Make it fade in/out
+
                 if (i === 0) {
                     ctx.moveTo(x, y);
                 } else {
@@ -675,8 +743,8 @@ Seedwave™:
                 }
             }
             ctx.stroke();
-
-            ctx.shadowBlur = 0; // Reset shadow
+            ctx.shadowBlur = 0;
+            ctx.globalAlpha = 1; // Reset alpha
 
             headerPulse.animationId = requestAnimationFrame(drawHeaderPulse);
         }
@@ -687,6 +755,56 @@ Seedwave™:
                 headerPulse.data.push(Math.random() * headerPulse.valueRange);
             }
             drawHeaderPulse();
+        }
+
+        // --- Discover Button Noodle Arrow Animation ---
+        function drawDiscoverButtonArrow(canvasObj) {
+            const { canvas, ctx, time, knittingDepth, knittingFrequency, speed, color, lineWidth } = canvasObj;
+            if (!ctx) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear fully for crisp line
+
+            canvasObj.time += speed;
+
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = lineWidth;
+            ctx.shadowBlur = 3; // Subtle glow for button arrow
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.6)';
+
+            const startX = 0;
+            const endX = canvas.width;
+            const step = 2; // Smaller steps for smoother line
+
+            for (let x = startX; x <= endX; x += step) {
+                const yBase = canvas.height / 2;
+                const yLoop = Math.sin((x / canvas.width) * Math.PI * 4 + time) * (canvas.height * knittingDepth);
+                const y = yBase + yLoop;
+
+                const phase = ((x / canvas.width) * Math.PI * 4 + time) % (Math.PI * 2);
+                let alphaMod = Math.sin(phase);
+                alphaMod = Math.max(0, alphaMod);
+
+                ctx.globalAlpha = alphaMod * 0.8 + 0.2; // Modulate alpha for disappearing effect
+
+                if (x === startX) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+            ctx.globalAlpha = 1; // Reset global alpha
+
+            canvasObj.animationId = requestAnimationFrame(() => drawDiscoverButtonArrow(canvasObj));
+        }
+
+        function startDiscoverButtonArrowAnimation() {
+            if (discoverButtonArrow.canvas) {
+                discoverButtonArrow.time = Math.random() * 100; // Random starting phase
+                drawDiscoverButtonArrow(discoverButtonArrow);
+            }
         }
 
 
@@ -1137,16 +1255,20 @@ Seedwave™:
             const { canvas, ctx } = canvasObj;
             if (!ctx) return;
 
+            // Define drawExtend within the function's scope
+            const drawExtend = 30; // Extend drawing into the "walls"
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'black'; /* Ensure individual canvas blocks are black */
+            // Changed fillStyle to a very subtle transparent black for soft trails/definition
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'; /* Very low alpha black for definition */
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Set global dimensions if not already set (first canvas will do this)
             if (canvases.samfoxNodePulse.canvas && canvases.seedwaveNodePulse.canvas && canvases.faaZoneNodePulse.canvas) {
                 if (nodePulseGraphSharedData.totalWidth === 0 || nodePulseGraphSharedData.height === 0) {
-                    // Recalculate total width including gaps based on actual rendered block width + gap
-                    const actualBlockWidth = canvases.samfoxNodePulse.canvas.offsetWidth; // All blocks should have same rendered width
-                    const gapWidth = 16; // The CSS gap is 1rem = 16px
+                    // Recalculate total width including gaps
+                    const actualBlockWidth = canvases.samfoxNodePulse.canvas.offsetWidth;
+                    const gapWidth = 16; /* 1rem = 16px */
                     nodePulseGraphSharedData.totalWidth = (actualBlockWidth * 3) + (2 * gapWidth);
                     nodePulseGraphSharedData.height = canvases.samfoxNodePulse.canvas.offsetHeight;
                 }
@@ -1157,30 +1279,29 @@ Seedwave™:
             const segmentWidth = nodePulseGraphSharedData.totalWidth / (nodePulseGraphSharedData.numPoints - 1);
 
             ctx.beginPath();
-            ctx.strokeStyle = 'white';
-            ctx.lineWidth = 2;
-            ctx.shadowBlur = 8;
+            ctx.strokeStyle = 'white'; // White noodle pulse line
+            ctx.lineWidth = 2; // Noodle thickness
+            ctx.shadowBlur = 8; // Subtle glow
             ctx.shadowColor = 'rgba(255, 255, 255, 0.7)';
 
-            // Iterate over points to draw the segment
-            const drawExtend = 30; // Extend drawing into the "walls"
+            // Draw line segment with "knitting" effect (looping in and out)
+            const loopDepth = canvas.height * nodePulseGraphSharedData.knittingDepth; // How much the line "dips" or "rises"
+            const loopFrequency = nodePulseGraphSharedData.knittingFrequency; // How often the loops occur
+
             for (let i = startIndex; i <= endIndex; i++) {
                 const xGlobal = i * segmentWidth;
                 let xLocal = xGlobal - offsetCanvasX;
 
                 const yBase = nodePulseGraphSharedData.points[i];
-                // Knitting/looping effect: modulate Y position based on horizontal position relative to block, and time
-                const knittingYOffset = Math.sin((xLocal / canvas.width) * Math.PI * 4 + nodePulseGraphSharedData.time * 10) * nodePulseGraphSharedData.knittingDepth * canvas.height;
+                const knittingYOffset = Math.sin((xLocal / canvas.width) * Math.PI * 4 + nodePulseGraphSharedData.time * 10) * loopDepth;
                 const y = yBase + knittingYOffset;
 
-                // Modulate opacity to create "disappearing" effect based on loop phase
                 const phase = ((xLocal / canvas.width) * Math.PI * 4 + nodePulseGraphSharedData.time * 10) % (Math.PI * 2);
-                let alphaMod = Math.sin(phase); // Sine wave for smooth fade in/out
-                alphaMod = Math.max(0, alphaMod); // Only positive alpha
+                let alphaMod = Math.sin(phase);
+                alphaMod = Math.max(0, alphaMod);
 
-                ctx.globalAlpha = alphaMod * 0.8 + 0.2; // Base opacity + modulated part
+                ctx.globalAlpha = alphaMod * 0.8 + 0.2;
 
-                // Ensure drawing extends into walls for seamless look
                 xLocal = Math.max(xLocal, -drawExtend);
                 xLocal = Math.min(xLocal, canvas.width + drawExtend);
 
@@ -1203,7 +1324,7 @@ Seedwave™:
                     const xGlobal = ep.index * segmentWidth;
                     let xLocal = xGlobal - offsetCanvasX;
                     const yBase = nodePulseGraphSharedData.points[ep.index];
-                    const knittingYOffset = Math.sin((xLocal / canvas.width) * Math.PI * 4 + nodePulseGraphSharedData.time * 10) * nodePulseGraphSharedData.knittingDepth * canvas.height;
+                    const knittingYOffset = Math.sin((xLocal / canvas.width) * Math.PI * 4 + nodePulseGraphSharedData.time * 10) * loopDepth;
                     const y = yBase + knittingYOffset;
 
                     if (xLocal >= -drawExtend && xLocal <= canvas.width + drawExtend) {
@@ -1271,4 +1392,3 @@ Seedwave™:
     </script>
 </body>
 </html>
-

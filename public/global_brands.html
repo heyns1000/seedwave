@@ -32,7 +32,7 @@
             /* NEW: General page background and text colors (Black & White) */
             --page-bg-light: #ffffff; /* Pure white background */
             --page-text-dark: #000000; /* Pure black text */
-            --page-muted-text: #333333; /* Dark grey muted text */
+            --page-muted-text: #333333; /* Dark grey muted muted text */
             --page-border-light: #cccccc; /* Light grey border */
 
             /* NEW: Accent colors for metrics/charts in B&W theme (subtle grey tones) */
@@ -221,8 +221,11 @@
             font-size: 3rem;
             font-weight: 800;
             color: var(--page-text-dark); /* Dark text */
-            margin-bottom: 3rem;
+            margin-bottom: 3rem; /* Default spacing */
             text-shadow: none; /* No text shadow for clean look */
+            max-width: 800px; /* Limit width for long headings */
+            margin-left: auto;
+            margin-right: auto;
         }
 
         /* Operational Blocks (Auto Design, Auto Build, Auto Deploy) */
@@ -341,7 +344,7 @@
         .node-pulse-container-wrapper { /* New wrapper for the black block */
             background-color: #000000; /* Solid black background for this entire block */
             box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Subtle shadow */
-            border-radius: 1rem; /* Rounded corners for the black block */
+            border-radius: 1rem; /* Rounded corners for the black block (RESTORED) */
             padding: 1rem; /* Padding inside the black block for the grid */
             max-width: 1200px; /* Max width, centered */
             margin: 0 auto;
@@ -359,17 +362,18 @@
         }
 
         .node-pulse-block {
-            background-color: #000000; /* Black background for individual blocks */
+            background-color: transparent; /* Make background transparent (allowing node-pulse-container-wrapper to show black) */
             position: relative; /* For canvas positioning */
             height: 100%; /* Fill parent grid item height */
             overflow: hidden;
-            border-radius: 0; /* No rounded corners on individual blocks */
-            border-left: none; /* No internal borders (rely on gap) */
-            border-right: none; /* No internal borders (rely on gap) */
-            box-sizing: border-box; /* Include padding/border in element's total width/height */
+            border-radius: 1rem; /* Rounded corners (RESTORED) */
+            border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle white border for each block */
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hover effects */
         }
-        /* No specific border for first/last child now, as all are border-none */
-
+        .node-pulse-block:hover {
+            transform: translateY(-5px) scale(1.02); /* Slight lift */
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); /* White glow on hover */
+        }
         .node-pulse-block h3 {
             position: absolute;
             top: 1rem;
@@ -458,7 +462,7 @@
                 grid-template-rows: repeat(6, 1fr); /* 6 rows on mobile */
                 max-height: none; /* Allow grid to stretch */
             }
-            .hero-cta-button { padding: 0.8rem 2rem; font-size: 1rem; }
+            .hero-cta-button { padding: 0.8rem 2rem; font-size: 1.1rem; } /* Slightly larger button on mobile */
             h2 { font-size: 2.2rem; }
             section { padding: 4rem 1rem; }
             .operational-blocks-grid, .master-brand-blocks-grid { grid-template-columns: 1fr; } /* Stack on mobile */
@@ -563,37 +567,32 @@ Seedwave™:
 
 
         <!-- Node.js Infiltration Pulse Section with three distinct canvases -->
-        <section id="node-pulse-sections" class="py-16 px-0 text-center">
-            <h2 class="text-4xl font-bold mb-8">Node.js Infiltration Pulse</h2>
+        <section id="node-pulse-sections" class="py-16 px-6 text-center">
+            <!-- Updated h2 text and styling to align with Seedwave heading -->
+            <h2 class="text-4xl font-bold mb-8" style="max-width: 800px; margin-left: auto; margin-right: auto; line-height: 1.2;">Noodle Juice Gorilla Combe™ Infiltrations</h2>
             <div class="node-pulse-container-wrapper">
                 <div class="node-pulse-grid">
                     <!-- Samfox™ Node Pulse -->
                     <div class="node-pulse-block">
-                        <h3>Samfox™ Node Pulse</h3>
                         <canvas id="canvas-samfox-node-pulse"></canvas>
                     </div>
                     <!-- Seedwave™ Node Pulse -->
                     <div class="node-pulse-block">
-                        <h3>Seedwave™ Node Pulse</h3>
                         <canvas id="canvas-seedwave-node-pulse"></canvas>
                     </div>
                     <!-- FAA.ZONE™ Node Pulse -->
                     <div class="node-pulse-block">
-                        <h3>FAA.ZONE™ Node Pulse</h3>
                         <canvas id="canvas-faa-zone-node-pulse"></canvas>
                     </div>
                 </div>
             </div>
-            <p class="text-sm text-page-muted-text mt-4 max-w-2xl mx-auto">
-                Real-time visualization of Node.js package infiltration, repo deployments, and array count growth across key master brands.
-            </p>
+            <!-- Removed paragraph here -->
         </section>
 
     </main>
 
     <footer>
-        <p>&copy; 2025 Seedwave™. All rights reserved.</p>
-        <p>A proud partner of <a href="https://faa.zone/" target="_blank">FAA.zone™ Treaty System™</a></p>
+        <!-- Copyright removed -->
     </footer>
 
     <script>
@@ -1210,7 +1209,6 @@ Seedwave™:
             electricitySpawnRate: 0.8,
             electricityDecayRate: 0.03,
             electricityLength: 10,
-            // New: Knitting/Looping parameters
             knittingDepth: 0.2, // Percentage of canvas height for loop depth
             knittingFrequency: 0.1, // How often loops occur
             knittingPhaseOffset: 0 // To make loops appear at different points
@@ -1255,12 +1253,11 @@ Seedwave™:
             const { canvas, ctx } = canvasObj;
             if (!ctx) return;
 
-            // Define drawExtend within the function's scope
             const drawExtend = 30; // Extend drawing into the "walls"
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // Changed fillStyle to a very subtle transparent black for soft trails/definition
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'; /* Very low alpha black for definition */
+            // Changed fillStyle to a darker, less transparent black
+            ctx.fillStyle = '#000000'; /* Pitch black */
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Set global dimensions if not already set (first canvas will do this)
@@ -1392,3 +1389,4 @@ Seedwave™:
     </script>
 </body>
 </html>
+

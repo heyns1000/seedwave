@@ -82,7 +82,6 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            /* Colors defined directly on logo elements now */
             flex-shrink: 0; /* Prevent shrinking */
         }
 
@@ -112,20 +111,90 @@
             min-width: 100px; /* Ensure it has some width even on smaller desktops */
         }
 
-        /* Hero Section - Still dark and funky, as requested */
+        /* New Section: Spotify & Discover Button (White Background) */
+        .spotify-discover-section {
+            background-color: var(--page-bg-light); /* Pure white background */
+            display: flex; /* Use flex for horizontal split */
+            height: 300px; /* Example height for this section, adjust as needed */
+            width: 100%;
+            border-bottom: 1px solid var(--page-border-light); /* Add a border to separate it */
+        }
+
+        .spotify-half, .discover-half {
+            flex: 1; /* Each takes 50% width */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem; /* Add internal padding */
+        }
+
+        .spotify-half {
+            border-right: 1px solid var(--page-border-light); /* Separator between Spotify and Discover */
+        }
+
+        .spotify-embed-container-in-white-section {
+            width: 100%;
+            max-width: 400px; /* Constrain Spotify embed width */
+            height: 152px; /* Fixed height for Spotify iframe */
+        }
+
+        .spotify-embed-container-in-white-section iframe {
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+        }
+
+        .discover-button-white-section {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background-color: #ffffff; /* White button background */
+            color: var(--page-text-dark); /* Black text */
+            text-decoration: none;
+            border-radius: 1rem;
+            font-weight: 700;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--page-border-light);
+            height: auto;
+            width: auto;
+            padding: 1rem 2.5rem;
+            position: relative;
+            z-index: 20;
+            overflow: hidden;
+        }
+        .discover-button-white-section:hover {
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        }
+        .discover-button-white-section .button-text {
+            position: relative;
+            z-index: 2;
+        }
+        .discover-button-white-section canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+
+        /* Hero Section - This is now ONLY the Pulse Graphs */
         .hero-section {
             position: relative;
-            height: 90vh; /* Taller hero section */
-            display: flex;
-            flex-direction: column; /* Stack button and grid */
+            height: 90vh; /* Keep it tall for the graphs */
+            display: flex; /* Use flex to center the grid */
             align-items: center;
             justify-content: center;
             text-align: center;
             overflow: hidden;
-            /* Background radial gradient based on original glow colors */
             background: radial-gradient(circle at center, rgba(0, 227, 147, 0.05) 0%, transparent 60%);
-            padding: 2rem; /* Add padding for breathing room */
             background-color: var(--dark-bg); /* Ensure dark background */
+            padding: 2rem; /* Add padding for breathing room */
         }
 
         .hero-pulse-grid {
@@ -136,8 +205,8 @@
             width: 100%;
             height: 100%; /* Fill hero section */
             max-width: 1200px; /* Limit overall grid size */
-            max-height: 80vh; /* Adjust max height to leave space for button */
-            margin-top: 2rem; /* Space below the button */
+            max-height: 80vh; /* Adjust max height to fit within hero */
+            margin-top: 0; /* No margin-top here */
         }
 
         .pulse-container {
@@ -163,47 +232,6 @@
             z-index: 1;
         }
 
-        /* Discover button with new styling and embedded canvas */
-        .hero-cta-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center; /* Center content horizontally */
-            gap: 10px;
-            padding: 0.5rem 1.5rem; /* Reduced padding for more compact button */
-            background-color: #ffffff; /* White background */
-            color: var(--page-text-dark); /* Black text */
-            text-decoration: none;
-            border-radius: 1rem; /* Rounded corners */
-            font-weight: 700;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* Softer shadow */
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 1px solid var(--page-border-light); /* Light border */
-            
-            width: 280px; /* Fixed width to align with blocks below */
-            margin: 0 auto 2rem auto; /* Centered with bottom margin */
-            position: relative;
-            z-index: 20;
-            height: 60px; /* Fixed height for the button */
-            overflow: hidden; /* Hide overflow from canvas */
-        }
-        .hero-cta-button:hover {
-            transform: translateY(-5px) scale(1.01);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-        }
-        .hero-cta-button .button-text {
-            position: relative;
-            z-index: 2; /* Ensure text is above canvas */
-        }
-        .hero-cta-button canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1; /* Below text */
-        }
-
 
         /* General Section Styling (for content below hero) */
         section {
@@ -223,7 +251,6 @@
             color: var(--page-text-dark); /* Dark text */
             margin-bottom: 3rem; /* Default spacing */
             text-shadow: none; /* No text shadow for clean look */
-            /* Removed max-width here, will apply directly in HTML for specific headings */
             margin-left: auto;
             margin-right: auto;
         }
@@ -396,7 +423,7 @@
             width: 100% !important;
             height: 100% !important;
             display: block;
-            background-color: transparent; /* Canvas itself is transparent */
+            background-color: transparent;
             z-index: 1;
         }
 
@@ -437,9 +464,25 @@
 
         /* Responsive Adjustments */
         @media (max-width: 1024px) { /* Adjust grid for tablets */
+            .spotify-discover-section {
+                flex-direction: column; /* Stack vertically on smaller screens */
+                height: auto; /* Auto height for stacked content */
+            }
+            .spotify-half, .discover-half {
+                width: 100%; /* Full width when stacked */
+                border-right: none; /* Remove vertical border */
+                border-bottom: 1px solid var(--page-border-light); /* Add horizontal border */
+            }
+            .discover-half {
+                border-bottom: none; /* Last item doesn't need bottom border */
+            }
+            .hero-section {
+                height: 90vh; /* Keep it tall for the graphs even on smaller screens */
+            }
             .hero-pulse-grid {
                 grid-template-columns: repeat(2, 1fr); /* 2 columns on tablet */
                 grid-template-rows: repeat(3, 1fr); /* 3 rows on tablet */
+                max-height: none; /* Allow height to expand */
             }
             .node-pulse-grid {
                 grid-template-columns: repeat(1, 1fr); /* Stack on tablets as well */
@@ -461,12 +504,27 @@
                 display: none; /* Hide header pulse on mobile to save space */
             }
 
+            .spotify-discover-section {
+                height: auto; /* Adjust height for mobile */
+            }
+            .spotify-half, .discover-half {
+                height: 250px; /* Give each half a fixed height on mobile */
+                padding: 1rem; /* Adjust padding for mobile */
+            }
+            .discover-button-white-section {
+                font-size: 1.4rem; /* Smaller font for mobile button */
+                padding: 0.8rem 2rem; /* Smaller padding for mobile button */
+            }
+
+            .hero-section {
+                height: auto; /* Allow height to auto-adjust for mobile */
+                padding: 1rem;
+            }
             .hero-pulse-grid {
                 grid-template-columns: 1fr; /* Single column on mobile */
                 grid-template-rows: repeat(6, 1fr); /* 6 rows on mobile */
                 max-height: none; /* Allow grid to stretch */
             }
-            .hero-cta-button { padding: 0.8rem 2rem; font-size: 1.1rem; } /* Slightly larger button on mobile */
             h2 { font-size: 2.2rem; }
             section { padding: 4rem 1rem; }
             .operational-blocks-grid, .master-brand-blocks-grid { grid-template-columns: 1fr; } /* Stack on mobile */
@@ -491,13 +549,24 @@
         </div>
     </header>
 
-    <main>
-        <section class="hero-section" id="pulse">
-            <!-- Text content removed -->
-            <a href="homepage.html" class="hero-cta-button" id="discover-button">
+    <!-- New: Section for Spotify and Discover Button with White Background -->
+    <section class="spotify-discover-section">
+        <div class="spotify-half">
+            <div class="spotify-embed-container-in-white-section">
+                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/2kdQY3b6dDRGonyIzcWljc?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+        </div>
+        <div class="discover-half">
+            <a href="homepage.html" class="discover-button-white-section" id="discover-button-white-bg">
                 <span class="button-text">Discover the Future</span>
                 <canvas id="button-arrow-canvas"></canvas>
             </a>
+        </div>
+    </section>
+
+    <main>
+        <section class="hero-section" id="pulse">
+            <!-- This section now ONLY contains the pulse graphs -->
             <div class="hero-pulse-grid">
                 <div class="pulse-container">
                     <canvas id="canvas-rhythmic"></canvas>
@@ -626,7 +695,7 @@ Seedwave™:
             speed: 0.8 // Speed of the graph scroll
         };
 
-        // New: Discover Button Noodle Arrow Canvas Object
+        // New: Discover Button Noodle Arrow Canvas Object (for the white section button)
         const discoverButtonArrow = {
             canvas: document.getElementById('button-arrow-canvas'),
             ctx: null,
@@ -635,7 +704,7 @@ Seedwave™:
             knittingDepth: 0.4, // Deeper loops for button arrow
             knittingFrequency: 0.08, // More frequent loops
             speed: 0.03, // Slower for a distinct feel
-            color: 'white', // White arrow
+            color: 'black', // Black arrow for white background
             lineWidth: 1.5 // Thinner line
         };
 
@@ -649,7 +718,7 @@ Seedwave™:
                 startHeaderPulseAnimation();
             }
 
-            // Initialize discover button arrow canvas
+            // Initialize discover button arrow canvas (now on white background)
             if (discoverButtonArrow.canvas) {
                 discoverButtonArrow.ctx = discoverButtonArrow.canvas.getContext('2d');
                 resizeCanvas(discoverButtonArrow.canvas); // Use generic resize for now
@@ -734,7 +803,7 @@ Seedwave™:
                 const yLoop = Math.sin((x / canvas.width) * Math.PI * 8 + headerPulse.time * 5) * headerKnittingDepth; // Loop effect
                 const y = yBase + yLoop;
 
-                const phase = ((x / canvas.width) * Math.PI * 8 + headerPulse.time * 5) % (Math.PI * 2);
+                const phase = ((x / canvas.width) * Math.PI * 4 + headerPulse.time * 5) % (Math.PI * 2);
                 let alphaMod = Math.sin(phase);
                 alphaMod = Math.max(0, alphaMod);
                 ctx.globalAlpha = alphaMod * 0.7 + 0.3; // Make it fade in/out
@@ -773,7 +842,7 @@ Seedwave™:
             ctx.strokeStyle = color;
             ctx.lineWidth = lineWidth;
             ctx.shadowBlur = 3; // Subtle glow for button arrow
-            ctx.shadowColor = 'rgba(255, 255, 255, 0.6)';
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.6)'; /* Black shadow for white background */
 
             const startX = 0;
             const endX = canvas.width;

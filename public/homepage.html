@@ -3,307 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seedwave™ - Global Pulse of Expansion</title>
+    <title>Banimal™ - Kind Creatures, Global Impact</title>
     <link rel="icon" href="/favicon.ico">
-    <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts - Inter for clean typography -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Base Styles - More dynamic and modern for Seedwave */
         :root {
-            --dark-bg: #0a0a0d; /* Very dark almost black */
+            --dark-bg: #0a0a0d;
             --light-text: #e0e0e0;
-            --primary-glow: #00e393; /* Greenish glow, Tesla-inspired */
-            --secondary-glow: #007bff; /* Blue glow, Google/Apple-inspired */
-            --accent-red: #ff4d4d;
+            --primary-glow: #00e393;
+            --secondary-glow: #007bff;
             --card-bg-dark: #1c1c21;
             --border-dark: #3a3a42;
-            --font-inter: 'Inter', sans-serif;
+            --fruitful-primary: #0071e3; /* Original Fruitful blue */
+            --fruitful-muted-text-light: #6e6e73;
+            --seedwave-green-glow-text: #00e393; /* Unused for header now, but kept in root */
 
-            /* Fruitful branding colors */
-            --fruitful-primary: #0071e3; /* Apple Blue */
-            --fruitful-text-light: #1d1d1f; /* Dark text for light mode */
-            --fruitful-muted-text-light: #6e6e73; /* Muted text for light mode */
+            /* Banimal Specific Colors - softer, warmer palette */
+            --banimal-soft-peach: #FFF0ED; /* A soft, warm background tone */
+            --banimal-soft-pink: #F8DCDC;
+            --banimal-accent-blue: #66B2FF; /* A gentle blue */
+            --banimal-dark-text: #333333;
+            --banimal-muted-text: #666666;
+            --banimal-cream: #FFFAF5;
+
+            /* Consolidated Fruitful Logo Color (now white) */
+            --fruitful-corporate-white: #ffffff;
         }
-
         body {
-            font-family: var(--font-inter);
-            background-color: var(--dark-bg);
-            color: var(--light-text);
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg); /* Default fallback */
+            color: var(--light-text); /* Default fallback */
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            margin: 0;
-            padding: 0;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden; /* Prevent horizontal scrolling */
+            align-items: center;
+            justify-content: flex-start; /* Align content to top for header */
+            text-align: center;
+            overflow-x: hidden;
+            padding: 0;
+            margin: 0;
         }
-
-        /* Header */
         header {
-            background-color: rgba(10, 10, 13, 0.8); /* Semi-transparent dark background */
-            backdrop-filter: blur(10px); /* Frosted glass effect */
+            background-color: rgba(10, 10, 13, 0.8);
+            backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border-dark);
             padding: 1rem 2rem;
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            width: 100%;
             z-index: 50;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-sizing: border-box;
         }
-
         .logo-group {
             display: flex;
             align-items: center;
             gap: 10px;
-            color: var(--light-text);
-            transition: color 0.3s ease;
+            /* No color here, inherited from individual logo styles */
         }
-
+        /* Consolidated Fruitful Logo */
         .logo-fruitful {
-            color: var(--fruitful-primary);
+            color: var(--fruitful-corporate-white); /* Now white */
             font-size: 1.6rem;
             font-weight: 800;
             text-decoration: none;
+            /* Removed text-shadow to make it steady, no pulse */
+            transition: color 0.3s ease; /* Keep transition for hover if added later */
         }
+        /* Removed .logo-separator and .logo-seedwave as requested */
 
-        .logo-separator {
-            color: var(--fruitful-muted-text-light); /* Adjusted for dark background readability */
-            font-size: 1.4rem;
-            font-weight: 600;
-        }
-
-        /* Removed .logo-omnigrid as requested */
-
-        nav a {
-            color: var(--light-text);
-            text-decoration: none;
-            margin-left: 2.5rem;
-            font-weight: 500;
-            position: relative;
-            transition: color 0.3s ease, text-shadow 0.3s ease;
-        }
-        nav a:hover {
-            color: var(--primary-glow);
-            text-shadow: 0 0 5px rgba(0, 227, 147, 0.4);
-        }
-        nav a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            background: var(--secondary-glow);
-            left: 50%;
-            bottom: -5px;
-            transform: translateX(-50%);
-            transition: width 0.3s ease;
-        }
-        nav a:hover::after {
+        /* Main Content Section - Banimal themed */
+        .content-section {
+            padding-top: 8rem; /* Space for fixed header */
+            padding-bottom: 8rem;
             width: 100%;
-        }
-
-        /* Hero Section */
-        .hero-section {
-            position: relative;
-            height: 90vh; /* Taller hero section */
+            flex-grow: 1;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            text-align: center;
-            overflow: hidden;
-            background: radial-gradient(circle at center, rgba(0, 227, 147, 0.1) 0%, transparent 60%);
+            justify-content: center; /* Center content vertically in remaining space */
+            position: relative;
+            overflow: hidden; /* For canvas background */
+            background: linear-gradient(135deg, var(--banimal-soft-peach) 0%, var(--banimal-cream) 100%); /* Soft gradient */
+            color: var(--banimal-dark-text); /* Darker text for light background */
         }
 
-        #hero-canvas {
+        #banimal-canvas {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: 0;
-            background-color: transparent;
+            pointer-events: none; /* Allow clicks to pass through */
+            opacity: 0.7; /* Slightly more subtle overlay */
         }
 
-        .hero-content {
+        .banimal-hero-content {
             position: relative;
-            z-index: 10;
-            max-width: 800px;
-            padding: 1rem;
-            /* Flexbox to center the button vertically and horizontally */
+            z-index: 1; /* Ensure content is above canvas */
+            max-width: 900px;
+            margin: auto;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100%; /* Take full height of the parent .hero-section */
+            min-height: calc(100vh - 16rem); /* Adjust min-height to push footer down */
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+        .banimal-hero-content h1 {
+            font-size: 5rem; /* Enlarge Banimal™ */
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 0.5rem; /* Reduce space after Banimal™ */
+            color: var(--banimal-dark-text); /* Stronger text color */
+            text-shadow: 0 4px 10px rgba(0,0,0,0.1); /* Soft shadow */
+            max-width: 700px;
+        }
+        .banimal-hero-content h1 span {
+            font-size: 0.5em; /* Reduce "Kind Creatures. Global Impact." relative to Banimal™ */
+            font-weight: 700; /* Keep bold for slogan */
+            color: var(--banimal-accent-blue); /* Accent color for slogan */
+            display: block; /* Ensure it's on a new line */
+            line-height: 1.2; /* Adjust line height for subtitle */
+            margin-top: 0.5rem; /* Space between Banimal and slogan */
+        }
+        .banimal-hero-content p {
+            font-size: 1.3rem; /* Slightly reduced body text */
+            color: var(--banimal-muted-text);
+            margin-bottom: 2.5rem;
+            max-width: 700px;
         }
 
-        /* Removed h1 and p styling for hero content */
-        .hero-content h1, .hero-content p {
-            display: none; /* Explicitly hide text content */
-        }
-
-
-        .hero-cta-button {
+        .cta-button {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            padding: 1rem 2.5rem;
-            background: linear-gradient(45deg, #007bff, #0056b3); /* Blue gradient */
+            padding: 1.2rem 3rem; /* Larger button */
+            background: linear-gradient(45deg, var(--banimal-accent-blue), #4A90E2); /* Blue gradient for CTA */
             color: white;
             text-decoration: none;
-            border-radius: 9999px; /* Fully rounded */
+            border-radius: 9999px;
             font-weight: 700;
-            font-size: 1.1rem;
-            box-shadow: 0 5px 20px rgba(0, 123, 255, 0.4);
+            font-size: 1.2rem;
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
             transition: all 0.3s ease-in-out;
-            opacity: 1; /* Always visible now */
-            animation: none; /* Remove initial animations as text is gone */
-            border: 1px solid rgba(0, 123, 255, 0.5);
+            border: 1px solid rgba(74, 144, 226, 0.5);
         }
-        .hero-cta-button:hover {
-            background: linear-gradient(45deg, #0056b3, #007bff); /* Inverted gradient */
-            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.6);
+        .cta-button:hover {
+            background: linear-gradient(45deg, #4A90E2, var(--banimal-accent-blue));
+            box-shadow: 0 10px 30px rgba(0, 123, 255, 0.6);
             transform: translateY(-5px) scale(1.02);
-            border-color: rgba(0, 123, 255, 0.8);
+            border-color: rgba(74, 144, 226, 0.8);
         }
-
-        /* General Section Styling */
-        section {
-            padding: 6rem 2rem;
-            background-color: var(--dark-bg);
-            border-top: 1px solid var(--border-dark);
-            text-align: center;
-        }
-
-        h2 {
-            font-size: 3rem;
-            font-weight: 800;
-            color: var(--light-text);
-            margin-bottom: 3rem;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-        }
-
-        /* Key Metrics / Info Cards */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2.5rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .metric-card {
-            background-color: var(--card-bg-dark);
-            border-radius: 1rem;
-            padding: 2rem;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-            border: 1px solid var(--border-dark);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .metric-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
-        }
-
-        .metric-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(0, 227, 147, 0.1) 0%, transparent 70%);
-            transform: rotate(45deg);
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            z-index: 0;
-        }
-        .metric-card:hover::before {
-            opacity: 1;
-        }
-
-        .metric-card-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .metric-card-icon {
-            font-size: 3.5rem;
-            color: var(--primary-glow);
-            margin-bottom: 1rem;
-            text-shadow: 0 0 15px rgba(0, 227, 147, 0.5);
-        }
-
-        .metric-card h3 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--light-text);
-            margin-bottom: 0.5rem;
-        }
-
-        .metric-card p {
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .metric-value {
-            font-size: 2.8rem;
-            font-weight: 900;
-            background: linear-gradient(90deg, var(--primary-glow), var(--secondary-glow));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 10px rgba(0, 227, 147, 0.5);
-            margin-top: 1rem;
-            display: block;
-        }
-
-        /* CTA Section */
-        .cta-section {
-            background: linear-gradient(135deg, #0a0a0d, #1c1c21); /* Dark gradient */
-            padding: 8rem 2rem;
-        }
-        .cta-section h2 {
-            font-size: 3.5rem;
-            background: linear-gradient(45deg, var(--secondary-glow), var(--accent-red));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(0, 123, 255, 0.6);
-            margin-bottom: 2rem;
-        }
-        .cta-section p {
-            font-size: 1.3rem;
-            color: var(--light-text);
-            max-width: 700px;
-            margin: 0 auto 3rem;
-        }
-        .cta-section .cta-button { /* Reusing hero-cta-button style */
-            background: linear-gradient(45deg, #ff4d4d, #cc0000); /* Red gradient for urgency */
-            box-shadow: 0 5px 20px rgba(255, 77, 77, 0.4);
-            border-color: rgba(255, 77, 77, 0.5);
-        }
-        .cta-section .cta-button:hover {
-            background: linear-gradient(45deg, #cc0000, #ff4d4d);
-            box-shadow: 0 8px 25px rgba(255, 77, 77, 0.6);
-            border-color: rgba(255, 77, 77, 0.8);
-        }
-
-        /* Footer */
         footer {
-            background-color: #050508; /* Even darker footer */
+            background-color: #050508;
             border-top: 1px solid #2a2a30;
             padding: 2.5rem;
             text-align: center;
             color: rgba(255, 255, 255, 0.5);
             font-size: 0.9rem;
+            width: 100%;
+            margin-top: auto;
         }
         footer a {
             color: rgba(255, 255, 255, 0.7);
@@ -314,261 +185,138 @@
             color: var(--primary-glow);
         }
 
-        /* Animations */
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes fadeInSlideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Responsive Adjustments */
+        /* Responsive adjustments */
         @media (max-width: 768px) {
             header { padding: 1rem; }
-            nav { display: none; } /* Hide nav on smaller screens, can add a hamburger menu */
-            .hero-content h1 { font-size: 3rem; }
-            .hero-content p { font-size: 1.1rem; }
-            .hero-cta-button { padding: 0.8rem 2rem; font-size: 1rem; }
-            h2 { font-size: 2.2rem; }
-            section { padding: 4rem 1rem; }
-            .metrics-grid { grid-template-columns: 1fr; }
-            .metric-card-icon { font-size: 3rem; }
-            .metric-card h3 { font-size: 1.5rem; }
-            .metric-value { font-size: 2.2rem; }
-            .cta-section h2 { font-size: 2.5rem; }
-            .cta-section p { font-size: 1rem; }
-            footer { padding: 1.5rem; }
+            .logo-group .logo-fruitful { font-size: 1.4rem; } /* Only Fruitful left */
+            .banimal-hero-content h1 { font-size: 3rem; }
+            .banimal-hero-content h1 span { font-size: 0.6em; }
+            .banimal-hero-content p { font-size: 1rem; }
+            .cta-button { padding: 1rem 2rem; font-size: 1rem; }
+            .content-section { padding-top: 6rem; padding-bottom: 6rem; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo-group"> 
+        <div class="logo-group">
             <a href="#" class="logo-fruitful">Fruitful™</a>
-            <span class="logo-separator">|</span>
-            <span class="logo-seedwave">Seedwave™</span>
+            <!-- Removed logo-separator and logo-seedwave -->
         </div>
-        <nav>
-            <a href="#pulse">Global Pulse</a>
-            <a href="#metrics">Key Metrics</a>
-            <a href="#ecosystem">Ecosystem</a>
-            <a href="#contact">Contact</a>
-        </nav>
     </header>
 
-    <main>
-        <section class="hero-section" id="pulse">
-            <canvas id="hero-canvas"></canvas>
-            <div class="hero-content">
-                <!-- Text content removed as requested -->
-                <a href="#metrics" class="hero-cta-button">
-                    Discover the Future <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
-        </section>
-
-        <section id="metrics">
-            <h2 class="mb-12">Our Interstellar Impact</h2>
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <div class="metric-card-content">
-                        <div class="metric-card-icon"><i class="fas fa-globe"></i></div>
-                        <h3>Global Node Reach</h3>
-                        <p>Expanding our network across all digital frontiers.</p>
-                        <span class="metric-value">92%</span>
-                    </div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-card-content">
-                        <div class="metric-card-icon"><i class="fas fa-rocket"></i></div>
-                        <h3>Launch Velocity</h3>
-                        <p>Accelerating brands into new market orbits.</p>
-                        <span class="metric-value">x10.5</span>
-                    </div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-card-content">
-                        <div class="metric-card-icon"><i class="fas fa-seedling"></i></div>
-                        <h3>Seed Planted</h3>
-                        <p>New projects cultivated and thriving within the ecosystem.</p>
-                        <span class="metric-value">7000+</span>
-                    </div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-card-content">
-                        <div class="metric-card-icon"><i class="fas fa-bolt"></i></div>
-                        <h3>Energy Efficiency</h3>
-                        <p>Optimizing resource allocation for sustainable growth.</p>
-                        <span class="metric-value">98%</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="ecosystem" class="cta-section">
-            <h2 class="mb-4">Join the Interstellar Network</h2>
-            <p>Connect with a thriving ecosystem of innovators, visionaries, and digital pioneers. Your growth journey starts here.</p>
-            <a href="https://faa.zone/contact-us.html" target="_blank" class="hero-cta-button cta-button">
-                Get Started <i class="fas fa-sign-in-alt"></i>
+    <main class="content-section">
+        <canvas id="banimal-canvas"></canvas>
+        <div class="banimal-hero-content">
+            <h1>Banimal™: <br> <span>Kind Creatures. Global Impact.</span></h1>
+            <p>
+                Discover Banimal's world of thoughtful baby essentials & innovative lighting. For every purchase, we deliver the same item to a child in need, identified by the Baobab Security Network's data-driven insights.
+            </p>
+            <a href="global_brands.html" class="cta-button">
+                Explore Banimal's World <i class="fas fa-arrow-right"></i>
             </a>
-        </section>
+        </div>
     </main>
 
-    <footer id="contact">
-        <p>&copy; 2025 Seedwave™. All rights reserved.</p>
-        <p>A proud partner of <a href="https://faa.zone/" target="_blank">FAA.zone™ Treaty System™</a></p>
+    <footer>
+        <p>&copy; 2025 Banimal™. All rights reserved.</p>
+        <p>A proud initiative of <a href="https://faa.zone/" target="_blank">FAA.zone™ Treaty System™</a></p>
     </footer>
 
     <script>
-        const canvas = document.getElementById('hero-canvas');
+        const canvas = document.getElementById('banimal-canvas');
         const ctx = canvas.getContext('2d');
         let animationFrameId;
 
-        // Dynamic canvas resizing
         function resizeCanvas() {
             canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight * 0.9; // 90vh
+            canvas.height = window.innerHeight;
         }
 
         window.addEventListener('resize', resizeCanvas);
-        resizeCanvas(); // Initial resize
+        resizeCanvas();
 
-        let time = 0;
-        const numRhythmicLines = 50;
-        let rhythmicLineAmplitude;
-        const rhythmicLineFrequency = 0.05;
-        const rhythmicLineSpeed = 0.005;
+        const particles = [];
+        const numParticles = 150; // Increased particles for denser, softer effect
 
-        // New "Shooting Pulses" for an "in-depth render" effect
-        const shootingPulses = [];
-        const maxShootingPulses = 25; // Increased count
-        const shootingPulseSpawnRate = 0.08; // Increased spawn rate
-        const shootingPulseMaxRadius = 150; // Max size of shooting pulses
-        const shootingPulseSpeed = 3; // Faster expansion
-
-        class ShootingPulse {
+        class Particle {
             constructor() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.initialRadius = 1;
-                this.currentRadius = this.initialRadius;
-                this.maxRadius = Math.random() * (shootingPulseMaxRadius - 50) + 50; // Random max radius
-                this.speed = Math.random() * shootingPulseSpeed + 1; // Faster expansion speed
-                this.alpha = 1;
-                this.decayRate = Math.random() * 0.01 + 0.008; // Faster decay for more "shooting" feel
-                this.color = `hsl(${Math.random() * 360}, 100%, 75%)`; // Vibrant colors
-                this.numRings = Math.floor(Math.random() * 4) + 3; // 3-6 rings for more depth
-                this.glowStrength = Math.random() * 15 + 5; // Stronger glow
+                this.radius = Math.random() * 1.5 + 0.5; // Smaller particles for subtlety
+                this.alpha = 0; // Start invisible
+                this.speed = Math.random() * 0.3 + 0.05; // Slower, gentler movement
+                this.directionX = Math.random() * 2 - 1;
+                this.directionY = Math.random() * 2 - 1;
+                // Use Banimal soft colors, slightly transparent
+                const randomColorIndex = Math.floor(Math.random() * 2);
+                const colors = ['rgba(255, 240, 237, ', 'rgba(248, 220, 220, ']; // banimal-soft-peach, banimal-soft-pink
+                this.baseColor = colors[randomColorIndex];
             }
 
             update() {
-                this.currentRadius += this.speed;
-                this.alpha -= this.decayRate;
+                this.x += this.directionX * this.speed;
+                this.y += this.directionY * this.speed;
 
-                // Reset or remove if too faded or too large
-                if (this.alpha <= 0 || this.currentRadius > this.maxRadius) {
-                    return false; // Indicate that this pulse should be removed
+                // Fade in and out more gently
+                if (this.alpha < 0.7 && this.speed > 0) { // Max alpha 0.7 for subtlety
+                    this.alpha += 0.003; // Slower fade in
+                } else if (this.alpha > 0) {
+                    this.alpha -= 0.001; // Slower fade out
+                } else {
+                    // Reset particle once fully faded
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.alpha = 0;
+                    this.speed = Math.random() * 0.3 + 0.05;
+                    this.directionX = Math.random() * 2 - 1;
+                    this.directionY = Math.random() * 2 - 1;
                 }
-                return true; // Indicate that this pulse is still active
+
+                // Wrap around screen
+                if (this.x < -this.radius || this.x > canvas.width + this.radius || this.y < -this.radius || this.y > canvas.height + this.radius) {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.alpha = 0; // Reset alpha on wrap
+                }
             }
 
             draw() {
-                ctx.save();
-                ctx.globalAlpha = this.alpha;
-                ctx.strokeStyle = this.color;
-                ctx.lineWidth = 1.5;
-
-                // Draw multiple rings for "in-depth render"
-                for (let i = 0; i < this.numRings; i++) {
-                    const ringRadius = this.currentRadius - (i * (this.currentRadius / this.numRings));
-                    if (ringRadius > this.initialRadius) {
-                        ctx.beginPath();
-                        ctx.arc(this.x, this.y, ringRadius, 0, Math.PI * 2);
-                        ctx.stroke();
-                    }
-                }
-
-                // Central glow for the "shooting" origin
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.initialRadius * 2, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
-                ctx.shadowBlur = this.glowStrength;
-                ctx.shadowColor = this.color;
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.baseColor + this.alpha + ')';
+                ctx.shadowBlur = 5; // Softer glow
+                ctx.shadowColor = this.baseColor + (this.alpha * 0.8) + ')';
                 ctx.fill();
                 ctx.shadowBlur = 0;
-
-                ctx.restore();
             }
         }
 
+        function initParticles() {
+            for (let i = 0; i < numParticles; i++) {
+                particles.push(new Particle());
+            }
+        }
 
-        function drawPulseAnimation() {
-            // Clear canvas with a very subtle trail effect (more transparent)
-            ctx.fillStyle = 'rgba(10, 10, 13, 0.03)'; /* Background color with lower alpha for fainter trails */
+        function animateCanvas() {
+            // Clear with very subtle transparency to create a faint, gentle trail effect
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.02)'; /* Very slight white overlay to clear */
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // Or use clearRect for no trails: ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            time += rhythmicLineSpeed;
 
-            // 1. Draw the rhythmic pulse from original fruitful.faa.zone/index.html
-            rhythmicLineAmplitude = canvas.height / 4; // Ensure this is always up-to-date
-            for (let i = 0; i < numRhythmicLines; i++) {
-                ctx.beginPath();
-                const offset = i * (Math.PI * 2 / numRhythmicLines);
-                const colorHue = (time * 100 + i * 5) % 360;
-                ctx.strokeStyle = `hsla(${colorHue}, 80%, 60%, 0.7)`;
-                ctx.lineWidth = 1.5;
-
-                for (let x = 0; x < canvas.width; x += 5) {
-                    const y = Math.sin(x * rhythmicLineFrequency + time + offset) * (rhythmicLineAmplitude * (Math.sin(time * 0.1 + i * 0.1) * 0.5 + 0.5)) + canvas.height / 2;
-                    if (x === 0) {
-                        ctx.moveTo(x, y);
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
-                }
-                ctx.stroke();
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
             }
 
-            // 2. Draw Shooting Pulses
-            if (Math.random() < shootingPulseSpawnRate && shootingPulses.length < maxShootingPulses) {
-                shootingPulses.push(new ShootingPulse());
-            }
-
-            for (let i = shootingPulses.length - 1; i >= 0; i--) {
-                const pulse = shootingPulses[i];
-                if (pulse.update()) {
-                    pulse.draw();
-                } else {
-                    shootingPulses.splice(i, 1); // Remove inactive pulses
-                }
-            }
-
-            animationFrameId = requestAnimationFrame(drawPulseAnimation);
+            animationFrameId = requestAnimationFrame(animateCanvas);
         }
 
-        // Initialize and start animation on window load
         window.onload = function() {
-            resizeCanvas(); // Ensure canvas is sized correctly
-            drawPulseAnimation(); // Start the combined animation
-
-            // Smooth scrolling for navigation links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    document.querySelector(this.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                });
-            });
+            initParticles();
+            animateCanvas();
         };
     </script>
 </body>

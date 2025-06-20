@@ -7,6 +7,7 @@
     <link rel="icon" href="/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
             --dark-bg: #0a0a0d;
@@ -144,37 +145,27 @@
             max-width: 700px;
         }
 
-        /* Updated CTA button style to match Banimal accent blue and be oval */
         .cta-button {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            padding: 1rem 2.5rem; /* Adjusted padding for a more oval shape */
-            background-color: var(--banimal-accent-blue); /* Use the Banimal accent blue */
+            padding: 1.2rem 3rem; /* Larger button */
+            background: linear-gradient(45deg, var(--banimal-accent-blue), #4A90E2); /* Blue gradient for CTA */
             color: white;
             text-decoration: none;
-            border-radius: 9999px; /* Makes it perfectly oval */
+            border-radius: 9999px;
             font-weight: 700;
-            font-size: 1.1rem; /* Slightly smaller font size */
-            box-shadow: 0 5px 15px rgba(102, 178, 255, 0.4); /* Shadow using accent blue */
+            font-size: 1.2rem;
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
             transition: all 0.3s ease-in-out;
-            border: 1px solid var(--banimal-accent-blue); /* Solid border in accent color */
-            margin-top: 1.5rem; /* Added margin for spacing below the paragraph */
+            border: 1px solid rgba(74, 144, 226, 0.5);
         }
         .cta-button:hover {
-            background-color: #4A90E2; /* Slightly darker shade on hover */
-            box-shadow: 0 8px 20px rgba(102, 178, 255, 0.6);
-            transform: translateY(-3px) scale(1.01);
-            border-color: #4A90E2;
+            background: linear-gradient(45deg, #4A90E2, var(--banimal-accent-blue));
+            box-shadow: 0 10px 30px rgba(0, 123, 255, 0.6);
+            transform: translateY(-5px) scale(1.02);
+            border-color: rgba(74, 144, 226, 0.8);
         }
-
-        /* Styling for the emoticons to ensure they match the text size */
-        .cta-button .emoticon {
-            font-size: 1.2em; /* Make them slightly larger than surrounding text */
-            line-height: 1; /* Adjust line height to prevent vertical alignment issues */
-            vertical-align: middle; /* Align vertically with text */
-        }
-
         footer {
             background-color: #050508;
             border-top: 1px solid #2a2a30;
@@ -201,7 +192,7 @@
             .banimal-hero-content h1 { font-size: 3rem; }
             .banimal-hero-content h1 span { font-size: 0.6em; }
             .banimal-hero-content p { font-size: 1rem; }
-            .cta-button { padding: 0.8rem 1.8rem; font-size: 0.9rem; } /* Smaller on mobile */
+            .cta-button { padding: 1rem 2rem; font-size: 1rem; }
             .content-section { padding-top: 6rem; padding-bottom: 6rem; }
         }
     </style>
@@ -211,7 +202,8 @@
     <header>
         <div class="logo-group">
             <a href="#" class="logo-fruitful">Fruitful™</a>
-            </div>
+            <!-- Removed logo-separator and logo-seedwave -->
+        </div>
     </header>
 
     <main class="content-section">
@@ -221,15 +213,15 @@
             <p>
                 Discover Banimal's world of thoughtful baby essentials & innovative lighting. For every purchase, we deliver the same item to a child in need, identified by the Baobab Security Network's data-driven insights.
             </p>
-            <a href="#" class="cta-button">
-                Explore <span class="emoticon">🐾</span> Banimal's <span class="emoticon">🍇</span>Fruitful™ World, It's a Giving Loop
+            <a href="global_brands.html" class="cta-button">
+                Explore Banimal's World <i class="fas fa-arrow-right"></i>
             </a>
         </div>
     </main>
 
     <footer>
-        <p>&copy; 2025 Banimal™. All rights reserved.</p>
-        <p>A proud initiative of <a href="https://Noodle Juice by Fruitful™/" target="_blank">Fruitful™ Treaty System™</a></p>
+        <p>&copy; 👟2025 Banimal™. All rights reserved.</p>
+        <p>A proud initiative of <a href="https://faa.zone/" target="_blank">FAA.zone™ Treaty System™</a></p>
     </footer>
 
     <script>

@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Chart.js for the new pulse graph -->
+    <!-- Chart.js is no longer directly used for the Node.js graph, but kept for other potential uses if needed elsewhere -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.js"></script>
     <style>
         /* Base Styles - More dynamic and modern for Seedwave */
@@ -192,11 +192,14 @@
 
         /* General Section Styling (for content below hero) */
         section {
-            padding: 6rem 2rem;
+            padding: 6rem 0rem; /* Removed horizontal padding to allow blocks to stretch to edges */
             background-color: var(--page-bg-light); /* Now uses light background */
             border-top: 1px solid var(--page-border-light); /* Light border */
             text-align: center;
             color: var(--page-text-dark); /* Dark text for general sections */
+        }
+        section:last-of-type {
+            border-bottom: none; /* Remove bottom border for the last section */
         }
 
         h2 {
@@ -207,28 +210,31 @@
             text-shadow: none; /* No text shadow for clean look */
         }
 
-        /* Metrics / Operational Blocks */
+        /* Operational Blocks (Auto Design, Auto Build, Auto Deploy) */
         .operational-blocks-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2.5rem;
-            max-width: 1200px;
-            margin: 0 auto;
+            gap: 2.5rem; /* Gap between blocks */
+            padding: 0 2rem; /* Restore padding to grid container */
+            max-width: 1200px; /* Limit width */
+            margin: 0 auto; /* Center the grid */
         }
 
         .operational-block {
             background-color: #ffffff; /* Pure white block background */
-            border-radius: 1rem;
-            padding: 2.5rem; /* Slightly more padding */
+            border-radius: 1rem; /* Rounded corners */
+            padding: 2.5rem; /* Standard padding */
             box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* Softer shadow */
             border: 1px solid var(--page-border-light); /* Light border */
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
             overflow: hidden;
-            color: var(--page-text-dark); /* Ensure dark text within cards */
-            display: flex; /* Flexbox for centering content */
+            color: var(--page-text-dark);
+            display: flex;
             align-items: center;
             justify-content: center;
+            margin: 0; /* No negative margins, rely on gap for spacing */
+            width: auto; /* Auto width within grid */
         }
         .operational-block:hover {
             transform: translateY(-5px) scale(1.01); /* Softer hover effect */
@@ -248,20 +254,21 @@
         #master-brands {
             background-color: var(--page-bg-light); /* Consistent light background */
             color: var(--page-text-dark);
+            padding-bottom: 0; /* Adjust padding for contiguous block below */
         }
         #master-brands h2 {
             color: var(--page-text-dark);
             text-shadow: none;
         }
         #master-brands .art-typo-container {
-            text-align: left; /* Align the art typo content to the left */
-            font-family: monospace; /* Monospace font for precise alignment */
-            line-height: 1; /* Tight line spacing */
-            font-size: 1.1rem; /* Adjust font size for art typo */
-            color: var(--page-muted-text); /* Muted text for the art typo */
-            max-width: 700px; /* Limit width */
-            margin: 0 auto 3rem auto; /* Center the block and add bottom margin */
-            white-space: pre-wrap; /* Preserve whitespace and wrap lines */
+            text-align: left;
+            font-family: monospace;
+            line-height: 1;
+            font-size: 1.1rem;
+            color: var(--page-muted-text);
+            max-width: 700px;
+            margin: 0 auto 3rem auto;
+            white-space: pre-wrap;
         }
 
 
@@ -270,56 +277,93 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2.5rem; /* Consistent gap */
+            padding: 0 2rem; /* Restore padding to grid container */
             max-width: 1200px; /* Max width for the grid */
             margin: 0 auto; /* Center the grid */
         }
 
         .master-brand-block {
             background-color: #ffffff; /* Pure white block background */
-            border-radius: 1rem;
-            padding: 2.5rem;
+            border-radius: 1rem; /* Rounded corners */
+            padding: 2.5rem; /* Standard padding */
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             border: 1px solid var(--page-border-light);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            text-decoration: none; /* Remove underline for links */
-            color: var(--page-text-dark); /* Ensure text is black */
+            text-decoration: none;
+            color: var(--page-text-dark);
+            margin: 0; /* Remove negative margins */
+            width: auto; /* Auto width within grid */
         }
         .master-brand-block:hover {
             transform: translateY(-5px) scale(1.01);
             box-shadow: 0 6px 20px rgba(0,0,0,0.12);
         }
         .master-brand-block h3 {
-            font-size: 2rem; /* Consistent large bold text */
+            font-size: 2rem;
             font-weight: 900;
-            color: var(--page-text-dark); /* Pure black */
+            color: var(--page-text-dark);
             line-height: 1.2;
             margin: 0;
             padding: 0;
         }
 
+        /* Node.js Pulse Graph Blocks */
+        #node-pulse-sections {
+            padding-top: 0; /* No top padding for seamless transition from master brands */
+            padding-left: 0; /* Section itself has no padding */
+            padding-right: 0; /* Section itself has no padding */
+            background-color: black; /* Ensure solid black background for the section itself */
+            border-top: none; /* Remove border top here, grid border handles it */
+        }
+        .node-pulse-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 columns for B&W graph */
+            gap: 1rem; /* RESTORED GAP between canvases */
+            max-width: 1200px; /* Limit width */
+            margin: 0 auto; /* Center the grid */
+            border-radius: 0; /* No rounded corners */
+            overflow: hidden; /* Ensure content stays within borders */
+            background-color: #000000; /* Black background for the entire grid area */
+            box-shadow: none; /* No shadow from grid container */
+            border: none; /* No border from grid container */
+            height: 250px; /* Fixed height for the entire grid */
+        }
 
-        /* Node.js Infiltration Pulse Graph Section (Updated for light theme) */
-        #node-pulse-graph {
-            background-color: var(--page-bg-light); /* Consistent light background */
-            color: var(--page-text-dark);
+        .node-pulse-block {
+            background-color: #000000; /* Black background for individual blocks */
+            position: relative; /* For canvas positioning */
+            height: 100%; /* Fill parent grid item height */
+            overflow: hidden;
+            border-radius: 0; /* No rounded corners */
+            border-left: none; /* Remove vertical white lines between blocks */
+            border-right: none; /* Remove vertical white lines between blocks */
+            box-sizing: border-box; /* Include padding/border in element's total width/height */
         }
-        #node-pulse-graph h2 {
-            color: var(--page-text-dark);
-            text-shadow: none;
+        /* No specific border for first/last child now, as all are border-none */
+
+        .node-pulse-block h3 {
+            position: absolute;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2; /* Above canvas */
+            color: rgba(255, 255, 255, 0.7); /* White text for headings */
+            font-size: 1.2rem; /* Smaller heading for sub-charts */
+            font-weight: 700;
         }
-        #node-pulse-graph .bg-gray-900 { /* Chart container background */
-            background-color: #ffffff; /* White background for chart */
-            border-color: var(--page-border-light); /* Light border */
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* Softer shadow */
-        }
-        #node-pulse-graph canvas {
-            background-color: transparent; /* No background fill, handled by container */
-        }
-        #node-pulse-graph p {
-            color: var(--page-muted-text);
+
+        .node-pulse-block canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+            background-color: transparent; /* Canvas itself is transparent */
+            z-index: 1;
         }
 
 
@@ -362,6 +406,16 @@
             .hero-pulse-grid {
                 grid-template-columns: repeat(2, 1fr); /* 2 columns on tablet */
                 grid-template-rows: repeat(3, 1fr); /* 3 rows on tablet */
+            }
+            .node-pulse-grid {
+                grid-template-columns: repeat(1, 1fr); /* Stack on tablets as well */
+            }
+            .operational-block, .master-brand-block {
+                margin: 0; /* Ensure no negative margin on tablets */
+                width: 100%; /* Full width */
+            }
+            section {
+                padding: 6rem 2rem; /* Restore normal padding on tablets */
             }
         }
         @media (max-width: 768px) {
@@ -431,9 +485,8 @@
             </div>
         </section>
 
-        <!-- Replaced "Our Interstellar Impact" section with new blocks -->
-        <section id="operational-pillars">
-            <!-- Removed h2 heading as requested -->
+        <!-- Operational Pillars - now solid blocks without internal borders/shadows -->
+        <section id="operational-pillars" class="py-16 px-6 text-center">
             <div class="operational-blocks-grid">
                 <div class="operational-block">
                     <h3>Auto Design</h3>
@@ -447,7 +500,7 @@
             </div>
         </section>
 
-        <!-- New: Master License Brands Section - Adjusted for B&W -->
+        <!-- Master License Brands Section - now solid blocks without internal borders/shadows -->
         <section id="master-brands" class="py-16 px-6 text-center">
             <h2 class="text-4xl font-bold mb-8">Seedwave™ Global Master License Brands</h2>
             <div class="art-typo-container">
@@ -467,7 +520,7 @@ Seedwave™:
                           Driving Collective Impact.
 </pre>
             </div>
-            <!-- New: Master Brand Blocks -->
+            <!-- Master Brand Blocks - now solid without internal borders/shadows -->
             <div class="mt-12 operational-blocks-grid master-brand-blocks-grid">
                 <a href="https://samfox.faa.zone" target="_blank" class="master-brand-block">
                     <h3>Samfox™</h3>
@@ -482,14 +535,28 @@ Seedwave™:
         </section>
 
 
-        <!-- Node.js Infiltration Pulse Graph Section -->
-        <section id="node-pulse-graph" class="py-16 px-6 text-center">
+        <!-- Node.js Infiltration Pulse Section with three distinct canvases -->
+        <section id="node-pulse-sections" class="py-16 px-0 text-center">
             <h2 class="text-4xl font-bold mb-8">Node.js Infiltration Pulse</h2>
-            <div class="w-full max-w-5xl mx-auto bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-700">
-                <canvas id="nodePulseChart"></canvas>
+            <div class="node-pulse-grid">
+                <!-- Samfox™ Node Pulse -->
+                <div class="node-pulse-block">
+                    <h3>Samfox™ Node Pulse</h3>
+                    <canvas id="canvas-samfox-node-pulse"></canvas>
+                </div>
+                <!-- Seedwave™ Node Pulse -->
+                <div class="node-pulse-block">
+                    <h3>Seedwave™ Node Pulse</h3>
+                    <canvas id="canvas-seedwave-node-pulse"></canvas>
+                </div>
+                <!-- FAA.ZONE™ Node Pulse -->
+                <div class="node-pulse-block">
+                    <h3>FAA.ZONE™ Node Pulse</h3>
+                    <canvas id="canvas-faa-zone-node-pulse"></canvas>
+                </div>
             </div>
             <p class="text-sm text-page-muted-text mt-4 max-w-2xl mx-auto">
-                Real-time visualization of Node.js package infiltration, repo deployments, and array count growth across sectors.
+                Real-time visualization of Node.js package infiltration, repo deployments, and array count growth across key master brands.
             </p>
         </section>
 
@@ -508,7 +575,11 @@ Seedwave™:
             shooting: { canvas: document.getElementById('canvas-shooting'), ctx: null, time: 0, animationId: null, pulses: [] },
             particles: { canvas: document.getElementById('canvas-particles'), ctx: null, time: 0, animationId: null, particles: [] },
             radialBursts: { canvas: document.getElementById('canvas-radial-bursts'), ctx: null, time: 0, animationId: null, bursts: [] },
-            hyperspace: { canvas: document.getElementById('canvas-hyperspace'), ctx: null, time: 0, animationId: null }
+            hyperspace: { canvas: document.getElementById('canvas-hyperspace'), ctx: null, time: 0, animationId: null },
+            // New canvas objects for the Node.js pulses
+            samfoxNodePulse: { canvas: document.getElementById('canvas-samfox-node-pulse'), ctx: null, time: 0, animationId: null, history: [], particles: [] },
+            seedwaveNodePulse: { canvas: document.getElementById('canvas-seedwave-node-pulse'), ctx: null, time: 0, animationId: null, history: [], waves: [] },
+            faaZoneNodePulse: { canvas: document.getElementById('canvas-faa-zone-node-pulse'), ctx: null, time: 0, animationId: null, history: [], circles: [] }
         };
 
         // New: Header Pulse Canvas object
@@ -991,137 +1062,201 @@ Seedwave™:
                 case 'hyperspace':
                     drawHyperspaceWarp(canvasObj);
                     break;
+                // Node Pulse animations
+                case 'samfoxNodePulse':
+                    drawSamfoxNodePulse(canvasObj);
+                    break;
+                case 'seedwaveNodePulse':
+                    drawSeedwaveNodePulse(canvasObj);
+                    break;
+                case 'faaZoneNodePulse':
+                    drawFaaZoneNodePulse(canvasObj);
+                    break;
             }
         }
 
-        // Chart.js for Node Pulse Graph
-        let nodePulseChartInstance = null;
-        function renderNodePulseChart() {
-            const ctx = document.getElementById('nodePulseChart')?.getContext('2d');
-            if (!ctx) return;
+        // --- New Node.js Pulse Animations for Samfox, Seedwave, FAA.ZONE ---
 
-            if (nodePulseChartInstance) {
-                nodePulseChartInstance.destroy(); // Destroy existing instance if any
+        // Shared data for the combined Node Pulse Graph
+        const nodePulseGraphSharedData = {
+            totalWidth: 0,
+            height: 0,
+            points: [],
+            numPoints: 150,
+            time: 0,
+            amplitude: 0.3,
+            frequency: 0.02,
+            speed: 0.05,
+            electricityPoints: [],
+            maxElectricityPoints: 200,
+            electricitySpawnRate: 0.8,
+            electricityDecayRate: 0.03,
+            electricityLength: 10,
+            // New: Knitting/Looping parameters
+            knittingDepth: 0.2, // Percentage of canvas height for loop depth
+            knittingFrequency: 0.1, // How often loops occur
+            knittingPhaseOffset: 0 // To make loops appear at different points
+        };
+
+        // Function to update shared graph data
+        function updateNodePulseGraphData() {
+            nodePulseGraphSharedData.time += nodePulseGraphSharedData.speed;
+            if (nodePulseGraphSharedData.points.length === 0) {
+                for (let i = 0; i < nodePulseGraphSharedData.numPoints; i++) {
+                    nodePulseGraphSharedData.points.push(Math.random() * nodePulseGraphSharedData.height);
+                }
+            } else {
+                for (let i = 0; i < nodePulseGraphSharedData.numPoints; i++) {
+                    const waveHeight = Math.sin(i * nodePulseGraphSharedData.frequency + nodePulseGraphSharedData.time) * nodePulseGraphSharedData.amplitude * nodePulseGraphSharedData.height;
+                    nodePulseGraphSharedData.points[i] = nodePulseGraphSharedData.height / 2 + waveHeight;
+                }
             }
 
-            const dataPoints = 50;
-            const labels = Array.from({length: dataPoints}, (_, i) => `Tick ${i+1}`);
-            // More dynamic data generation for better visual
-            const coreNodeData = Array.from({length: dataPoints}, (v, i) => {
-                const base = 50 + (i * 1.5);
-                const fluctuation = (Math.random() - 0.5) * 40;
-                return Math.floor(Math.max(0, base + fluctuation));
-            });
-            const arrayCountData = Array.from({length: dataPoints}, (v, i) => {
-                const base = 100 + (i * 2);
-                const fluctuation = (Math.random() - 0.5) * 60;
-                return Math.floor(Math.max(0, base + fluctuation));
-            });
-            const repoInfiltrationData = Array.from({length: dataPoints}, (v, i) => {
-                const base = 10 + (i * 0.8);
-                const fluctuation = (Math.random() - 0.5) * 20;
-                return Math.floor(Math.max(0, base + fluctuation));
-            });
+            if (Math.random() < nodePulseGraphSharedData.electricitySpawnRate && nodePulseGraphSharedData.electricityPoints.length < nodePulseGraphSharedData.maxElectricityPoints) {
+                const randomPointIndex = Math.floor(Math.random() * nodePulseGraphSharedData.numPoints);
+                nodePulseGraphSharedData.electricityPoints.push({
+                    index: randomPointIndex,
+                    alpha: 1,
+                    length: Math.random() * nodePulseGraphSharedData.electricityLength + 5,
+                    offsetY: (Math.random() - 0.5) * 5
+                });
+            }
 
-            nodePulseChartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Core Nodes (Thousands)',
-                            borderColor: 'rgba(0, 113, 227, 0.9)', /* Fruitful Blue for light mode */
-                            backgroundColor: 'rgba(0, 113, 227, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 0, // No points for a smooth pulse
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Array Counts (Hundreds)',
-                            data: arrayCountData,
-                            borderColor: 'rgba(48, 209, 88, 0.9)', /* Fruitful Green for light mode */
-                            backgroundColor: 'rgba(48, 209, 88, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 0,
-                            borderWidth: 2
-                        },
-                        {
-                            label: 'Repo Infiltrations',
-                            data: repoInfiltrationData,
-                            borderColor: 'rgba(255, 77, 77, 0.9)', /* Accent Red for light mode */
-                            backgroundColor: 'rgba(255, 77, 77, 0.1)',
-                            fill: true,
-                            tension: 0.4,
-                            pointRadius: 0,
-                            borderWidth: 2
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    animation: {
-                        duration: 0 // Disable Chart.js default animation for continuous update
-                    },
-                    scales: {
-                        x: {
-                            display: false // Hide X-axis labels
-                        },
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                color: 'var(--page-text-dark)' // Dark ticks for light background
-                            },
-                            grid: {
-                                color: 'var(--page-border-light)' // Subtle grid lines
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: 'var(--page-text-dark)' // Dark legend labels
-                            }
-                        }
+            for (let i = nodePulseGraphSharedData.electricityPoints.length - 1; i >= 0; i--) {
+                const ep = nodePulseGraphSharedData.electricityPoints[i];
+                ep.alpha -= nodePulseGraphSharedData.electricityDecayRate;
+                if (ep.alpha <= 0) {
+                    nodePulseGraphSharedData.electricityPoints.splice(i, 1);
+                }
+            }
+        }
+        setInterval(updateNodePulseGraphData, 50);
+
+        // Helper to draw a segment of the noodle pulse graph with knitting effect
+        function drawNoodlePulseSegment(canvasObj, startIndex, endIndex, offsetCanvasX) {
+            const { canvas, ctx } = canvasObj;
+            if (!ctx) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'black'; /* Ensure individual canvas blocks are black */
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Set global dimensions if not already set (first canvas will do this)
+            if (canvases.samfoxNodePulse.canvas && canvases.seedwaveNodePulse.canvas && canvases.faaZoneNodePulse.canvas) {
+                if (nodePulseGraphSharedData.totalWidth === 0 || nodePulseGraphSharedData.height === 0) {
+                    // Recalculate total width including gaps based on actual rendered block width + gap
+                    const actualBlockWidth = canvases.samfoxNodePulse.canvas.offsetWidth; // All blocks should have same rendered width
+                    const gapWidth = 16; // The CSS gap is 1rem = 16px
+                    nodePulseGraphSharedData.totalWidth = (actualBlockWidth * 3) + (2 * gapWidth);
+                    nodePulseGraphSharedData.height = canvases.samfoxNodePulse.canvas.offsetHeight;
+                }
+            } else {
+                return;
+            }
+
+            const segmentWidth = nodePulseGraphSharedData.totalWidth / (nodePulseGraphSharedData.numPoints - 1);
+
+            ctx.beginPath();
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.7)';
+
+            // Iterate over points to draw the segment
+            const drawExtend = 30; // Extend drawing into the "walls"
+            for (let i = startIndex; i <= endIndex; i++) {
+                const xGlobal = i * segmentWidth;
+                let xLocal = xGlobal - offsetCanvasX;
+
+                const yBase = nodePulseGraphSharedData.points[i];
+                // Knitting/looping effect: modulate Y position based on horizontal position relative to block, and time
+                const knittingYOffset = Math.sin((xLocal / canvas.width) * Math.PI * 4 + nodePulseGraphSharedData.time * 10) * nodePulseGraphSharedData.knittingDepth * canvas.height;
+                const y = yBase + knittingYOffset;
+
+                // Modulate opacity to create "disappearing" effect based on loop phase
+                const phase = ((xLocal / canvas.width) * Math.PI * 4 + nodePulseGraphSharedData.time * 10) % (Math.PI * 2);
+                let alphaMod = Math.sin(phase); // Sine wave for smooth fade in/out
+                alphaMod = Math.max(0, alphaMod); // Only positive alpha
+
+                ctx.globalAlpha = alphaMod * 0.8 + 0.2; // Base opacity + modulated part
+
+                // Ensure drawing extends into walls for seamless look
+                xLocal = Math.max(xLocal, -drawExtend);
+                xLocal = Math.min(xLocal, canvas.width + drawExtend);
+
+                if (i === startIndex || (ctx.canvas.lastPoint && Math.abs(xLocal - ctx.canvas.lastPoint.x) > segmentWidth * 1.5)) {
+                     ctx.moveTo(xLocal, y);
+                } else {
+                    ctx.lineTo(xLocal, y);
+                }
+                ctx.canvas.lastPoint = {x: xLocal, y: y};
+            }
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+            ctx.globalAlpha = 1; // Reset alpha after drawing line
+
+            // Draw electricity effects
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.lineWidth = 1;
+            nodePulseGraphSharedData.electricityPoints.forEach(ep => {
+                if (ep.index >= startIndex && ep.index <= endIndex) {
+                    const xGlobal = ep.index * segmentWidth;
+                    let xLocal = xGlobal - offsetCanvasX;
+                    const yBase = nodePulseGraphSharedData.points[ep.index];
+                    const knittingYOffset = Math.sin((xLocal / canvas.width) * Math.PI * 4 + nodePulseGraphSharedData.time * 10) * nodePulseGraphSharedData.knittingDepth * canvas.height;
+                    const y = yBase + knittingYOffset;
+
+                    if (xLocal >= -drawExtend && xLocal <= canvas.width + drawExtend) {
+                        ctx.save();
+                        ctx.globalAlpha = ep.alpha;
+                        ctx.beginPath();
+                        ctx.moveTo(xLocal, y);
+                        ctx.lineTo(xLocal + (Math.random() - 0.5) * ep.length, y + (Math.random() - 0.5) * ep.length + ep.offsetY);
+                        ctx.stroke();
+                        ctx.restore();
                     }
                 }
             });
 
-            // Update chart data periodically to simulate live pulse
-            setInterval(() => {
-                const lastCore = nodePulseChartInstance.data.datasets[0].data[nodePulseChartInstance.data.datasets[0].data.length - 1];
-                const lastArray = nodePulseChartInstance.data.datasets[1].data[nodePulseChartInstance.data.datasets[1].data.length - 1];
-                const lastRepo = nodePulseChartInstance.data.datasets[2].data[nodePulseChartInstance.data.datasets[2].data.length - 1];
-
-                const newDataPointCore = Math.floor(Math.max(0, lastCore + (Math.random() - 0.5) * 20)); // More dynamic change
-                const newDataPointArray = Math.floor(Math.max(0, lastArray + (Math.random() - 0.5) * 30));
-                const newDataPointRepo = Math.floor(Math.max(0, lastRepo + (Math.random() - 0.5) * 10));
-
-
-                nodePulseChartInstance.data.labels.push(`Tick ${nodePulseChartInstance.data.labels.length + 1}`);
-                nodePulseChartInstance.data.datasets[0].data.push(newDataPointCore);
-                nodePulseChartInstance.data.datasets[1].data.push(newDataPointArray);
-                nodePulseChartInstance.data.datasets[2].data.push(newDataPointRepo);
-
-                // Remove old data points to maintain maxDataPoints
-                if (nodePulseChartInstance.data.labels.length > dataPoints) {
-                    nodePulseChartInstance.data.labels.shift();
-                    nodePulseChartInstance.data.datasets[0].data.shift();
-                    nodePulseChartInstance.data.datasets[1].data.shift();
-                    nodePulseChartInstance.data.datasets[2].data.shift();
+            canvasObj.animationId = requestAnimationFrame(() => {
+                switch(canvasObj.canvas.id) {
+                    case 'canvas-samfox-node-pulse':
+                        drawSamfoxNodePulse(canvasObj);
+                        break;
+                    case 'canvas-seedwave-node-pulse':
+                        drawSeedwaveNodePulse(canvasObj);
+                        break;
+                    case 'canvas-faa-zone-node-pulse':
+                        drawFaaZoneNodePulse(canvasObj);
+                        break;
                 }
-
-                nodePulseChartInstance.update();
-            }, 1000); // Update every 1 second
+            });
         }
 
+        // Specific draw functions for each Node Pulse canvas
+        function drawSamfoxNodePulse(canvasObj) {
+            const segmentStart = 0;
+            const segmentEnd = Math.floor(nodePulseGraphSharedData.numPoints / 3) + 2;
+            drawNoodlePulseSegment(canvasObj, segmentStart, segmentEnd, 0);
+        }
+
+        function drawSeedwaveNodePulse(canvasObj) {
+            const segmentStart = Math.floor(nodePulseGraphSharedData.numPoints / 3) - 2;
+            const segmentEnd = Math.floor(nodePulseGraphSharedData.numPoints * 2 / 3) + 2;
+            const offsetCanvasX = (canvases.samfoxNodePulse.canvas ? canvases.samfoxNodePulse.canvas.offsetWidth : 0) + 16; /* Samfox width + gap */
+            drawNoodlePulseSegment(canvasObj, segmentStart, segmentEnd, offsetCanvasX);
+        }
+
+        function drawFaaZoneNodePulse(canvasObj) {
+            const segmentStart = Math.floor(nodePulseGraphSharedData.numPoints * 2 / 3) - 2;
+            const segmentEnd = nodePulseGraphSharedData.numPoints - 1;
+            const offsetCanvasX = (canvases.samfoxNodePulse.canvas ? canvases.samfoxNodePulse.canvas.offsetWidth : 0) + (canvases.seedwaveNodePulse.canvas ? canvases.seedwaveNodePulse.canvas.offsetWidth : 0) + (2 * 16); /* Samfox width + Seedwave width + two gaps */
+            drawNoodlePulseSegment(canvasObj, segmentStart, segmentEnd, offsetCanvasX);
+        }
 
         // Initialize all canvases and start their animations on window load
         window.onload = function() {
             initCanvases();
-            renderNodePulseChart(); // Render the new Chart.js graph
 
             // Smooth scrolling for navigation links (if any were present)
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -1136,3 +1271,4 @@ Seedwave™:
     </script>
 </body>
 </html>
+

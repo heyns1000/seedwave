@@ -223,7 +223,7 @@
             color: var(--page-text-dark); /* Dark text */
             margin-bottom: 3rem; /* Default spacing */
             text-shadow: none; /* No text shadow for clean look */
-            max-width: 800px; /* Limit width for long headings */
+            /* Removed max-width here, will apply directly in HTML for specific headings */
             margin-left: auto;
             margin-right: auto;
         }
@@ -277,6 +277,9 @@
         #master-brands h2 {
             color: var(--page-text-dark);
             text-shadow: none;
+            max-width: 800px; /* Specific width for this heading */
+            margin-left: auto;
+            margin-right: auto;
         }
         #master-brands .art-typo-container {
             text-align: left;
@@ -284,7 +287,7 @@
             line-height: 1;
             font-size: 1.1rem;
             color: var(--page-muted-text);
-            max-width: 700px;
+            max-width: 700px; /* Adjusted to align with heading width */
             margin: 0 auto 3rem auto;
             white-space: pre-wrap;
         }
@@ -349,6 +352,7 @@
             max-width: 1200px; /* Max width, centered */
             margin: 0 auto;
             position: relative; /* For relative positioning of titles if needed */
+            /* Removed fixed height here, let grid height dictate it */
         }
 
         .node-pulse-grid {
@@ -533,7 +537,7 @@
 
         <!-- Master License Brands Section - now with rounded blocks and proper gaps -->
         <section id="master-brands" class="py-16 px-6 text-center">
-            <h2 class="text-4xl font-bold mb-8">Seedwave™ Global Master License Brands</h2>
+            <h2 class="text-4xl font-bold mb-8" style="max-width: 800px; margin-left: auto; margin-right: auto;">Seedwave™ Global Master License Brands</h2>
             <div class="art-typo-container">
 <pre>
 Seedwave™:
@@ -1256,7 +1260,7 @@ Seedwave™:
             const drawExtend = 30; // Extend drawing into the "walls"
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // Changed fillStyle to a darker, less transparent black
+            // Updated fillStyle to a darker, less transparent black
             ctx.fillStyle = '#000000'; /* Pitch black */
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -1389,4 +1393,3 @@ Seedwave™:
     </script>
 </body>
 </html>
-

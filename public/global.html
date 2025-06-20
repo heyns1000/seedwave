@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seedwave™ - Global Pulse & Master Brands</title>
+    <title>Noodle Juice Rhino Strikes v.11 - Seedwave™</title>
     <link rel="icon" href="/favicon.ico">
     <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -347,6 +347,150 @@
             .metric-value { font-size: 2.2rem; }
             footer { padding: 1.5rem; }
         }
+
+        /* New styles for Noodle Soup & Ant Hut sections */
+        .whimsical-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .whimsical-card {
+            background-color: var(--card-bg-dark);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border: 1px solid var(--border-dark);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .whimsical-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+        }
+
+        .whimsical-icon {
+            font-size: 4rem; /* Larger icon/emoji */
+            margin-bottom: 1rem;
+            line-height: 1; /* Adjust line height for emojis */
+            text-shadow: 0 0 15px rgba(0, 227, 147, 0.5); /* Primary glow */
+        }
+        .whimsical-card h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--light-text);
+            margin-bottom: 0.75rem;
+        }
+        .whimsical-card p {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.7);
+            flex-grow: 1; /* Allow paragraph to take space */
+        }
+
+        /* Spotify Integration Section Styles */
+        .spotify-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .spotify-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border: none;
+            text-decoration: none; /* Ensure it looks like a button */
+        }
+
+        .spotify-btn-primary {
+            background: linear-gradient(45deg, #1DB954, #128A3C); /* Spotify Green */
+            color: white;
+            box-shadow: 0 4px 15px rgba(29, 185, 84, 0.4);
+        }
+        .spotify-btn-primary:hover {
+            background: linear-gradient(45deg, #128A3C, #1DB954);
+            box-shadow: 0 6px 20px rgba(29, 185, 84, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .spotify-btn-secondary {
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #555;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .spotify-btn-secondary:hover {
+            background-color: #555;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transform: translateY(-2px);
+        }
+
+        #top-tracks-list, #playlist-message, #audio-players, #spotify-album-embed {
+            background-color: var(--card-bg-dark);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border: 1px solid var(--border-dark);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            text-align: left;
+        }
+
+        #top-tracks-list ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        #top-tracks-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.8);
+        }
+        #top-tracks-list li:last-child {
+            border-bottom: none;
+        }
+        #top-tracks-list li strong {
+            color: var(--primary-glow);
+        }
+
+        #playlist-message {
+            color: var(--light-text);
+            font-weight: 500;
+        }
+
+        #audio-players {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        #audio-players iframe {
+            width: 100%;
+            height: 80px; /* Compact player height */
+            border-radius: 12px; /* Rounded corners for iframe */
+            border: none;
+        }
+
+        #spotify-album-embed iframe {
+            width: 100%;
+            border-radius: 12px;
+            border: none;
+        }
+
     </style>
 </head>
 <body>
@@ -367,8 +511,8 @@
     <main>
         <section class="hero-section" id="pulse">
             <!-- Text content removed -->
-            <a href="homepage.html" class="hero-cta-button">
-                Discover the Future <i class="fas fa-arrow-right"></i>
+            <a href="#whimsical-ventures" class="hero-cta-button">
+                Explore Whimsical Ventures <i class="fas fa-arrow-down"></i>
             </a>
             <div class="hero-pulse-grid">
                 <div class="pulse-container">
@@ -422,7 +566,7 @@
             </div>
         </section>
 
-        <!-- New: Master License Brands Section -->
+        <!-- Existing Master License Brands Section -->
         <section id="master-brands" class="py-16 px-6 text-center">
             <h2 class="text-4xl font-bold mb-8">Seedwave™ Global Master License Brands</h2>
             <div class="max-w-4xl mx-auto text-lg text-gray-400 leading-relaxed space-y-4">
@@ -462,6 +606,84 @@
             </div>
         </section>
 
+        <!-- New: Whimsical Ventures Section (Noodle Soup & Job Ant Huts) -->
+        <section id="whimsical-ventures" class="py-16 px-6 text-center">
+            <h2 class="text-4xl font-bold mb-8">Whimsical Ventures: Noodle Soup & Job Ant Huts</h2>
+            <div class="max-w-4xl mx-auto text-lg text-gray-400 leading-relaxed space-y-4">
+                <p>
+                    At Seedwave™, we believe in fostering innovation that spans the practical and the playfully imaginative. Our latest ventures explore the untapped potential of 'Noodle Soup Innovations' and the intricate logistics of 'Job Ant Huts', bringing delightful efficiency to unexpected places.
+                </p>
+                <p>
+                    From optimizing the perfect noodle-to-broth ratio using quantum algorithms to managing bustling ant-colony logistics with distributed ledger technology, we're building the future, one whimsical step at a time.
+                </p>
+            </div>
+            <div class="mt-12 whimsical-card-grid">
+                <div class="whimsical-card">
+                    <span class="whimsical-icon">🍜</span>
+                    <h3>Noodle Soup Innovations</h3>
+                    <p>
+                        Crafting culinary excellence with data-driven ingredient sourcing, predictive broth temperature, and hyper-efficient noodle hydration. Experience the future of gourmet.
+                    </p>
+                </div>
+                <div class="whimsical-card">
+                    <span class="whimsical-icon">🐜🏡</span>
+                    <h3>Job Ant Huts Management</h3>
+                    <p>
+                        Revolutionizing ant colony productivity with real-time task assignment, resource allocation, and miniature infrastructure development. Tiny workers, massive impact.
+                    </p>
+                </p>
+                </div>
+                <div class="whimsical-card">
+                    <span class="whimsical-icon">💡✨</span>
+                    <h3>Rhino Strike Protocols</h3>
+                    <p>
+                        Implementing advanced behavioral algorithms for simulated rhino interactions, ensuring optimal engagement and unexpected delightful outcomes in virtual environments.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Spotify Integration Section -->
+        <section id="spotify-integration" class="py-16 px-6 text-center">
+            <h2 class="text-4xl font-bold mb-8">Spotify Music Pulse</h2>
+            <div class="max-w-4xl mx-auto">
+                <p class="text-lg text-gray-400 mb-6">
+                    Connect to your Spotify account to discover your top tracks, create a new playlist, and listen to the pulse of your music.
+                </p>
+
+                <div class="spotify-controls">
+                    <button id="getTopTracksBtn" class="spotify-btn spotify-btn-primary">
+                        <i class="fab fa-spotify"></i> Get My Top 5 Tracks
+                    </button>
+                    <button id="createPlaylistBtn" class="spotify-btn spotify-btn-secondary">
+                        <i class="fas fa-save"></i> Save to Playlist
+                    </button>
+                    <button id="playTracksBtn" class="spotify-btn spotify-btn-secondary">
+                        <i class="fas fa-play-circle"></i> Listen Now
+                    </button>
+                </div>
+
+                <div id="top-tracks-list" class="hidden">
+                    <h3 class="text-2xl font-semibold mb-4">Your Top Tracks:</h3>
+                    <ul></ul>
+                </div>
+
+                <div id="playlist-message" class="hidden mt-6 p-4 bg-green-800 bg-opacity-30 rounded-lg border border-green-700">
+                    <!-- Messages about playlist creation will appear here -->
+                </div>
+
+                <div id="audio-players" class="mt-6">
+                    <!-- Spotify embedded players will appear here -->
+                </div>
+
+                <!-- New: Spotify Album Embed -->
+                <div id="spotify-album-embed" class="mt-8">
+                    <h3 class="text-2xl font-semibold mb-4 text-left">Featured Album:</h3>
+                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/6fi2uM0hYrLOTK7jIhuAUr?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                </div>
+
+            </div>
+        </section>
 
         <!-- Node.js Infiltration Pulse Graph Section -->
         <section id="node-pulse-graph" class="py-16 px-6 text-center">
@@ -1104,12 +1326,186 @@
         }
 
 
+        // Global variable to store top tracks for playlist creation and playback
+        let globalTopTracks = [];
+        let userId = null; // Will be fetched from Spotify
+
+        // --- Spotify API Integration ---
+        // IMPORTANT: In a real application, never hardcode your Spotify token like this.
+        // You would implement an OAuth 2.0 flow to securely obtain and refresh tokens.
+        // This token is for demonstration purposes only.
+        const token = 'BQBDSZ232IQmSLV1BROkxqdwNMoGhtitKOJBjDzE-Lu9YKsSK1RKVwXNfYfncP2wf6Fj6xcYlnGD75baEqOmd3XtxhUhB-X6koPd92H9S0rQBqZ0HSKpsb04HiAme_FtqVLket7_s07gH9y1nxuPhbRyxp0r59oXtovV-uw0lCt2B7Mh5OmN3untEAGhfg6a6AZsaWLsv02dh6zKOQ_6DXHvCHZWxcYVmoggu4eLA2NrqAf8rFRSNOw6HQpaN-VZkJWblznWQ0pT7ynzjpKOPlM_70N7vOLIZF8XnRmN1Oe784V-XfYNV-j1x1kdXGEpzlx1'; // <-- Use your valid token here if refreshing
+
+        async function fetchWebApi(endpoint, method, body) {
+            try {
+                const res = await fetch(`https://api.spotify.com/${endpoint}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json' // Important for POST/PUT requests
+                    },
+                    method,
+                    body: body ? JSON.stringify(body) : null
+                });
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    console.error('Spotify API Error:', errorData);
+                    displayMessage(`Error: ${errorData.error.message || 'Something went wrong with Spotify API.'}`, 'red');
+                    return null;
+                }
+                return await res.json();
+            } catch (error) {
+                console.error('Network or other error:', error);
+                displayMessage(`Network error: ${error.message}`, 'red');
+                return null;
+            }
+        }
+
+        // Function to get the user's profile to retrieve their ID
+        async function getUserProfile() {
+            return await fetchWebApi('v1/me', 'GET');
+        }
+
+        // 1. Get your top 5 tracks
+        async function getTopTracks() {
+            displayMessage('Fetching your top tracks...', 'gray');
+            const topTracksListElement = document.getElementById('top-tracks-list');
+            const topTracksUl = topTracksListElement.querySelector('ul');
+            topTracksUl.innerHTML = ''; // Clear previous tracks
+            topTracksListElement.classList.remove('hidden');
+            document.getElementById('audio-players').innerHTML = ''; // Clear players
+
+            try {
+                const response = (await fetchWebApi(
+                    'v1/me/top/tracks?time_range=long_term&limit=5', 'GET'
+                ));
+
+                if (response && response.items && response.items.length > 0) {
+                    globalTopTracks = response.items; // Store tracks globally
+                    globalTopTracks.forEach(track => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `<strong>${track.name}</strong> by ${track.artists.map(artist => artist.name).join(', ')}`;
+                        topTracksUl.appendChild(li);
+                    });
+                    displayMessage('Top 5 tracks fetched successfully!', 'green');
+                } else {
+                    topTracksUl.innerHTML = '<li>No top tracks found or an error occurred.</li>';
+                    displayMessage('Could not retrieve top tracks. Please check your token and try again.', 'red');
+                    globalTopTracks = []; // Clear in case of error
+                }
+            } catch (error) {
+                console.error('Error getting top tracks:', error);
+                displayMessage('Failed to fetch top tracks.', 'red');
+                globalTopTracks = [];
+            }
+        }
+
+        // 2. Save the 5 songs in a playlist
+        async function createPlaylistAndSaveSongs() {
+            if (globalTopTracks.length === 0) {
+                displayMessage('Please fetch your top tracks first!', 'orange');
+                return;
+            }
+
+            displayMessage('Creating playlist and adding songs...', 'gray');
+
+            try {
+                // Get user ID
+                const userProfile = await getUserProfile();
+                if (!userProfile || !userProfile.id) {
+                    displayMessage('Could not retrieve user profile to create playlist. Is your token valid?', 'red');
+                    return;
+                }
+                userId = userProfile.id;
+
+                // Create playlist
+                const playlistName = `My Seedwave Top Tracks - ${new Date().toLocaleDateString()}`;
+                const playlistDescription = "Top 5 tracks generated by Seedwave's Noodle Juice Rhino Strikes v.11!";
+                const createPlaylistResponse = await fetchWebApi(
+                    `v1/users/${userId}/playlists`, 'POST', {
+                        name: playlistName,
+                        public: false, // Make it private by default
+                        description: playlistDescription
+                    }
+                );
+
+                if (!createPlaylistResponse || !createPlaylistResponse.id) {
+                    displayMessage('Failed to create playlist.', 'red');
+                    return;
+                }
+                const playlistId = createPlaylistResponse.id;
+
+                // Add items to playlist
+                const trackUris = globalTopTracks.map(track => track.uri);
+                const addItemsResponse = await fetchWebApi(
+                    `v1/playlists/${playlistId}/tracks`, 'POST', {
+                        uris: trackUris
+                    }
+                );
+
+                if (addItemsResponse && addItemsResponse.snapshot_id) {
+                    displayMessage(`Playlist "${playlistName}" created and tracks added successfully!`, 'green');
+                } else {
+                    displayMessage('Failed to add tracks to playlist.', 'red');
+                }
+
+            } catch (error) {
+                console.error('Error creating/saving playlist:', error);
+                displayMessage('Failed to create or save playlist.', 'red');
+            }
+        }
+
+        // 3. Listen to the songs right here right now
+        async function playTopTracks() {
+            if (globalTopTracks.length === 0) {
+                displayMessage('Please fetch your top tracks first!', 'orange');
+                return;
+            }
+
+            displayMessage('Loading audio players...', 'gray');
+            const audioPlayersDiv = document.getElementById('audio-players');
+            audioPlayersDiv.innerHTML = ''; // Clear previous players
+
+            globalTopTracks.forEach(track => {
+                // Spotify Embed Widget URL: https://developer.spotify.com/documentation/embed-sdk/guides/using-the-iframe-api/
+                // Example: <iframe src="https://open.spotify.com/embed/track/TRackID?utm_source=generator" width="100%" height="80" frameborder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+                const trackId = track.id;
+                const iframe = document.createElement('iframe');
+                iframe.src = `https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0`; // theme=0 for dark
+                iframe.width = "100%";
+                iframe.height = "80";
+                iframe.setAttribute('frameborder', '0');
+                iframe.setAttribute('allowfullscreen', '');
+                iframe.setAttribute('allow', 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture');
+                audioPlayersDiv.appendChild(iframe);
+            });
+            displayMessage('Audio players loaded!', 'green');
+        }
+
+        // Helper function to display messages to the user
+        function displayMessage(message, type = 'gray') {
+            const msgBox = document.getElementById('playlist-message');
+            msgBox.textContent = message;
+            msgBox.className = 'mt-6 p-4 rounded-lg border'; // Reset classes
+            msgBox.classList.remove('hidden');
+
+            if (type === 'green') {
+                msgBox.classList.add('bg-green-800', 'bg-opacity-30', 'border-green-700');
+            } else if (type === 'red') {
+                msgBox.classList.add('bg-red-800', 'bg-opacity-30', 'border-red-700');
+            } else if (type === 'orange') {
+                msgBox.classList.add('bg-orange-800', 'bg-opacity-30', 'border-orange-700');
+            } else { // default gray
+                msgBox.classList.add('bg-gray-800', 'bg-opacity-30', 'border-gray-700');
+            }
+        }
+
+
         // Initialize all canvases and start their animations on window load
         window.onload = function() {
             initCanvases();
             renderNodePulseChart(); // Render the new Chart.js graph
 
-            // Smooth scrolling for navigation links (if any were present)
+            // Smooth scrolling for navigation links
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
                     e.preventDefault();
@@ -1118,7 +1514,13 @@
                     });
                 });
             });
+
+            // Add event listeners for Spotify buttons
+            document.getElementById('getTopTracksBtn').addEventListener('click', getTopTracks);
+            document.getElementById('createPlaylistBtn').addEventListener('click', createPlaylistAndSaveSongs);
+            document.getElementById('playTracksBtn').addEventListener('click', playTopTracks);
         };
     </script>
 </body>
 </html>
+

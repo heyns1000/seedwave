@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌐 VaultMesh™ | Banimal Loop Checkout</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Base Styles - Consistent with FAA.zone theme, optimized for product page */
+        :root {
+            --text-color-light: #1d1d1f;
+            --text-color-dark: #f5f5f7;
+            --bg-color-light: #f5f5f7;
+            --bg-color-dark: #1a1a1c;
+            --card-bg-light: #ffffff;
+            --card-bg-dark: #2a2a2e;
+            --border-color-light: #e8e8ed;
+            --border-color-dark: #3a3a3e;
+            --primary-color: #0071e3; /* Apple Blue */
+            --mindlift-color: #7B68EE; /* MediumPurple for MindLift theme */
+            --mindlift-accent-color: #9370DB; /* Brighter purple */
+            --muted-text-light: #6e6e73;
+            --muted-text-dark: #a0a0a5;
+
+            /* The specific green from your MindLift code for FCU/currency sections (used as the header green) */
+            --fcu-color: #4CAF50; /* Green for currency */
+            --fcu-accent-color: #66BB6A; /* Lighter green */
+
+            /* SecureSign button colors (from your previous instruction, integrated into MindLift theme) */
+            --secure-sign-purple: #8A2BE2;
+            --secure-sign-blue: #4169E1;
+            --secure-sign-purple-hover: #7b27cb;
+            --secure-sign-blue-hover: #375ac7;
+
+            /* New: Dynamic properties based on JS for header positioning */
+            --announcement-bar-height: 0px; /* Default to 0, adjusted by JS if visible */
+            --header-height: 80px; /* Example initial height, will be calculated by JS */
+
+            /* New: Hyper Mode colors */
+            --hyper-bg-color: #000033;
+            --hyper-text-color: #FFCCFF;
+            --hyper-card-bg: #110044;
+            --hyper-border-color: #330066;
+            --hyper-primary-color: #FF00FF; /* Magenta */
+            --hyper-accent-color: #FF69B4; /* HotPink */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color-dark); /* Use MindLift's overall dark background */
+            color: var(--text-color-dark); /* Default text color for dark theme */
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* NEW: Hyper Mode styles */
+        body.hyper-mode {
+            background-color: var(--hyper-bg-color);
+            color: var(--hyper-text-color);
+        }
+        .hyper-mode .checkout-header {
+            background-color: var(--hyper-primary-color);
+            box-shadow: 0 10px 30px rgba(255, 0, 255, 0.4);
+        }
+        .hyper-mode .checkout-card {
+            background-color: var(--hyper-card-bg);
+            border-color: var(--hyper-border-color);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+        .hyper-mode .checkout-card h2,
+        .hyper-mode .checkout-card h3 {
+            color: var(--hyper-text-color);
+        }
+        .hyper-mode .checkout-card h3 i {
+            color: var(--hyper-accent-color);
+        }
+        .hyper-mode .form-label {
+            color: var(--hyper-text-color);
+        }
+        .hyper-mode .form-input, .hyper-mode .form-select {
+            background-color: #000022;
+            border-color: var(--hyper-border-color);
+            color: var(--hyper-text-color);
+        }
+        .hyper-mode .form-input::placeholder {
+            color: #AA44AA;
+        }
+        .hyper-mode .checkout-step-number {
+            background-color: #330066;
+            color: var(--hyper-text-color);
+        }
+        .hyper-mode .checkout-step-line {
+            border-color: #330066;
+        }
+        .hyper-mode .checkout-step.active .checkout-step-number {
+            background-color: var(--hyper-primary-color);
+            color: white;
+        }
+        .hyper-mode .checkout-footer {
+            background-color: var(--hyper-card-bg);
+            border-top-color: var(--hyper-border-color);
+        }
+
+
+        .light-mode {
+            background-color: var(--bg-color-light);
+            color: var(--text-color-light);
+        }
+
+        .dark-mode {
+            background-color: var(--bg-color-dark);
+            color: var(--text-color-dark);
+        }
+
+
+        /* The .container class from your MindLift code will define max-width */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* NEW: Announcement Bar Styling */
+        #announcement-bar {
+            background-color: #4CAF50; /* Matches fcu-color */
+            color: white; 
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1001; /* Higher than header sticky */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #announcement-bar .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        #announcement-bar.hidden {
+            display: none;
+        }
+
+        /* Header - Styled to perfectly match the MindLift banner from your screenshot */
+        .checkout-header {
+            background-color: var(--fcu-color); /* The solid green from the MindLift banner */
+            color: white; 
+            min-height: 150px; /* Adjusted height based on visual comparison with screenshot */
+            padding: 20px; /* Adjusted to allow internal flexbox to control layout */
+            text-align: center; /* Fallback for content not managed by flex */
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.4); /* Green shadow */
+            border-bottom: none; 
+            display: flex;
+            flex-direction: column; /* Allow vertical centering of content inside header */
+            justify-content: center; /* Center content vertically */
+            align-items: center; /* Center content horizontally */
+            position: sticky; /* Sticky header */
+            top: var(--announcement-bar-height); /* Position header below announcement bar */
+            z-index: 1000;
+            /* backdrop-filter removed as per user request */
+        }
+        .checkout-header .header-content-wrapper {
+            display: flex;
+            flex-direction: column; /* Changed to column for text and sub-text */
+            justify-content: center; /* Center vertically */
+            align-items: center; /* Center horizontally */
+            max-width: 1000px; 
+            width: 100%; 
+            padding: 0; 
+            text-align: center; /* Ensure text inside is centered */
+        }
+        /* Adjusted h1 for Banimal Loop */
+        .checkout-header h1 {
+            font-family: 'Inter', sans-serif; 
+            font-size: 3.8rem; 
+            font-weight: 800; 
+            line-height: 1.1; 
+            margin: 0; 
+            letter-spacing: -0.05em; 
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3); 
+            color: white; 
+            word-break: break-word; 
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.2); 
+        }
+        /* New styling for the slogan/sub-headline */
+        .checkout-header .slogan {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.5rem; /* Larger than default p, similar to MindLift hero p */
+            color: rgba(255, 255, 255, 0.9); /* Slightly muted white */
+            margin-top: 10px; /* Space from h1 */
+            line-height: 1.5;
+            max-width: 800px; /* Constrain width for readability */
+        }
+
+        .checkout-header .back-link {
+            font-family: 'Inter', sans-serif; 
+            color: white; 
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            white-space: nowrap; 
+            font-size: 1.1rem; 
+            margin-top: 20px; /* Space below slogan */
+            display: block; /* Ensure it takes its own line below slogan */
+        }
+        .checkout-header .back-link:hover {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: underline;
+        }
+
+        /* Main Content Area - Dark theme, using MindLift card background for main wrapper */
+        .main-content-area {
+            flex-grow: 1; 
+            padding: 40px 20px;
+            background-color: var(--bg-color-dark); /* Overall dark background from MindLift */
+        }
+
+        /* Individual Checkout Cards/Sections */
+        .checkout-card {
+            background-color: var(--card-bg-dark); /* Dark card background from MindLift code */
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3); /* Dark shadow from MindLift pricing card */
+            border: 1px solid var(--border-color-dark); /* Dark border from MindLift code */
+            padding: 30px;
+            margin-bottom: 30px; 
+            color: var(--text-color-dark); /* Light text on dark card */
+        }
+        .checkout-card h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-color-dark); /* From MindLift section title */
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .checkout-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color-dark); /* From MindLift feature card h3 */
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .checkout-card h3 i {
+            color: var(--mindlift-purple-accent); /* Icon color, using MindLift's purple accent */
+            margin-right: 15px;
+            font-size: 1.8rem;
+        }
+
+        /* Input field styling for dark theme */
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--muted-text-dark); /* Muted light text for labels */
+        }
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color-dark); /* Dark border for inputs */
+            border-radius: 8px;
+            background-color: #3a3a3e; /* Slightly darker input background, from MindLift inputs */
+            color: var(--text-color-dark); /* Light text for input values */
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+        }
+        .form-input::placeholder {
+            color: #718096; /* Muted placeholder text */
+        }
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color); /* Apple Blue focus ring, from MindLift inputs */
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
+        }
+
+        /* Checkout Buttons (SecureSign style within MindLift theme) */
+        .checkout-action-button {
+            display: block;
+            width: 100%;
+            height: 56px;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .checkout-action-button.purple {
+            background-color: var(--secure-sign-purple);
+        }
+        .checkout-action-button.purple:hover {
+            background-color: var(--secure-sign-purple-hover);
+            transform: translateY(-2px);
+        }
+
+        .checkout-action-button.blue {
+            background-color: var(--secure-sign-blue);
+        }
+        .checkout-action-button.blue:hover {
+            background-color: var(--secure-sign-blue-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Order Summary details */
+        .order-summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: var(--text-color-dark); /* Light text on dark card */
+        }
+        .order-summary-total {
+            font-size: 1.3rem;
+            font-weight: 700;
+            border-top: 1px solid var(--border-color-dark); /* Dark border for total line */
+            padding-top: 15px;
+            margin-top: 15px;
+            color: var(--text-color-dark);
+        }
+
+        /* Footer - Dark theme, consistent with MindLift page */
+        .checkout-footer {
+            background-color: var(--bg-color-dark); /* From MindLift main footer */
+            border-top: 1px solid var(--border-color-dark); /* From MindLift main footer */
+            padding: 30px 0;
+            text-align: center;
+            color: var(--muted-text-dark); /* From MindLift copyright */
+            font-size: 0.9rem;
+        }
+        .checkout-footer a {
+            color: var(--primary-color); /* Apple Blue for links */
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .checkout-footer a:hover {
+            color: var(--text-color-dark); /* Lighter on hover */
+        }
+
+        /* Checkout steps specific styling for dark theme */
+        .checkout-steps-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--muted-text-dark); /* Muted color for inactive steps */
+            margin-bottom: 40px;
+            padding: 0 10px;
+        }
+        .checkout-step {
+            text-align: center;
+            flex-shrink: 0; 
+        }
+        .checkout-step-number {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            background-color: #4A5568; /* Darker gray for inactive circles */
+            color: var(--muted-text-dark);
+            font-weight: 700;
+            margin: 0 auto 8px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .checkout-step-text {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .checkout-step.active .checkout-step-number {
+            background-color: var(--primary-color); /* Apple Blue for active step, from MindLift theme */
+            color: white;
+        }
+        .checkout-step.active .checkout-step-text {
+            color: var(--text-color-dark); /* Brighter text for active step */
+        }
+        .checkout-step-line {
+            flex-grow: 1;
+            border-top: 2px solid #4A5568; /* Darker gray line */
+            margin: 0 10px;
+        }
+
+        /* Planet Pulse Text Styling (No Blur) */
+        #planet-text {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 40px;
+            margin-bottom: 40px;
+            color: var(--mindlift-color); /* Use MindLift purple accent */
+            overflow: hidden; /* Hide overflow during animation */
+            white-space: nowrap; /* Prevent text wrapping */
+            animation: pulse-glow 3s infinite alternate; /* Apply animation */
+            transition: all 0.5s ease-in-out;
+            text-shadow: none; /* Explicitly remove text shadow that might cause blur */
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.05);
+                opacity: 0.9;
+            }
+        }
+
+        /* Styles for theme buttons in footer */
+        .theme-controls button,
+        .theme-controls select {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        /* Default (Light) Mode button styling */
+        .theme-controls #theme-day-btn {
+            background-color: var(--card-bg-light);
+            color: var(--text-color-light);
+            border-color: var(--border-color-light);
+        }
+        .light-mode .theme-controls #theme-day-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        .light-mode .theme-controls #theme-night-btn,
+        .light-mode .theme-controls #theme-hyper-btn {
+            background-color: var(--card-bg-light);
+            color: var(--muted-text-light);
+            border-color: var(--border-color-light);
+        }
+
+        /* Dark Mode button styling */
+        .theme-controls #theme-night-btn {
+            background-color: var(--card-bg-dark);
+            color: var(--text-color-dark);
+            border-color: var(--border-color-dark);
+        }
+        .dark-mode .theme-controls #theme-night-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        .dark-mode .theme-controls #theme-day-btn,
+        .dark-mode .theme-controls #theme-hyper-btn {
+            background-color: var(--card-bg-dark);
+            color: var(--muted-text-dark);
+            border-color: var(--border-color-dark);
+        }
+
+        /* Hyper Mode button styling */
+        .theme-controls #theme-hyper-btn {
+            background-color: var(--hyper-card-bg);
+            color: var(--hyper-text-color);
+            border-color: var(--hyper-border-color);
+        }
+        .hyper-mode .theme-controls #theme-hyper-btn.active {
+            background-color: var(--hyper-primary-color);
+            color: white;
+            border-color: var(--hyper-primary-color);
+        }
+        .hyper-mode .theme-controls #theme-day-btn,
+        .hyper-mode .theme-controls #theme-night-btn {
+            background-color: var(--hyper-card-bg);
+            color: var(--muted-text-dark); /* Use a muted version of hyper-text for non-active */
+            border-color: var(--hyper-border-color);
+        }
+
+        /* Language Switcher */
+        .theme-controls #languageSwitcher {
+            background-color: var(--card-bg-dark);
+            color: var(--text-color-dark);
+            border-color: var(--border-color-dark);
+            cursor: pointer;
+        }
+        .light-mode .theme-controls #languageSwitcher {
+            background-color: var(--card-bg-light);
+            color: var(--text-color-light);
+            border-color: var(--border-color-light);
+        }
+        .hyper-mode .theme-controls #languageSwitcher {
+            background-color: var(--hyper-card-bg);
+            color: var(--hyper-text-color);
+            border-color: var(--hyper-border-color);
+        }
+
+        /* Styling for generated text output to preserve whitespace */
+        #generatedTextOutput {
+            white-space: pre-wrap; /* Preserve whitespace and allow wrapping */
+            word-break: break-word; /* Break long words */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NEW: Announcement Bar -->
+    <div id="announcement-bar" class="bg-fcu-color text-white text-center p-2 text-sm relative z-50">
+        <div class="container flex justify-center items-center">
+            <span>🚀 Accelerate Your Workflow! Get 15% off Pro Grid for a limited time!</span>
+            <button class="close-btn text-white text-lg ml-4">&times;</button>
+        </div>
+    </div>
+
+    <!-- Header Section (MindLift FCU Hero style, now with absolute precision) -->
+    <header class="checkout-header" id="main-header">
+        <div class="header-content-wrapper">
+            <h1 class="text-white">🌐 Banimal Loop™</h1>
+            <p class="slogan">Kaaft een Artikel a mir sponseren een! ❤️</p>
+            <a href="#" class="back-link">← Zréck an de Buttek</a>
+        </div>
+    </header>
+
+    <main class="main-content-area">
+        <div class="container max-w-3xl mx-auto">
+            <div class="checkout-card">
+                <h2>Komplett Äre Kaf</h2>
+
+                <!-- Checkout Steps/Progress -->
+                <div class="checkout-steps-container">
+                    <div class="checkout-step active">
+                        <div class="checkout-step-number">1</div>
+                        <span class="checkout-step-text">Versand</span>
+                    </div>
+                    <div class="checkout-step-line"></div>
+                    <div class="checkout-step">
+                        <div class="checkout-step-number">2</div>
+                        <span class="checkout-step-text">Bezuelung</span>
+                    </div>
+                    <div class="checkout-step-line"></div>
+                    <div class="checkout-step">
+                        <div class="checkout-step-number">3</div>
+                        <span class="checkout-step-text">Iwwerpréiwen</span>
+                    </div>
+                </div>
+
+                <!-- Shipping Information Section -->
+                <section class="mb-8">
+                    <h3><i class="fas fa-shipping-fast"></i> Versandinformatioun</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="fullName" class="form-label">Voll Numm</label>
+                            <input type="text" id="fullName" class="form-input" placeholder="Max Mustermann">
+                        </div>
+                        <div>
+                            <label for="address" class="form-label">Adress</label>
+                            <input type="text" id="address" class="form-input" placeholder="123 Haaptstrooss">
+                        </div>
+                        <div>
+                            <label for="city" class="form-label">Stad</label>
+                            <input type="text" id="city" class="form-input" placeholder="Stad Lëtzebuerg">
+                        </div>
+                        <div>
+                            <label for="zip" class="form-label">Postleetzuel</label>
+                            <input type="text" id="zip" class="form-input" placeholder="L-1234">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Payment Method Section -->
+                <section class="mb-8">
+                    <h3><i class="fas fa-credit-card"></i> Bezuelmethod</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="cardNumber" class="form-label">Kaartennummer</label>
+                            <input type="text" id="cardNumber" class="form-input" placeholder="XXXX XXXX XXXX XXXX">
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label for="expMonth" class="form-label">Mount</label>
+                                <input type="text" id="expMonth" class="form-input" placeholder="MM">
+                            </div>
+                            <div>
+                                <label for="expYear" class="form-label">Joer</label>
+                                <input type="text" id="expYear" class="form-input" placeholder="JJ">
+                            </div>
+                            <div>
+                                <label for="cvv" class="form-label">CVV</label>
+                                <input type="text" id="cvv" class="form-input" placeholder="123">
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Order Summary Section -->
+                <section class="mb-8">
+                    <h3><i class="fas fa-file-invoice-dollar"></i> Bestellungsresumé</h3>
+                    <div class="space-y-3">
+                        <div class="order-summary-item">
+                            <span>Produkt Artikel 1</span>
+                            <span>$XX.XX</span>
+                        </div>
+                        <div class="order-summary-item">
+                            <span>Produkt Artikel 2</span>
+                            <span>$YY.YY</span>
+                        </div>
+                        <div class="order-summary-item">
+                            <span>Versand</span>
+                            <span>$0.00</span>
+                        </div>
+                        <div class="order-summary-item order-summary-total">
+                            <span>Total</span>
+                            <span>$ZZ.ZZ USD</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- NEW: AI-Powered Help/FAQ Section -->
+                <section class="checkout-card mt-8">
+                    <h3><i class="fas fa-question-circle"></i> AI Hëllef & FAQ Äntwerten</h3>
+                    <p class="text-sm mb-4 text-center text-muted-text-dark">Stellt Är Fro iwwer MindLift™ oder FAA.zone, an eis KI äntwert.</p>
+                    <div class="form-group">
+                        <label for="faqPromptInput" class="form-label">Är Fro:</label>
+                        <textarea id="faqPromptInput" class="form-input" rows="4" placeholder="z.B. Wat ass de Kärprotokoll vu MindLift™?"></textarea>
+                    </div>
+                    <button id="getFaqAnswerBtn" class="checkout-action-button purple mt-4">Kritt Äntwert ✨</button>
+                    <div id="faqLoadingIndicator" class="hidden text-center mt-2 text-blue-400">
+                        <i class="fas fa-spinner fa-spin mr-2"></i> Äntwert gëtt generéiert...
+                    </div>
+                    <p id="faqAnswerOutput" class="result-text mt-4 whitespace-pre-wrap"></p>
+                </section>
+
+                <!-- Checkout Buttons (SecureSign style) -->
+                <div class="space-y-4">
+                    <button class="checkout-action-button purple">
+                        Finaliséieren & Bestätegen Bestellung <i class="fas fa-check-circle ml-2"></i>
+                    </button>
+                    <button class="checkout-action-button blue">
+                        Bestellungsdetailer iwwerpréiwen <i class="fas fa-search ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- NEW: Planet Pulse Text -->
+    <p id="planet-text" class="text-center text-xl font-bold mt-8 mb-8"></p>
+
+    <!-- Footer Section (Dark theme, consistent with MindLift page) -->
+    <footer class="checkout-footer">
+        <div class="container">
+            <p>&copy; 2025 VaultMesh™. All Rechter reservéiert. Powered by FAA.ZONE™ Ecosystem.</p>
+            <!-- NEW: Theme & Language Controls in Footer -->
+            <div class="theme-controls flex items-center justify-center space-x-4 mt-4 flex-wrap gap-2">
+                <button id="theme-day-btn">Liicht Modus</button>
+                <button id="theme-night-btn">Däischter Modus</button>
+                <button id="theme-hyper-btn">Hyper Modus</button>
+                <select id="languageSwitcher" class="form-select">
+                    <option value="en">English</option>
+                    <option value="es">Spanish</option>
+                    <option value="fr">French</option>
+                    <option value="de">German</option>
+                    <option value="zh">Chinese</option>
+                </select>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const body = document.body;
+            const mainHeader = document.getElementById('main-header'); // Get the main header
+            const announcementBar = document.getElementById('announcement-bar');
+            const hamburgerMenu = document.querySelector('.hamburger-menu'); // Keep existing hamburger menu logic
+            const mainNav = document.querySelector('.main-nav'); // Keep existing main nav for hamburger
+
+            // Function to update header top position based on announcement bar visibility
+            const updateHeaderTop = () => {
+                const announcementHeight = announcementBar && !announcementBar.classList.contains('hidden') ? announcementBar.offsetHeight : 0;
+                document.documentElement.style.setProperty('--announcement-bar-height', `${announcementHeight}px`);
+                // Update --header-height based on actual header height
+                document.documentElement.style.setProperty('--header-height', `${mainHeader.offsetHeight}px`);
+            };
+
+            // --- Announcement Bar Close Button --- 
+            if (announcementBar && announcementBar.querySelector('.close-btn')) {
+                announcementBar.querySelector('.close-btn').addEventListener('click', () => { 
+                    announcementBar.classList.add('hidden'); 
+                    updateHeaderTop(); // Re-adjust header top when bar is hidden
+                    // Store preference in localStorage to keep it hidden on subsequent visits 
+                    localStorage.setItem('hideAnnouncementBar', 'true'); 
+                }); 
+            }
+
+            // --- Theme Switching Logic --- 
+            const themeDayBtn = document.getElementById('theme-day-btn'); 
+            const themeNightBtn = document.getElementById('theme-night-btn'); 
+            const themeHyperBtn = document.getElementById('theme-hyper-btn'); 
+
+            function setTheme(theme) { 
+                document.body.classList.remove('light-mode', 'dark-mode', 'hyper-mode'); 
+                themeDayBtn?.classList.remove('active'); 
+                themeNightBtn?.classList.remove('active'); 
+                themeHyperBtn?.classList.remove('active'); 
+
+                if (theme === 'dark') { 
+                    document.body.classList.add('dark-mode'); 
+                    themeNightBtn?.classList.add('active'); 
+                } else if (theme === 'hyper') { 
+                    document.body.classList.add('hyper-mode'); 
+                    themeHyperBtn?.classList.add('active'); 
+                } else { 
+                    document.body.classList.add('light-mode'); // Default to light-mode if theme is 'day' or unset
+                    themeDayBtn?.classList.add('active'); 
+                } 
+                localStorage.setItem('themeMode', theme); 
+                // Re-render charts logic (assuming renderChartsForView exists elsewhere for a full application) 
+                // const activeViewId = document.querySelector('.content-section.active')?.id || document.querySelector('#admin-portal-main-content-area .admin-view-panel.active')?.id; 
+                // if (activeViewId) { 
+                //     renderChartsForView(activeViewId); 
+                // } 
+            } 
+
+            if (themeDayBtn) { 
+                themeDayBtn.addEventListener('click', () => setTheme('day')); 
+                themeNightBtn.addEventListener('click', () => setTheme('dark')); 
+                themeHyperBtn.addEventListener('click', () => setTheme('hyper')); 
+
+                // Load saved theme on startup 
+                const savedTheme = localStorage.getItem('themeMode') || 'dark'; // Default to 'dark' for this checkout page
+                setTheme(savedTheme); 
+            } 
+
+            // --- Language Switcher Logic --- 
+            const languageSwitcher = document.getElementById('languageSwitcher'); 
+            const languageMap = { 
+                'en': 'English', 
+                'es': 'Spanish', 
+                'fr': 'French', 
+                'de': 'German', 
+                'zh': 'Chinese' 
+                // Add more languages as needed 
+            }; 
+
+            if (languageSwitcher) { 
+                languageSwitcher.addEventListener('change', (e) => { 
+                    const selectedLang = e.target.value; 
+                    document.documentElement.lang = selectedLang; // Update HTML lang attribute 
+                    console.log(`Language changed to: ${languageMap[selectedLang] || selectedLang}`); 
+                    // In a real app, you would load and display translated content here. 
+                }); 
+                // Set initial value based on HTML's lang attribute or default to English 
+                languageSwitcher.value = document.documentElement.lang || 'en'; 
+            } 
+
+            // --- Existing Hamburger Menu Logic (copied from your provided code) ---
+            if (hamburgerMenu) {
+                hamburgerMenu.addEventListener('click', () => {
+                    if (mainNav) {
+                        mainNav.classList.toggle('active');
+                    }
+                });
+            }
+            document.querySelectorAll('.nav-list a').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    if (mainNav && mainNav.classList.contains('active')) {
+                        mainNav.classList.remove('active');
+                    }
+                    const href = this.getAttribute('href');
+                    if (href.startsWith('#') && href.length > 1) {
+                        e.preventDefault();
+                        const targetElement = document.querySelector(href);
+                        if (targetElement) {
+                            targetElement.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }
+                });
+            });
+
+
+            // --- On Load Initializations (adapted for this specific page) --- 
+            window.addEventListener('DOMContentLoaded', () => { 
+                // Initialize dynamic header top position based on announcement bar 
+                if (announcementBar && mainHeader) { 
+                    // Check localStorage for announcement bar preference 
+                    if (localStorage.getItem('hideAnnouncementBar') === 'true') { 
+                        announcementBar.classList.add('hidden'); 
+                        document.documentElement.style.setProperty('--announcement-bar-height', '0px'); 
+                    } else { 
+                        announcementBar.classList.remove('hidden'); // Ensure visible if not hidden 
+                        updateHeaderTop(); // Set initial height 
+                    } 
+                    // Update on resize 
+                    window.addEventListener('resize', updateHeaderTop); 
+                    // Also update after fonts/images might load and affect layout 
+                    window.addEventListener('load', updateHeaderTop); 
+                } 
+
+                // Initialize the default view (Innovate, Connect, Thrive) - this page doesn't have multiple views, so this is commented out or adapted
+                // showMainContentView('innovate-connect-thrive'); 
+
+                // Set initial active state for the default view's link (adapted for this single page) 
+                // const defaultNavLink = document.querySelector(`[data-view-id="innovate-connect-thrive"]`); 
+                // if (defaultNavLink) { 
+                //     // Ensure the logo link is also correctly activating the main page view 
+                //     document.querySelector('.logo-link').addEventListener('click', (e) => { 
+                //         e.preventDefault(); 
+                //         showMainContentView('innovate-connect-thrive'); 
+                //     }); 
+                // } 
+            }); 
+
+            // --- Terminal Iframe Loading (commented out as there's no terminal on this page) --- 
+            // window.loadTerminal = function(iframeSrc) { 
+            //     const vaultFrame = document.getElementById('vault-frame'); 
+            //     if (vaultFrame) { 
+            //         vaultFrame.src = iframeSrc; 
+            //         document.querySelectorAll('.terminal-btn').forEach(btn => btn.classList.remove('ring')); 
+            //         event.target.classList.add('ring'); 
+            //     } 
+            // }; 
+
+            // Initialize with default terminal iframe (commented out) 
+            // window.addEventListener('load', () => { 
+            //     loadTerminal('vault-master.html'); // Load default terminal on page load 
+            // }); 
+
+            // --- Planet Pulse Text Logic --- 
+            const planetTextElement = document.getElementById('planet-text'); 
+            // Only one phrase as per user request
+            const planetPhrases = [ 
+                { text: "fruchtbarer.planet.wandel", lang: "de" } 
+            ]; 
+            let currentPhraseIndex = 0; 
+
+            function updatePlanetText() { 
+                if (planetTextElement) { 
+                    planetTextElement.classList.remove('pulse-animation'); // Remove to re-trigger animation 
+                    void planetTextElement.offsetWidth; // Trigger reflow 
+                    
+                    currentPhraseIndex = (currentPhraseIndex + 1) % planetPhrases.length; 
+                    const nextPhrase = planetPhrases[currentPhraseIndex]; 
+                    
+                    planetTextElement.textContent = nextPhrase.text; 
+                    planetTextElement.lang = nextPhrase.lang; // Update language attribute for accessibility/context 
+                    
+                    planetTextElement.classList.add('pulse-animation'); // Add back to restart animation 
+                } 
+            } 
+            if (planetTextElement) { // Only start interval if element exists
+                setInterval(updatePlanetText, 3000); // Change every 3 seconds 
+                updatePlanetText(); // Initial display
+            }
+
+
+            // --- Gemini API Text Generation Logic (Now AI Help/FAQ) --- 
+            const getFaqAnswerBtn = document.getElementById('getFaqAnswerBtn'); 
+            const faqPromptInput = document.getElementById('faqPromptInput'); 
+            const faqAnswerOutput = document.getElementById('faqAnswerOutput'); 
+            const faqLoadingIndicator = document.getElementById('faqLoadingIndicator'); 
+
+            if (getFaqAnswerBtn && faqPromptInput && faqAnswerOutput && faqLoadingIndicator) { 
+                getFaqAnswerBtn.addEventListener('click', async () => { 
+                    const prompt = faqPromptInput.value.trim(); 
+                    if (!prompt) { 
+                        faqAnswerOutput.textContent = "Gitt w.e.g. eng Fro an, fir eng Äntwert ze kréien."; 
+                        faqAnswerOutput.style.color = "red"; 
+                        return; 
+                    } 
+
+                    faqAnswerOutput.textContent = ''; // Clear previous output 
+                    faqAnswerOutput.style.color = "var(--text-color-dark)"; // Reset color 
+                    faqLoadingIndicator.classList.remove('hidden'); // Show loading indicator 
+                    getFaqAnswerBtn.disabled = true; // Disable button during generation 
+
+                    try { 
+                        // Enhanced prompt for the LLM to provide context-aware answers
+                        const fullPrompt = `De Benotzer huet eng Fro iwwer de Banimal Loop™ oder en ähnleche Produkt/Promotioun. Äntwert op dës Fro esou präzis a kuerz wéi méiglech. Wann d'Fro net mat Banimal Loop™ oder seng Promotioun ("Kaaft een Artikel a mir sponseren een!") ze dinn huet, sot w.e.g. datt Dir nëmmen op dës Themen äntwere kënnt.
+
+                        Fro vum Benotzer: "${prompt}"
+
+                        Informatioun fir ze berücksichtegen:
+                        - Banimal Loop™ ass e Produkt/eng Promotioun wou de Benotzer een Artikel keeft an d'Firma een sponsert.
+                        - D'Firma ass Deel vum FAA.ZONE Ökosystem (awer d'MindLift™ Detailer sinn hei net primär relevant).
+
+                        Äntwert:`;
+
+                        let chatHistory = []; 
+                        chatHistory.push({ role: "user", parts: [{ text: fullPrompt }] }); 
+                        const payload = { contents: chatHistory }; 
+                        const apiKey = ""; // Canvas will automatically provide this during runtime 
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`; 
+
+                        console.log("Attempting to call Gemini API with prompt:", fullPrompt); 
+                        const response = await fetch(apiUrl, { 
+                            method: 'POST', 
+                            headers: { 'Content-Type': 'application/json' }, 
+                            body: JSON.stringify(payload) 
+                        }); 
+
+                        console.log("Raw API Response Object:", response); 
+                        const result = await response.json(); 
+                        console.log("Parsed API Result JSON:", result); 
+
+                        if (result.candidates && result.candidates.length > 0 && 
+                            result.candidates[0].content && result.candidates[0].content.parts && 
+                            result.candidates[0].content.parts.length > 0) { 
+                            const text = result.candidates[0].content.parts[0].text; 
+                            console.log("Extracted Generated Text:", text); // Log the actual text content 
+                            faqAnswerOutput.textContent = text; 
+                        } else { 
+                            faqAnswerOutput.textContent = "Feeler: Keng Äntwert vun der KI. Probéiert et w.e.g. méi spéit nach eng Kéier."; 
+                            faqAnswerOutput.style.color = "red"; 
+                            console.error("Gemini API response was unexpected or missing content:", result); 
+                            if (result.error && result.error.message) { 
+                                faqAnswerOutput.textContent += ` Grond: ${result.error.message}`; 
+                            } 
+                        } 
+
+                    } catch (error) { 
+                        faqAnswerOutput.textContent = `Feeler: Konnt net mat der Sproochemodell verbannen. Kuckt d'Konsol fir Netzproblemer.`; 
+                        faqAnswerOutput.style.color = "red"; 
+                        console.error("Error calling Gemini API:", error); 
+                    } finally { 
+                        faqLoadingIndicator.classList.add('hidden'); // Hide loading indicator 
+                        getFaqAnswerBtn.disabled = false; // Re-enable button 
+                    } 
+                }); 
+            } else { 
+                console.warn("Elementer fir d'KI-Textgeneratioun (Knäppchen, Input, Output oder Luedeindikator) goufen net am DOM fonnt. Kontrolléiert w.e.g. d'IDen."); 
+            } 
+        }); 
+    </script>
+</body>
+</html>

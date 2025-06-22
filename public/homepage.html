@@ -27,6 +27,7 @@
             --banimal-dark-text: #333333;
             --banimal-muted-text: #666666;
             --banimal-cream: #FFFAF5;
+            --banimal-button-green: #90EE90; /* Soft green for the new button */
 
             /* Consolidated Fruitful Logo Color (now white) */
             --fruitful-corporate-white: #ffffff;
@@ -166,6 +167,20 @@
             transform: translateY(-5px) scale(1.02);
             border-color: rgba(74, 144, 226, 0.8);
         }
+
+        .shop-now-button {
+            background: linear-gradient(45deg, var(--banimal-button-green), #6B8E23); /* Soft green gradient */
+            box-shadow: 0 8px 25px rgba(144, 238, 144, 0.4);
+            border: 1px solid rgba(144, 238, 144, 0.5);
+        }
+
+        .shop-now-button:hover {
+            background: linear-gradient(45deg, #6B8E23, var(--banimal-button-green));
+            box-shadow: 0 10px 30px rgba(144, 238, 144, 0.6);
+            border-color: rgba(144, 238, 144, 0.8);
+        }
+
+
         footer {
             background-color: #050508;
             border-top: 1px solid #2a2a30;
@@ -193,6 +208,11 @@
             .banimal-hero-content h1 span { font-size: 0.6em; }
             .banimal-hero-content p { font-size: 1rem; }
             .cta-button { padding: 1rem 2rem; font-size: 1rem; }
+            /* Adjust button container for mobile */
+            .button-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
             .content-section { padding-top: 6rem; padding-bottom: 6rem; }
         }
     </style>
@@ -201,7 +221,8 @@
 
     <header>
         <div class="logo-group">
-            <a href="#" class="logo-fruitful">Fruitful™</a>
+            <!-- Fruitful logo now links directly to fruitful.faa.zone/ -->
+            <a href="https://fruitful.faa.zone/" class="logo-fruitful">Fruitful™</a>
             <!-- Removed logo-separator and logo-seedwave -->
         </div>
     </header>
@@ -213,9 +234,14 @@
             <p>
                 Discover Banimal's world of thoughtful baby essentials & innovative lighting. For every purchase, we deliver the same item to a child in need, identified by the Baobab Security Network's data-driven insights.
             </p>
-            <a href="global_brands.html" class="cta-button">
-                Explore Banimal's World <i class="fas fa-arrow-right"></i>
-            </a>
+            <div class="button-container flex flex-wrap justify-center gap-4 mt-6">
+                <a href="global_brands.html" class="cta-button">
+                    Explore Banimal's World <i class="fas fa-arrow-right"></i>
+                </a>
+                <a href="https://www.banimal.co.za/" target="_blank" class="cta-button shop-now-button">
+                    Shop Now <i class="fas fa-external-link-alt"></i>
+                </a>
+            </div>
         </div>
     </main>
 
@@ -321,3 +347,4 @@
     </script>
 </body>
 </html>
+

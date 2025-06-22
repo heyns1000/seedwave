@@ -429,6 +429,54 @@
             }
         }
 
+        // Function to fetch Xero contacts (new example API call)
+        async function fetchXeroContacts() {
+            if (!xeroTokens || !xeroTokens.access_token) {
+                showMessageBox("Not connected to Xero or access token missing.", "error");
+                return [];
+            }
+
+            const tenantId = xeroTokens.connections?.[0]?.tenantId;
+            if (!tenantId) {
+                showMessageBox("No Xero tenant found. Please reconnect to Xero.", "error");
+                return [];
+            }
+
+            try {
+                const response = await fetch(`https://api.xero.com/api.xro/2.0/Contacts`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${xeroTokens.access_token}`,
+                        'Xero-Tenant-Id': tenantId,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log("Xero Contacts:", data.Contacts);
+                    return data.Contacts;
+                } else if (response.status === 401) { // Unauthorized, token might be expired
+                    showMessageBox("Xero token expired. Attempting to refresh...", "error");
+                    const refreshed = await refreshXeroAccessToken();
+                    if (refreshed) {
+                        return await fetchXeroContacts(); // Retry after refresh
+                    } else {
+                        return [];
+                    }
+                } else {
+                    const errorData = await response.json();
+                    console.error("Error fetching Xero contacts:", errorData);
+                    showMessageBox(`Error fetching Xero contacts: ${errorData.Message || 'Unknown error'}`, "error");
+                    return [];
+                }
+            } catch (error) {
+                console.error("Network error or other issue fetching Xero contacts:", error);
+                showMessageBox("Network error or issue fetching Xero contacts.", "error");
+                return [];
+            }
+        }
+
 
         // --- Dynamic Content Loading ---
         const mainContentDiv = document.getElementById('main-content');
@@ -483,9 +531,12 @@
                     if (xeroConnectionStatus === 'Connected' && xeroTokens) {
                         xeroDataHtml = `
                             <p class="text-lg text-green-600 mb-4">✅ Connected to Xero!</p>
-                            <button id="fetch-invoices-btn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200 mt-4">Fetch Recent Invoices</button>
-                            <div id="xero-invoices-list" class="mt-4">
-                                <p class="text-gray-600">Click "Fetch Recent Invoices" to see data.</p>
+                            <div class="flex space-x-4 mt-4">
+                                <button id="fetch-invoices-btn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200">Fetch Recent Invoices</button>
+                                <button id="fetch-contacts-btn" class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition duration-200">Fetch Recent Contacts</button>
+                            </div>
+                            <div id="xero-data-display" class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                <p class="text-gray-600">Click a button above to fetch Xero data.</p>
                             </div>
                         `;
                     } else {
@@ -514,18 +565,34 @@
                 if (xeroConnectionStatus === 'Connected') {
                     document.getElementById('fetch-invoices-btn').onclick = async () => {
                         const invoices = await fetchXeroInvoices();
-                        const invoicesListDiv = document.getElementById('xero-invoices-list');
+                        const dataDisplayDiv = document.getElementById('xero-data-display');
                         if (invoices && invoices.length > 0) {
-                            let listHtml = '<h4 class="font-semibold mt-4 mb-2">Recent Invoices:</h4><ul class="list-disc list-inside">';
+                            let listHtml = '<h4 class="font-semibold mt-4 mb-2">Recent Invoices:</h4><ul class="list-disc list-inside space-y-1">';
                             invoices.forEach(invoice => {
                                 listHtml += `<li class="text-gray-700">Invoice #${invoice.InvoiceNumber || 'N/A'} - Contact: ${invoice.Contact.Name} - Total: ${invoice.Total} ${invoice.CurrencyCode} - Status: ${invoice.Status}</li>`;
                             });
                             listHtml += '</ul>';
-                            invoicesListDiv.innerHTML = listHtml;
+                            dataDisplayDiv.innerHTML = listHtml;
                         } else {
-                            invoicesListDiv.innerHTML = '<p class="text-gray-600">No invoices found or failed to fetch.</p>';
+                            dataDisplayDiv.innerHTML = '<p class="text-gray-600">No invoices found or failed to fetch.</p>';
                         }
                     };
+
+                    document.getElementById('fetch-contacts-btn').onclick = async () => {
+                        const contacts = await fetchXeroContacts();
+                        const dataDisplayDiv = document.getElementById('xero-data-display');
+                        if (contacts && contacts.length > 0) {
+                            let listHtml = '<h4 class="font-semibold mt-4 mb-2">Recent Contacts:</h4><ul class="list-disc list-inside space-y-1">';
+                            contacts.forEach(contact => {
+                                listHtml += `<li class="text-gray-700">Name: ${contact.Name} - Email: ${contact.EmailAddress || 'N/A'} - Status: ${contact.ContactStatus}</li>`;
+                            });
+                            listHtml += '</ul>';
+                            dataDisplayDiv.innerHTML = listHtml;
+                        } else {
+                            dataDisplayDiv.innerHTML = '<p class="text-gray-600">No contacts found or failed to fetch.</p>';
+                        }
+                    };
+
                 } else {
                     const connectBtn = document.getElementById('connect-xero-btn');
                     if (connectBtn) {

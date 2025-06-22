@@ -15,7 +15,7 @@
     </script>
 
     <!-- Content Security Policy (CSP) to allow Firebase, Xero, and Tailwind resources -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.tailwindcss.com https://www.gstatic.com https://apis.google.com https://www.googletagmanager.com 'unsafe-inline'; connect-src 'self' https://identity.xero.com https://api.xero.com https://firestore.googleapis.com https://securetoken.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://accounts.google.com https://www.googleapis.com https://firebaseauth.googleapis.com https://www.google-analytics.com https://stats.g.doubleclick.net https://identitytoolkit.googleapis.com; frame-src 'self' https://*.firebaseapp.com; img-src 'self' data: https://www.google.com; style-src 'self' 'unsafe-inline'; font-src 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.tailwindcss.com https://www.gstatic.com https://apis.google.com https://www.googletagmanager.com 'unsafe-inline'; connect-src 'self' https://identity.xero.com https://api.xero.com https://firestore.googleapis.com https://securetoken.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://accounts.google.com https://www.googleapis.com https://firebaseauth.googleapis.com https://www.google-analytics.com https://stats.g.doubleclick.net https://identitytoolkit.googleapis.com https://auth.firebase.com; frame-src 'self' https://*.firebaseapp.com https://accounts.google.com; img-src 'self' data: https://www.google.com; style-src 'self' 'unsafe-inline'; font-src 'self';">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -161,9 +161,9 @@
     <!-- Firebase SDKs -->
     <script type="module">
         console.log("Seedwave Admin Panel script loaded."); // Added for debugging
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js"; // Updated to 11.9.1
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js"; // Updated to 11.9.1
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js"; // Updated to 11.9.1
 
         // Firebase Configuration (YOUR ACTUAL FIREBASE CONFIG)
         // This was copied from your Firebase Console's "Add Firebase SDK" step.
@@ -651,4 +651,4 @@
         });
     </script>
 </body>
-</html>
+</ht

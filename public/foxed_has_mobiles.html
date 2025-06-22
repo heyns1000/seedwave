@@ -12,25 +12,32 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* CONSOLIDATED CSS FROM ALL PREVIOUS CANVASES */
+        /* CONSOLIDATED CSS FOR GLOBAL THEME & COMPONENTS */
         :root {
             /* General Fruitful/Seedwave/Banimal Theme Variables */
-            --dark-bg: #0a0a0d;
-            --primary-glow: #00e393;
-            --secondary-glow: #007bff;
+            --dark-bg: #0a0a0d; /* Very dark almost black */
+            --primary-glow: #00e393; /* Greenish glow */
+            --secondary-glow: #007bff; /* Blue glow */
+            --accent-red: #ff4d4d;
             --card-bg-dark: #1c1c21;
             --border-dark: #3a3a42;
             --font-inter: 'Inter', sans-serif;
 
-            --fruitful-logo-color: #ffffff;
-            --fruitful-separator-color: #bbbbbb;
+            --fruitful-logo-color: #ffffff; /* White logo text */
+            --fruitful-separator-color: #bbbbbb; /* Lighter grey separator */
 
-            --page-bg-light: #f8f8f8;
-            --page-text-dark: #000000;
-            --page-muted-text: #333333;
-            --page-border-light: #cccccc;
+            /* Light Mode Defaults (as per banimal/homepage.html aesthetic) */
+            --page-bg-light: #f8f8f8; /* Soft light background */
+            --page-text-dark: #333333; /* Dark grey for primary text */
+            --page-muted-text: #666666; /* Lighter grey for muted text */
+            --page-border-light: #e0e0e0; /* Soft light border */
+            --card-bg-light: #ffffff; /* Pure white card background */
+            --input-bg-light: #f0f4f8; /* Soft light grey for inputs */
+            --input-border-light: #d1d5db; /* Light grey input border */
+            --cta-button-bg-light: #4f46e5; /* Indigo for primary CTA */
+            --cta-button-text-light: #ffffff; /* White text on CTA */
 
-            /* Canvas-specific colors */
+            /* Canvas-specific colors (used in JS animations or unique sections) */
             --black: #000000;
             --super-pearl-white: #FFFFFF;
             --pastel-grey: #ECEFF1;
@@ -50,49 +57,48 @@
             --pastel-grey-blue: #CFD8DC;
             --pastel-peach: #FFE0B2;
 
-            /* Noodle/Banimal/Mountain Lions Specifics */
-            --noodle-color: #000000; /* Black noodle */
-            --winter-brown-grass: #8B4513; /* SaddleBrown */
+            /* Noodle/Banimal/Mountain Lions Specifics (from other pages) */
+            --noodle-color: #000000;
+            --winter-brown-grass: #8B4513;
             --melting-snow-gradient-start: rgb(255,255,255);
             --melting-snow-gradient-mid: rgb(173,216,230);
             --melting-snow-gradient-end: rgb(0,128,0);
-
             --sun-burn-gradient-start: #FFD700;
             --sun-burn-gradient-end: #FF4500;
             --mountain-lion-bg: #4B0082;
             
-            /* Polishing Script Theme Variables */
+            /* Polishing Script Theme Variables - Active Theme controlled by JS */
             --bg-color: var(--page-bg-light);
             --text-color: var(--page-text-dark);
             --muted-text-color: var(--page-muted-text);
             --border-color: var(--page-border-light);
-            --card-bg: var(--fruitful-card-bg); /* Default white card background */
-            --button-bg: #ffffff;
-            --button-text: #000000;
-            --input-bg: #f9fafb;
-            --input-border: #d1d5db;
-            --tertiary-color: #dc2626;
+            --card-bg: var(--card-bg-light);
+            --button-bg: var(--cta-button-bg-light);
+            --button-text: var(--cta-button-text-light);
+            --input-bg: var(--input-bg-light);
+            --input-border: var(--input-border-light);
+            --tertiary-color: #dc2626; /* For error messages */
 
-            /* Dynamic Header Top Position (from polishing script) */
+            /* Dynamic Header Top Position */
             --announcement-bar-height: 0px;
             --header-height: 0px;
         }
 
         /* Dark Mode */
         body.dark-mode {
-            --bg-color: #121212;
-            --text-color: #e0e0e0;
-            --muted-text-color: #aaaaaa;
-            --border-color: #444444;
-            --card-bg: #1c1c1c;
-            --button-bg: #282828;
+            --bg-color: #1a1a1a; /* Deeper dark */
+            --text-color: #f0f0f0; /* Lighter grey text */
+            --muted-text-color: #bbbbbb; /* Muted light grey */
+            --border-color: #333333; /* Darker border */
+            --card-bg: #2a2a2a; /* Darker card background */
+            --button-bg: #555555;
             --button-text: #ffffff;
-            --input-bg: #333333;
-            --input-border: #555555;
+            --input-bg: #3c3c3c;
+            --input-border: #666666;
             --tertiary-color: #ef4444;
         }
 
-        /* Hyper Mode */
+        /* Hyper Mode (Vibrant, techy feel) */
         body.hyper-mode {
             --bg-color: #0d0d1a;
             --text-color: #c0f0ff;
@@ -120,14 +126,15 @@
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth theme transitions */
         }
 
         /* === Header Styling (Fruitful | Banimal) === */
         .sticky-header-wrapper {
             position: sticky;
             top: 0;
-            z-index: 100; /* Ensure it's above other content */
-            background-color: var(--dark-bg);
+            z-index: 100;
+            background-color: var(--dark-bg); /* Fixed dark background for header */
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         .main-nav {
@@ -145,7 +152,7 @@
             flex-shrink: 0;
         }
         .logo-group a {
-            color: #ffffff; /* White */
+            color: var(--fruitful-logo-color); /* White */
             font-size: 1.6rem;
             font-weight: 800;
             text-decoration: none;
@@ -155,7 +162,7 @@
             color: rgba(255, 255, 255, 0.8);
         }
         .logo-group .separator {
-            color: #bbbbbb;
+            color: var(--fruitful-separator-color);
             font-size: 1.4rem;
             font-weight: 600;
         }
@@ -177,14 +184,10 @@
             background-color: rgba(255, 255, 255, 0.1);
             color: #ffffff;
         }
-        /* Header Pulse Canvas in Header - hidden elements, but styles are good */
-        #header-pulse-canvas { /* This is from the polishing script, but not visible */
-            display: none; /* Hide it as it's not part of the visible header structure for this page */
-        }
 
         /* === Main Content Area === */
         main {
-            flex-grow: 1; /* Allows main to take up available vertical space */
+            flex-grow: 1;
             width: 100%;
             box-sizing: border-box;
             background-color: var(--bg-color); /* Matches body background */
@@ -196,10 +199,11 @@
             max-width: 1200px;
             margin: 0 auto;
             text-align: center;
-            background-color: var(--card-bg); /* Use card background for sections */
+            background-color: var(--card-bg); /* Use theme card background */
             border-bottom: 1px solid var(--border-color); /* Separator */
             color: var(--text-color);
             box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease; /* Smooth theme transitions */
         }
         .dashboard-section:last-child {
             border-bottom: none;
@@ -207,31 +211,31 @@
         .dashboard-section h1, .dashboard-section h2, .dashboard-section h3 {
             font-weight: 800;
             margin-bottom: 1.5rem;
-            color: var(--text-color);
+            color: var(--text-color); /* Theme text color */
         }
         .dashboard-section h1 { font-size: 3rem; }
         .dashboard-section h2 { font-size: 2.5rem; }
         .dashboard-section h3 { font-size: 2rem; }
         .dashboard-section p {
             margin-bottom: 1rem;
-            color: var(--muted-text-color);
+            color: var(--muted-text-color); /* Theme muted text color */
         }
         .dashboard-section ul {
             list-style-type: disc;
             margin-left: 20px;
             margin-bottom: 1rem;
             text-align: left;
-            color: var(--muted-text-color);
+            color: var(--muted-text-color); /* Theme muted text color */
         }
         .dashboard-section strong {
             font-weight: 700;
         }
 
-        /* === Individual Canvas/Section Styles (from previous demos) === */
+        /* === Individual Canvas/Section Styles === */
 
-        /* Foxed Has Mobiles Hero Section */
+        /* Foxed Has Mobiles Hero Section - PRESERVED COLORS */
         .foxed-hero-section {
-            background: radial-gradient(circle at center, #f9fafb, #e0e7ff);
+            background: radial-gradient(circle at center, #f9fafb, #e0e7ff); /* PRESERVED */
             animation: pulseBG 12s ease-in-out infinite;
             min-height: 80vh;
             display: flex;
@@ -242,10 +246,10 @@
             padding: 4rem 2rem;
             box-sizing: border-box;
             position: relative;
-            z-index: 1; /* Above general page content */
-            color: #000000; /* Force black text */
+            z-index: 1;
+            color: #000000; /* PRESERVED - Force black text */
         }
-        .foxed-hero-section .ant-route-canvas-bg {
+        .foxed-hero-section #ant-route-canvas {
             position: absolute;
             top: 0;
             left: 0;
@@ -257,7 +261,7 @@
         .foxed-hero-title {
             font-size: 4.5rem;
             font-weight: 900;
-            color: #000000;
+            color: #000000; /* PRESERVED */
             line-height: 1.1;
             margin-bottom: 1rem;
             text-shadow: 2px 2px 5px rgba(0,0,0,0.1);
@@ -267,46 +271,46 @@
         .foxed-hero-slogan {
             font-size: 1.5rem;
             font-style: italic;
-            color: #007bff;
+            color: #007bff; /* PRESERVED, uses specific blue */
             margin-bottom: 3rem;
             position: relative;
             z-index: 1;
         }
         .foxed-hero-subtitle {
             font-size: 2.2rem;
-            color: #333333;
+            color: #333333; /* PRESERVED, uses specific dark grey */
             margin-bottom: 1.5rem;
             max-width: 900px;
             position: relative;
             z-index: 1;
         }
 
-        /* General CTA Button Styling */
+        /* General CTA Button Styling (for all pages unless overridden) */
         .cta-button {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
             padding: 1.2rem 3rem;
-            background: linear-gradient(45deg, #0071e3, #4A90E2);
-            color: white;
+            background: linear-gradient(45deg, var(--cta-button-bg-light), #4A90E2); /* Theme based primary CTA */
+            color: var(--cta-button-text-light); /* Theme based text color */
             text-decoration: none;
             border-radius: 9999px;
             font-weight: 700;
             font-size: 1.2rem;
-            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.4);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
             transition: all 0.3s ease-in-out;
-            border: 1px solid rgba(74, 144, 226, 0.5);
+            border: 1px solid rgba(79, 70, 229, 0.5);
         }
         .cta-button:hover {
-            background: linear-gradient(45deg, #4A90E2, #0071e3);
-            box-shadow: 0 10px 30px rgba(0, 123, 255, 0.6);
+            background: linear-gradient(45deg, #4A90E2, var(--cta-button-bg-light));
+            box-shadow: 0 10px 30px rgba(79, 70, 229, 0.6);
             transform: translateY(-5px) scale(1.02);
-            border-color: rgba(74, 144, 226, 0.8);
+            border-color: rgba(79, 70, 229, 0.8);
         }
-        .foxed-hero-section .cta-button {
-            background-color: #007bff; /* Bright blue for direct access */
-            color: white;
+        .foxed-hero-section .cta-button { /* Specific override for hero section button */
+            background-color: #007bff; /* Bright blue for direct access - PRESERVED */
+            color: white; /* PRESERVED */
             border: none;
             box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
             padding: 0.8rem 2rem;
@@ -319,99 +323,158 @@
             transform: translateY(-2px);
         }
 
-        /* Products Section (Price Cards) */
+        /* Products Section (Price Cards) - Styles based on provided HTML snippet */
         .products-section {
-            background-color: #ffffff; /* Consistent white background */
-            color: #333333;
+            background-color: #f1f5f9; /* slate-100 from provided snippet */
+            color: #333; /* Default text for snippet */
+        }
+        /* Styles from the user provided pricing snippet (previously in global styling) */
+        .products-section .main-container-style-pricing { /* Outer wrapper from provided snippet */
+            background-color: #ffffff;
+            border-top: 8px solid #4f46e5; /* indigo-600 */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border-radius: 1.5rem;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+            padding: 1rem;
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        @media (min-width: 640px) {
+            .products-section .main-container-style-pricing {
+                padding: 2rem;
+                max-width: 640px;
+            }
+        }
+        @media (min-width: 768px) {
+            .products-section .main-container-style-pricing {
+                padding: 2.5rem;
+                max-width: 768px;
+            }
+        }
+        @media (min-width: 1024px) {
+            .products-section .main-container-style-pricing {
+                padding: 3rem;
+                max-width: 1024px;
+            }
         }
         .products-section .currency-selector-wrapper {
-            margin-top: 2rem; /* Adjusted from 8rem for better flow */
+            margin-top: 2rem;
             margin-bottom: 2.5rem;
-            background-color: #f8f8f8;
+            background-color: #f8fafc; /* slate-50 */
             padding: 1.5rem;
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             display: inline-flex;
             align-items: center;
-            justify-content: center;
-            border: 1px solid #e0e0e0;
+            justify-content: space-between; /* Adjusted for better spacing */
+            border: 1px solid #e2e8f0; /* slate-200 */
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            max-width: xs; /* To align with provided snippet's design */
+            margin-left: auto; /* Center it */
+            margin-right: auto; /* Center it */
         }
-        .products-section .price-cards-grid {
+        .products-section .currency-selector-wrapper label,
+        .products-section .currency-selector-wrapper select {
+            color: #475569; /* slate-700 */
+            background-color: transparent;
+            border: none;
+        }
+        .products-section .currency-selector-wrapper select {
+             padding: 0.5rem;
+             border: 1px solid #cbd5e1; /* slate-300 */
+             border-radius: 6px;
+             appearance: none; /* Remove default arrow */
+             -webkit-appearance: none;
+             -moz-appearance: none;
+             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23666'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+             background-repeat: no-repeat;
+             background-position: right 0.7em center;
+             background-size: 1.2em;
+        }
+
+        .products-section .price-cards-grid { /* This is the grid container for product cards */
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
+            gap: 2rem; /* Gap between cards */
             margin-top: 2rem;
         }
-        .product-card {
-            background-color: #f8f8f8;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border: 1px solid #e0e0e0;
+        .product-card { /* Individual product card */
+            background-color: #f8fafc; /* slate-50 */
+            padding: 1.5rem; /* py-6 px-6 */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* shadow-md */
+            border: 1px solid #e2e8f0; /* border-slate-200 */
+            text-align: left;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            text-align: left;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .product-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         .product-card h3 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #1a202c; /* Dark text for title */
-            margin-bottom: 0.8rem;
+            font-size: 1.5rem; /* text-2xl */
+            font-weight: 700; /* font-bold */
+            color: #1e293b; /* slate-800 */
+            margin-bottom: 0.5rem; /* mb-2 */
         }
         .product-card .description {
-            color: #4a5568;
-            margin-bottom: 1.5rem;
+            color: #475569; /* slate-600 */
+            margin-bottom: 1rem; /* mb-4 */
         }
         .product-card ul {
             list-style-type: disc;
             list-style-position: inside;
-            color: #4a5568;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 2rem;
+            color: #475569; /* slate-700 */
+            font-size: 0.875rem; /* text-sm */
+            line-height: 1.5; /* space-y-1 */
+            margin-bottom: 1.5rem; /* mb-6 */
         }
         .product-card .price-display {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #4f46e5; /* Indigo accent for price */
-            margin-bottom: 1.5rem;
+            font-size: 2.25rem; /* text-3xl */
+            font-weight: 800; /* font-extrabold */
+            color: #4f46e5; /* indigo-600 */
+            margin-bottom: 1.5rem; /* mb-6 */
             text-align: center;
         }
         .product-card .price-display .frequency {
-            font-size: 0.9rem;
-            font-weight: 400;
-            color: #718096;
+            font-size: 1rem; /* text-base */
+            font-weight: 400; /* font-normal */
+            color: #64748b; /* slate-500 */
         }
-        .product-card .buy-button {
-            background-color: #4f46e5; /* Indigo button */
-            color: white;
-            font-weight: 600;
-            padding: 0.8rem 1.5rem;
-            border-radius: 9999px;
-            transition: background-color 0.2s ease, transform 0.2s ease;
-            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        .product-card .buy-button { /* This button is now the primary button in the snippet */
+            background-color: #4f46e5; /* indigo-600 */
+            color: #ffffff; /* text-white */
+            font-weight: 600; /* font-semibold */
+            padding: 0.75rem 1.5rem; /* py-3 px-6 */
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1); /* shadow-lg */
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+            transform: none; /* Reset transform for hover */
+            border: none;
         }
         .product-card .buy-button:hover {
-            background-color: #4338ca; /* Darker indigo on hover */
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+            background-color: #4338ca; /* Darker indigo */
+            transform: scale(1.05); /* Slightly larger scale on hover */
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
         }
+
 
         /* Noodle Mountain Journey Section */
         .noodle-journey-section {
             background-color: var(--card-bg-dark); /* Dark background */
-            color: #ffffff;
+            color: var(--light-text);
             border-top: 1px solid var(--border-dark);
             border-bottom: 1px solid var(--border-dark);
         }
         .noodle-journey-section h2 {
-            color: #ffffff;
+            color: var(--light-text);
         }
         .noodle-gallery-grid {
             display: grid;
@@ -420,12 +483,12 @@
             margin-top: 2rem;
         }
         .noodle-stage-card {
-            background-color: #f0f0f0;
+            background-color: var(--card-bg); /* Theme card background */
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             transition: transform 0.3s ease;
-            border: 1px solid #d0d0d0;
+            border: 1px solid var(--border-color); /* Theme border */
         }
         .noodle-stage-card:hover {
             transform: translateY(-5px) scale(1.02);
@@ -434,18 +497,18 @@
             width: 100%;
             height: auto;
             display: block;
-            border-bottom: 1px solid #d0d0d0;
+            border-bottom: 1px solid var(--border-color); /* Theme border */
         }
         .noodle-stage-caption {
             padding: 1rem;
             font-size: 0.95rem;
             font-weight: 600;
-            color: #555555;
+            color: var(--muted-text-color); /* Theme muted text color */
         }
 
         /* Competition Details Section */
         .competition-details-section h3 {
-            color: #007bff;
+            color: var(--secondary-glow); /* Consistent blue accent */
             font-size: 1.8rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
@@ -454,39 +517,39 @@
             font-size: 1.2rem;
             font-weight: bold;
             margin-top: 2rem;
-            color: #1e293b;
+            color: var(--text-color); /* Theme text color */
         }
         .competition-details-section .announcement-text {
             font-size: 1.6rem;
             font-weight: 800;
-            color: #007bff;
+            color: var(--secondary-glow); /* Consistent blue accent */
             margin-bottom: 1.5rem;
         }
         .competition-details-section .slogan-text {
             font-size: 1.2rem;
             font-style: italic;
-            color: #475569;
+            color: var(--muted-text-color); /* Theme muted text color */
         }
 
         /* Sun Burn Mountain Lions Section */
         .sun-burn-section {
-            background: linear-gradient(135deg, var(--sun-burn-gradient-start), var(--sun-burn-gradient-end));
-            color: #FFFFFF;
+            background: linear-gradient(135deg, var(--sun-burn-gradient-start), var(--sun-burn-gradient-end)); /* PRESERVED */
+            color: #FFFFFF; /* PRESERVED */
             position: relative;
             overflow: hidden;
             border-top: 1px solid rgba(255,255,255,0.2);
             box-shadow: inset 0 5px 20px rgba(0,0,0,0.3);
         }
         .sun-burn-section h2 {
-            color: #FFFFFF;
+            color: #FFFFFF; /* PRESERVED */
         }
         .sun-burn-section p {
             text-shadow: 1px 1px 5px rgba(0,0,0,0.3);
         }
         .sun-burn-section .cta-button {
-            background: rgba(255,255,255,0.15);
-            color: #FFFFFF;
-            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.15); /* PRESERVED */
+            color: #FFFFFF; /* PRESERVED */
+            border: 1px solid rgba(255,255,255,0.3); /* PRESERVED */
             box-shadow: 0 8px 25px rgba(0,0,0,0.4);
         }
         .sun-burn-section .cta-button:hover {
@@ -533,48 +596,51 @@
             align-items: center;
             font-size: 2rem;
             font-weight: bold;
-            color: #333333;
-            border-bottom: 1px solid var(--page-border-light);
-            background-color: var(--page-bg-light);
+            color: var(--text-color); /* Theme text color */
+            border-bottom: 1px solid var(--border-color); /* Theme border */
+            background-color: var(--card-bg); /* Theme background for these sections */
             box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
+        /* Specific color backgrounds for individual canvases */
         .color-canvas-section.black-bg { background-color: var(--black); color: white; }
         .color-canvas-section.white-bg { background-color: var(--super-pearl-white); color: #333; border-color: #bbb; }
-        .color-canvas-section.pastel-grey-bg { background-color: var(--pastel-grey); }
-        .color-canvas-section.pastel-yellow-bg { background-color: var(--pastel-yellow); }
-        .color-canvas-section.pastel-blue-bg { background-color: var(--pastel-blue); }
-        .color-canvas-section.pastel-olive-green-bg { background-color: var(--pastel-olive-green); }
-        .color-canvas-section.pastel-red-bg { background-color: var(--pastel-red); }
-        .color-canvas-section.pastel-dark-green-bg { background-color: var(--pastel-dark-green); }
-        .color-canvas-section.pastel-purple-bg { background-color: var(--pastel-purple); }
-        .color-canvas-section.pastel-orange-bg { background-color: var(--pastel-orange); }
-        .color-canvas-section.pastel-pink-bg { background-color: var(--pastel-pink); }
-        .color-canvas-section.pastel-brown-bg { background-color: var(--pastel-brown); }
-        .color-canvas-section.pastel-teal-bg { background-color: var(--pastel-teal); }
-        .color-canvas-section.pastel-light-green-bg { background-color: var(--pastel-light-green); }
-        .color-canvas-section.pastel-yellow-green-bg { background-color: var(--pastel-yellow-green); }
-        .color-canvas-section.pastel-lavender-bg { background-color: var(--pastel-lavender); }
-        .color-canvas-section.pastel-grey-blue-bg { background-color: var(--pastel-grey-blue); }
-        .color-canvas-section.pastel-peach-bg { background-color: var(--pastel-peach); }
+        .color-canvas-section.pastel-grey-bg { background-color: var(--pastel-grey); color: #333; }
+        .color-canvas-section.pastel-yellow-bg { background-color: var(--pastel-yellow); color: #333; }
+        .color-canvas-section.pastel-blue-bg { background-color: var(--pastel-blue); color: #333; }
+        .color-canvas-section.pastel-olive-green-bg { background-color: var(--pastel-olive-green); color: #333; }
+        .color-canvas-section.pastel-red-bg { background-color: var(--pastel-red); color: #333; }
+        .color-canvas-section.pastel-dark-green-bg { background-color: var(--pastel-dark-green); color: #333; }
+        .color-canvas-section.pastel-purple-bg { background-color: var(--pastel-purple); color: #333; }
+        .color-canvas-section.pastel-orange-bg { background-color: var(--pastel-orange); color: #333; }
+        .color-canvas-section.pastel-pink-bg { background-color: var(--pastel-pink); color: #333; }
+        .color-canvas-section.pastel-brown-bg { background-color: var(--pastel-brown); color: #333; }
+        .color-canvas-section.pastel-teal-bg { background-color: var(--pastel-teal); color: #333; }
+        .color-canvas-section.pastel-light-green-bg { background-color: var(--pastel-light-green); color: #333; }
+        .color-canvas-section.pastel-yellow-green-bg { background-color: var(--pastel-yellow-green); color: #333; }
+        .color-canvas-section.pastel-lavender-bg { background-color: var(--pastel-lavender); color: #333; }
+        .color-canvas-section.pastel-grey-blue-bg { background-color: var(--pastel-grey-blue); color: #333; }
+        .color-canvas-section.pastel-peach-bg { background-color: var(--pastel-peach); color: #333; }
         
         /* Chess-like Board */
         .chess-board-section {
             min-height: 80vh;
             padding: 4rem 2rem;
-            background-color: var(--page-bg-light);
-            border-bottom: 1px solid var(--page-border-light);
+            background-color: var(--card-bg); /* Theme background */
+            border-bottom: 1px solid var(--border-color); /* Theme border */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: #333333;
+            color: var(--text-color); /* Theme text color */
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
         }
         .chessboard-wrapper {
             width: calc(100% - 4mm);
             height: calc(100% - 4mm);
             aspect-ratio: 1 / 1;
             max-width: 800px;
-            background-color: #ffffff;
+            background-color: var(--bg-color); /* Theme background */
             border-radius: 12px;
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
             padding: 10px;
@@ -582,6 +648,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         .chess-grid {
             display: grid;
@@ -601,6 +669,7 @@
             font-size: 1.2rem;
             font-weight: bold;
         }
+        /* Chess cell colors are set directly in JS for dynamic theme changes */
 
         /* Stacked Colors Section (Red/Black) */
         .stacked-colors-section {
@@ -609,15 +678,18 @@
             flex-direction: column;
             justify-content: flex-start;
             align-items: stretch;
-            border-bottom: 1px solid var(--border-dark);
+            border-bottom: 1px solid var(--border-dark); /* Retain dark border for contrast */
         }
         .stacked-colors-section .color-stripe {
             width: 100%;
             flex-grow: 1;
             height: 5vh;
         }
+        /* Specific colors for stripes are hardcoded in HTML as per original design intent */
         .stacked-colors-section .color-stripe.black-stripe-bg { background-color: #000000; }
         .stacked-colors-section .color-stripe.red-stripe-bg { background-color: #FF0000; }
+        .stacked-colors-section .color-stripe.yellow-stripe-bg { background-color: #FFFF00; } /* Added for multi-color stack */
+        .stacked-colors-section .color-stripe.green-stripe-bg { background-color: #008000; } /* Added for multi-color stack */
         .stacked-colors-section.red-black-stack .color-stripe:nth-child(odd) { background-color: #FF0000; }
         .stacked-colors-section.red-black-stack .color-stripe:nth-child(even) { background-color: #000000; }
         .stacked-colors-section.multi-color-stack .color-stripe:nth-child(1) { background-color: #000000; }
@@ -628,16 +700,16 @@
         /* Black with Red Panel */
         .black-with-red-panel-section {
             min-height: 80vh;
-            background-color: #000000;
+            background-color: #000000; /* Retain pure black */
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 2rem;
             box-sizing: border-box;
-            border-bottom: 1px solid #000000;
+            border-bottom: 1px solid #000000; /* Retain black border */
         }
         .black-with-red-panel-section .inner-red-panel {
-            background-color: #FF0000;
+            background-color: #FF0000; /* Retain pure red */
             width: calc(100% - 20px);
             height: calc(100% - 20px);
             border-radius: 12px;
@@ -653,16 +725,16 @@
         /* Augusta Green with Red Border */
         .augusta-green-red-border-section {
             min-height: 80vh;
-            background-color: #FF0000;
+            background-color: #FF0000; /* Retain pure red */
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 2rem;
             box-sizing: border-box;
-            border-bottom: 1px solid #e0e7ff;
+            border-bottom: 1px solid #FF0000; /* Retain red border */
         }
         .augusta-green-red-border-section .inner-green-panel {
-            background-color: #3C713C;
+            background-color: #3C713C; /* Retain specific green */
             width: calc(100% - 20px);
             height: calc(100% - 20px);
             border-radius: 12px;
@@ -679,18 +751,19 @@
         .concentric-canvas-section {
             min-height: 80vh;
             padding: 4rem 2rem;
-            background-color: #f1f5f9;
-            border-bottom: 1px solid #e0e7ff;
+            background-color: var(--card-bg); /* Theme background */
+            border-bottom: 1px solid var(--border-color); /* Theme border */
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            color: #333333;
+            color: var(--text-color); /* Theme text color */
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
         }
         .concentric-canvas-wrapper {
             width: calc(100% - 20mm);
             height: calc(100% - 20mm);
-            background-color: #000000;
+            background-color: #000000; /* Retain black base */
             border-radius: 8px;
             display: flex;
             justify-content: center;
@@ -709,6 +782,7 @@
             align-items: center;
             box-sizing: border-box;
         }
+        /* Specific colors for concentric layers are hardcoded */
         .concentric-red-bg { background-color: #FF0000; }
         .concentric-yellow-bg { background-color: #FFFF00; }
         .concentric-green-bg { background-color: #008000; }
@@ -719,14 +793,15 @@
             min-height: 80vh;
             padding: 4rem 2rem;
             position: relative;
-            background: linear-gradient(to bottom, var(--page-bg-light) 0%, var(--page-bg-light) 70%, var(--winter-brown-grass) 100%); /* Fading background for snow to brown grass */
-            border-bottom: 1px solid var(--page-border-light);
+            background: linear-gradient(to bottom, var(--bg-color) 0%, var(--bg-color) 70%, var(--winter-brown-grass) 100%); /* Theme bg to brown grass */
+            border-bottom: 1px solid var(--border-color); /* Theme border */
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            overflow: hidden; /* Ensure SVG doesn't overflow */
+            overflow: hidden;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         .noodle-mountain-main-content-overlay {
             position: relative;
@@ -734,8 +809,8 @@
             max-width: 800px;
             width: 100%;
             text-align: center;
-            color: #333333;
-            background-color: rgba(255,255,255,0.0);
+            color: var(--text-color); /* Theme text color */
+            background-color: rgba(255,255,255,0.0); /* Transparent overlay */
         }
         .noodle-mountain-svg-layer {
             position: absolute;
@@ -745,7 +820,7 @@
             height: 100%;
             z-index: 1;
         }
-        /* Noodle and sheep styling */
+        /* Noodle and sheep styling - retain specific colors/strokes */
         .noodle-mountain-svg-layer #noodle-mountain-path {
             stroke: #000000;
             stroke-width: 2mm;
@@ -761,38 +836,39 @@
             dominant-baseline: text-after-edge;
         }
         .noodle-mountain-svg-layer .sun-circle-svg {
-            filter: url(#noodleSunBlur); /* Corrected filter ID */
+            filter: url(#noodleSunBlur);
         }
         .noodle-mountain-svg-layer .melting-grass-path-svg {
-            stroke-width: 15mm; /* Increased width for more prominent "bush" */
+            stroke-width: 15mm;
             fill: none;
             stroke-linecap: round;
             stroke-linejoin: round;
         }
-        /* Noodle Mountain SVG Gradients */
+        /* Noodle Mountain SVG Gradients - retain specific colors */
         .noodle-sun-gradient-start-color { stop-color:rgb(255,255,0);stop-opacity:1; }
         .noodle-sun-gradient-end-color { stop-color:rgb(255,165,0);stop-opacity:0; }
-        .noodle-melting-snow-gradient-stop1 { stop-color:rgb(255,255,255);stop-opacity:1; } /* Solid white snow */
-        .noodle-melting-snow-gradient-stop2 { stop-color:rgb(173,216,230);stop-opacity:0.5; } /* Melting blue */
-        .noodle-melting-snow-gradient-stop3 { stop-color:rgb(0,128,0);stop-opacity:0.8; } /* Grass green */
-        .noodle-melting-snow-gradient-stop4 { stop-color:rgba(139, 69, 19, 0);stop-opacity:0; } /* Transparent to blend into section background */
+        .noodle-melting-snow-gradient-stop1 { stop-color:rgb(255,255,255);stop-opacity:1; }
+        .noodle-melting-snow-gradient-stop2 { stop-color:rgb(173,216,230);stop-opacity:0.5; }
+        .noodle-melting-snow-gradient-stop3 { stop-color:rgb(0,128,0);stop-opacity:0.8; }
+        .noodle-melting-snow-gradient-stop4 { stop-color:rgba(139, 69, 19, 0);stop-opacity:0; }
 
 
         /* README HTML Section */
         .readme-section-dashboard {
             padding: 4rem 2rem;
-            background-color: var(--card-bg);
+            background-color: var(--card-bg); /* Theme card background */
             text-align: left;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color); /* Theme border */
             box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.02);
-            color: var(--text-color);
+            color: var(--text-color); /* Theme text color */
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
         }
         .readme-content-dashboard {
             max-width: 800px;
             margin: 0 auto;
         }
         .readme-content-dashboard h1, .readme-content-dashboard h2, .readme-content-dashboard h3 {
-            color: var(--secondary-glow);
+            color: var(--secondary-glow); /* Theme accent color */
             font-weight: 800;
             margin-top: 2rem;
             margin-bottom: 1rem;
@@ -803,24 +879,25 @@
         .readme-content-dashboard h3 { font-size: 1.5rem; }
         .readme-content-dashboard p {
             margin-bottom: 1rem;
-            color: var(--muted-text-color);
+            color: var(--muted-text-color); /* Theme muted text color */
         }
         .readme-content-dashboard ul {
             list-style-type: disc;
             margin-left: 20px;
             margin-bottom: 1rem;
-            color: var(--muted-text-color);
+            color: var(--muted-text-color); /* Theme muted text color */
         }
 
         /* Canvas Chooser Section */
         .canvas-chooser-section-dashboard {
-            background-color: var(--bg-color);
+            background-color: var(--bg-color); /* Theme background */
             padding: 4rem 2rem;
             text-align: center;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color); /* Theme border */
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         .canvas-chooser-section-dashboard h2 {
-            color: var(--text-color);
+            color: var(--text-color); /* Theme text color */
         }
         .color-palette-grid-dashboard {
             display: grid;
@@ -834,7 +911,7 @@
             padding-bottom: 100%;
             border-radius: 12px;
             cursor: pointer;
-            border: 2px solid var(--border-color);
+            border: 2px solid var(--border-color); /* Theme border */
             transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
             position: relative;
@@ -843,11 +920,11 @@
             justify-content: center;
             font-size: 0.9rem;
             font-weight: 600;
-            color: var(--text-color);
+            color: var(--text-color); /* Theme text color */
         }
         .color-swatch-dashboard:hover {
             transform: translateY(-5px) scale(1.05);
-            border-color: var(--secondary-glow);
+            border-color: var(--secondary-glow); /* Theme accent color */
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
         }
         .color-swatch-dashboard .swatch-label-dashboard {
@@ -857,9 +934,9 @@
             transform: translateX(-50%);
             white-space: nowrap;
             font-size: 0.85rem;
-            color: var(--muted-text-color);
+            color: var(--muted-text-color); /* Theme muted text color */
         }
-        /* Specific color backgrounds for swatches */
+        /* Specific color backgrounds for swatches (hardcoded) */
         .swatch-black-bg { background-color: var(--black); color: white; }
         .swatch-super-pearl-white-bg { background-color: var(--super-pearl-white); border-color: #bbbbbb; color: var(--page-text-dark); }
         .swatch-pastel-grey-bg { background-color: var(--pastel-grey); }
@@ -883,22 +960,23 @@
         .global-master-header-demo-section {
             padding: 4rem 2rem;
             text-align: center;
-            background-color: var(--bg-color);
-            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-color); /* Theme background */
+            border-bottom: 1px solid var(--border-color); /* Theme border */
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         .global-master-header-demo-section h2 {
             font-size: 2.5rem;
             font-weight: 800;
             margin-bottom: 2rem;
-            color: var(--text-color);
+            color: var(--text-color); /* Theme text color */
         }
         .global-master-header-demo-section .header-placeholder-box {
-            border: 2px dashed var(--border-color);
+            border: 2px dashed var(--border-color); /* Theme border */
             padding: 2rem;
             margin-top: 2rem;
             text-align: center;
             font-style: italic;
-            color: var(--muted-text-color);
+            color: var(--muted-text-color); /* Theme muted text color */
         }
 
         /* Message box for alerts/notifications (from polishing script) */
@@ -947,6 +1025,11 @@
             .chess-board-wrapper { max-width: 600px; max-height: 600px; }
         }
         @media (max-width: 768px) {
+            .main-nav { padding: 0.5rem 1rem; } /* Tighter header on mobile */
+            .logo-group a { font-size: 1.4rem; }
+            .logo-group .separator { font-size: 1.2rem; }
+            .header-nav-links { display: none; } /* Hide nav links on small mobile screens */
+            
             .dashboard-section { padding: 2rem 1rem; }
             .dashboard-section h1 { font-size: 2.5rem; }
             .dashboard-section h2 { font-size: 2rem; }
@@ -959,6 +1042,7 @@
             .foxed-hero-section .cta-button { padding: 0.7rem 1.5rem; font-size: 0.9rem; }
             
             .products-section .currency-selector-wrapper { margin-top: 1rem; padding: 1rem; }
+            .products-section .currency-selector-wrapper select { font-size: 0.9rem; }
             .product-card { padding: 1.5rem; }
             .product-card h3 { font-size: 1.5rem; }
             .product-card .price-display { font-size: 2rem; }
@@ -985,6 +1069,9 @@
             .chess-cell { font-size: 0.8rem; }
 
             .noodle-mountain-full-section { padding: 2rem 1rem; }
+
+            .global-master-header-demo-section h2 { font-size: 2rem; }
+            .global-master-header-demo-section .header-placeholder-box { padding: 1.5rem; }
         }
     </style>
 </head>
@@ -995,12 +1082,14 @@
         <header>
             <div class="main-nav">
                 <div class="logo-group">
-                    <a href="#home" class="fruitful-logo">Fruitful™</a>
+                    <!-- Fruitful Logo linking to home of this site or general Fruitful page -->
+                    <a href="homepage.html" class="fruitful-logo">Fruitful™</a>
                     <span class="separator">|</span>
-                    <a href="#home" class="fruitful-logo">Banimal™</a>
+                    <!-- Banimal Logo linking to Banimal section of this site -->
+                    <a href="homepage.html" class="fruitful-logo">Banimal™</a>
                 </div>
                 <nav class="header-nav-links">
-                    <a href="#home">Home</a>
+                    <a href="homepage.html">Home</a>
                     <a href="#master-competition-summary">Competitions</a>
                     <a href="#noodle-journey-saga">Noodle Mtn</a>
                     <a href="#products">Products</a>
@@ -1023,9 +1112,9 @@
     </div>
 
     <main>
-        <!-- Foxed Has Mobiles Hero Section -->
+        <!-- Foxed Has Mobiles Hero Section - PRESERVED COLORS/BRANDING -->
         <section id="foxed-hero" class="foxed-hero-section">
-            <canvas id="ant-route-canvas"></canvas> <!-- Ant Route Canvas in background -->
+            <canvas id="ant-route-canvas" class="ant-route-canvas-bg"></canvas> <!-- Ant Route Canvas in background -->
             <h1 class="foxed-hero-title">🦊 Foxed Has Mobiles™</h1>
             <p class="foxed-hero-slogan">"The fox doesn’t speak — it routes."</p>
             <p class="foxed-hero-subtitle">"Not what it is — what it means."</p>
@@ -1042,37 +1131,37 @@
             
             <h3 class="mt-8 mb-4 text-center text-blue-600 font-bold">Competition Categories</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
-                <div>
-                    <h3>🦊 1. Foxed Has Mobiles™ – The 1/1 Apparel Oracle</h3>
-                    <p>Wearable interpretations of "Foxed Has Mobiles™". Include the phrase, embed atom-level details like hidden codes, GPS, seeds. One-of-one designs only.</p>
+                <div class="p-4 rounded-lg bg-white shadow-sm border border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">🦊 1. Foxed Has Mobiles™ – The 1/1 Apparel Oracle</h3>
+                    <p class="text-gray-600">Wearable interpretations of "Foxed Has Mobiles™". Include the phrase, embed atom-level details like hidden codes, GPS, seeds. One-of-one designs only.</p>
                 </div>
-                <div>
-                    <h3>🍉 2. Mr Fruitful™’s Olympic Threads</h3>
-                    <p>Design athlete gear for Crate Dance Olympics™. Must include hidden Baobab or Snotneus symbols. Focus: fruit, fire, function.</p>
+                <div class="p-4 rounded-lg bg-white shadow-sm border border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">🍉 2. Mr Fruitful™’s Olympic Threads</h3>
+                    <p class="text-gray-600">Design athlete gear for Crate Dance Olympics™. Must include hidden Baobab or Snotneus symbols. Focus: fruit, fire, function.</p>
                 </div>
-                <div>
-                    <h3>📦 3. Water the Seed™ – Brandborn Creations</h3>
-                    <p>Create logos, frames, packaging for any of 139+ FAA brands. Any medium accepted — even painted dirt.</p>
+                <div class="p-4 rounded-lg bg-white shadow-sm border border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">📦 3. Water the Seed™ – Brandborn Creations</h3>
+                    <p class="text-gray-600">Create logos, frames, packaging for any of 139+ FAA brands. Any medium accepted — even painted dirt.</p>
                 </div>
-                <div>
-                    <h3>🧬 4. Playing with the Seed™ – Chaos Cartography</h3>
-                    <p>Submit memes, glitchwear, absurdist artifacts representing brand collapse into new culture.</p>
+                <div class="p-4 rounded-lg bg-white shadow-sm border border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">🧬 4. Playing with the Seed™ – Chaos Cartography</h3>
+                    <p class="text-gray-600">Submit memes, glitchwear, absurdist artifacts representing brand collapse into new culture.</p>
                 </div>
-                <div>
-                    <h3>🌍 5. Crate Dance Showcase™: Stage & Nation Design</h3>
-                    <p>Stage and nation layouts made from crates. 2D / 3D blueprints. Cosmic bridges welcome.</p>
+                <div class="p-4 rounded-lg bg-white shadow-sm border border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">🌍 5. Crate Dance Showcase™: Stage & Nation Design</h3>
+                    <p class="text-gray-600">Stage and nation layouts made from crates. 2D / 3D blueprints. Cosmic bridges welcome.</p>
                 </div>
-                <div>
-                    <h3>🎓 6. FAA University Identity Deck</h3>
-                    <p>Create FAA University student identity assets: cards, robes, stamps, crests with Baobab + Compliance Seal + Snotneus Welcome.</p>
+                <div class="p-4 rounded-lg bg-white shadow-sm border border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">🎓 6. FAA University Identity Deck</h3>
+                    <p class="text-gray-600">Create FAA University student identity assets: cards, robes, stamps, crests with Baobab + Compliance Seal + Snotneus Welcome.</p>
                 </div>
             </div>
             <a href="#rules" class="cta-button mt-12">View Challenge Rules <i class="fas fa-gavel"></i></a>
         </section>
 
-        <!-- === FAA.ZONE Products (Price Cards) === -->
+        <!-- === FAA.ZONE Products (Price Cards) - INTEGRATED FROM USER'S PROVIDED HTML === -->
         <section id="products" class="products-section dashboard-section">
-            <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-4xl w-full text-center border-t-8 border-indigo-600 flex flex-col justify-between min-h-[80vh] mx-auto">
+            <div class="main-container-style-pricing p-8 rounded-3xl shadow-2xl max-w-4xl w-full text-center border-t-8 border-indigo-600 flex flex-col justify-between min-h-[80vh] mx-auto">
                 <div>
                     <div class="flex items-center justify-center gap-3 mb-8">
                         <span class="text-4xl">🦍</span>
@@ -1109,7 +1198,11 @@
                                 </ul>
                                 <p class="price-display" data-original-price="199.00" data-currency-symbol="R" data-currency-code="ZAR">R 199.00 <span class="frequency">/ month</span></p>
                             </div>
-                            <button class="buy-now-button featured-button w-full bg-indigo-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+                            <button class="buy-now-button featured-button w-full bg-indigo-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                                    data-product-name="Starter Package"
+                                    data-amount="199.00"
+                                    data-billing-cycle="MONTHLY"
+                                    data-plan-key="Starter Package_MONTHLY">
                                 Subscribe Now (Monthly)
                             </button>
                         </div>
@@ -1127,7 +1220,11 @@
                                 </ul>
                                 <p class="price-display" data-original-price="499.00" data-currency-symbol="R" data-currency-code="ZAR">R 499.00 <span class="frequency">/ month</span></p>
                             </div>
-                            <button class="buy-now-button featured-button w-full bg-indigo-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+                            <button class="buy-now-button featured-button w-full bg-indigo-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                                    data-product-name="Business Package"
+                                    data-amount="499.00"
+                                    data-billing-cycle="MONTHLY"
+                                    data-plan-key="Business Package_MONTHLY">
                                 Subscribe Now (Monthly)
                             </button>
                         </div>
@@ -1145,7 +1242,11 @@
                                 </ul>
                                 <p class="price-display" data-original-price="1200.00" data-currency-symbol="R" data-currency-code="ZAR">R 1200.00 <span class="frequency">/ month</span></p>
                             </div>
-                            <button class="buy-now-button featured-button w-full bg-indigo-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+                            <button class="buy-now-button featured-button w-full bg-indigo-600 text-white font-semibold py-3 px-6 rounded-xl shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+                                    data-product-name="Enterprise Package"
+                                    data-amount="1200.00"
+                                    data-billing-cycle="MONTHLY"
+                                    data-plan-key="Enterprise Package_MONTHLY">
                                 Subscribe Now (Monthly)
                             </button>
                         </div>
@@ -1200,7 +1301,7 @@
         </section>
 
         <!-- === COMPETITION DETAILS & GLOBAL CHALLENGE === -->
-        <section id="master-competition-summary" class="dashboard-section">
+        <section id="master-competition-summary-duplicate" class="dashboard-section">
             <h2>📜 Master Competition Suite Summary</h2>
             <p>Launched By: <strong>Heyns Schoeman & Baobab Whisperer Protocols</strong></p>
             <p>Governance: <strong>FAA Interbrand + Yield Design Council</strong></p>
@@ -1209,33 +1310,34 @@
             
             <h3 class="mt-8 mb-4 text-center text-blue-600 font-bold">Competition Categories</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
-                <div>
-                    <h3>🦊 1. Foxed Has Mobiles™ – The 1/1 Apparel Oracle</h3>
-                    <p>Wearable interpretations of "Foxed Has Mobiles™". Include the phrase, embed atom-level details like hidden codes, GPS, seeds. One-of-one designs only.</p>
+                <div class="p-4 rounded-lg bg-white shadow-sm border border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">🦊 1. Foxed Has Mobiles™ – The 1/1 Apparel Oracle</h3>
+                    <p class="text-gray-600">Wearable interpretations of "Foxed Has Mobiles™". Include the phrase, embed atom-level details like hidden codes, GPS, seeds. One-of-one designs only.</p>
                 </div>
-                <div>
-                    <h3>🍉 2. Mr Fruitful™’s Olympic Threads</h3>
-                    <p>Design athlete gear for Crate Dance Olympics™. Must include hidden Baobab or Snotneus symbols. Focus: fruit, fire, function.</p>
+                <div class="p-4 rounded-lg bg-white shadow-sm border border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">🍉 2. Mr Fruitful™’s Olympic Threads</h3>
+                    <p class="text-gray-600">Design athlete gear for Crate Dance Olympics™. Must include hidden Baobab or Snotneus symbols. Focus: fruit, fire, function.</p>
                 </div>
-                <div>
-                    <h3>📦 3. Water the Seed™ – Brandborn Creations</h3>
-                    <p>Create logos, frames, packaging for any of 139+ FAA brands. Any medium accepted — even painted dirt.</p>
+                <div class="p-4 rounded-lg bg-white shadow-sm border border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">📦 3. Water the Seed™ – Brandborn Creations</h3>
+                    <p class="text-gray-600">Create logos, frames, packaging for any of 139+ FAA brands. Any medium accepted — even painted dirt.</p>
                 </div>
-                <div>
-                    <h3>🧬 4. Playing with the Seed™ – Chaos Cartography</h3>
-                    <p>Submit memes, glitchwear, absurdist artifacts representing brand collapse into new culture.</p>
+                <div class="p-4 rounded-lg bg-white shadow-sm border border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">🧬 4. Playing with the Seed™ – Chaos Cartography</h3>
+                    <p class="text-gray-600">Submit memes, glitchwear, absurdist artifacts representing brand collapse into new culture.</p>
                 </div>
-                <div>
-                    <h3>🌍 5. Crate Dance Showcase™: Stage & Nation Design</h3>
-                    <p>Stage and nation layouts made from crates. 2D / 3D blueprints. Cosmic bridges welcome.</p>
+                <div class="p-4 rounded-lg bg-white shadow-sm border border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">🌍 5. Crate Dance Showcase™: Stage & Nation Design</h3>
+                    <p class="text-gray-600">Stage and nation layouts made from crates. 2D / 3D blueprints. Cosmic bridges welcome.</p>
                 </div>
-                <div>
-                    <h3>🎓 6. FAA University Identity Deck</h3>
-                    <p>Create FAA University student identity assets: cards, robes, stamps, crests with Baobab + Compliance Seal + Snotneus Welcome.</p>
+                <div class="p-4 rounded-lg bg-white shadow-sm border border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">🎓 6. FAA University Identity Deck</h3>
+                    <p class="text-gray-600">Create FAA University student identity assets: cards, robes, stamps, crests with Baobab + Compliance Seal + Snotneus Welcome.</p>
                 </div>
             </div>
             <a href="#rules" class="cta-button mt-12">View Challenge Rules <i class="fas fa-gavel"></i></a>
         </section>
+
 
         <!-- === SUN BURN MOUNTAIN LIONS === -->
         <section id="sun-burn" class="sun-burn-section dashboard-section">
@@ -1338,15 +1440,15 @@
             <p>A visual archive of the distinct canvas designs crafted throughout our journey.</p>
             
             <!-- Minutes of Meeting Iframe Setup -->
-            <section id="minutes-of-meeting" class="minutes-of-meeting-section">
-                <div class="container">
+            <section id="minutes-of-meeting" class="dashboard-section">
+                <div class="container mx-auto px-4 py-8">
                     <h2 class="text-3xl font-bold text-gray-800 mb-6 rounded-lg p-2 bg-blue-100 shadow-md">
                         Minutes of Meeting Display
                     </h2>
                     <p class="text-gray-600 mb-6">
                         This iframe is set up to display content from an external source, perfect for embedding your meeting minutes or a shared document.
                     </p>
-                    <iframe src="https://www.example.com/your-meeting-minutes" title="Meeting Minutes Document" allowfullscreen>
+                    <iframe src="https://www.example.com/your-meeting-minutes" title="Meeting Minutes Document" class="w-full h-[600px] border border-gray-300 rounded-lg shadow-md" allowfullscreen>
                         Your browser does not support iframes.
                     </iframe>
                     <p class="text-sm text-gray-500 mt-6">
@@ -1454,17 +1556,20 @@
 
     <!-- === CONSOLIDATED FOOTER SECTION === -->
     <footer class="bg-gray-900 text-white py-8 px-6 md:px-20">
-        <div class="banimal-footer-content">
-            <h1>Banimal™: <br> <span>🐑Kind Creatures. Global Impact.</span></h1>
-            <p>
+        <div class="banimal-footer-content text-center max-w-2xl mx-auto">
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight text-white mb-2">
+                Banimal™: <br> 
+                <span class="text-blue-400">🐑Kind Creatures. Global Impact.</span>
+            </h1>
+            <p class="text-base md:text-lg text-gray-300 leading-relaxed mb-6">
                 Discover Banimal's world of thoughtful baby essentials & innovative lighting. For every purchase, we deliver the same item to a child in need, identified by the Baobab Security Network's data-driven insights.
             </p>
-            <a href="global_brands.html" class="cta-button">
-                Explore Banimal's World <i class="fas fa-arrow-right"></i>
+            <a href="global_brands.html" class="cta-button bg-blue-600 text-white font-semibold py-3 px-6 rounded-full inline-flex items-center justify-center hover:bg-blue-700 transition-colors duration-200">
+                Explore Banimal's World <i class="fas fa-arrow-right ml-2"></i>
             </a>
         </div>
-        <p class="copyright">&copy; 👟2025 Banimal™. All rights reserved.</p>
-        <p class="copyright">A proud initiative of <a href="https://faa.zone/" target="_blank">FAA.zone™ Treaty System™</a></p>
+        <p class="copyright text-sm text-gray-500 mt-8">&copy; 👟2025 Banimal™. All rights reserved.</p>
+        <p class="copyright text-sm text-gray-500">A proud initiative of <a href="https://faa.zone/" target="_blank" class="text-blue-400 hover:underline">FAA.zone™ Treaty System™</a></p>
     </footer>
 
     <!-- Message box for alerts/notifications -->
@@ -1611,7 +1716,10 @@
             for (let row = 0; row < gridSize; row++) {
                 for (let col = 0; col < gridSize; col++) {
                     const cell = document.createElement('div'); cell.classList.add('chess-cell');
-                    if ((row + col) % 2 === 0) { cell.style.backgroundColor = '#E0E0E0'; cell.style.color = '#333333'; } else { cell.style.backgroundColor = '#424242'; cell.style.color = '#F5F5F5'; }
+                    // Explicitly set black and white colors for chess board
+                    const isEven = (row + col) % 2 === 0;
+                    cell.style.backgroundColor = isEven ? '#000000' : '#FFFFFF'; // Black and White
+                    cell.style.color = isEven ? '#FFFFFF' : '#000000'; // White text on black, black text on white
                     chessboardDisplay.appendChild(cell);
                 }
             }
@@ -1620,8 +1728,6 @@
 
         // --- Noodle Mountain SVG Overlay Initialization ---
         function initNoodleMountainSvg() {
-            // This function is now mostly a trigger for logging/debugging.
-            // The SVG is directly in HTML.
             console.log("Noodle Mountain SVG overlay initialized.");
         }
         // End Noodle Mountain SVG Overlay Initialization
@@ -1629,15 +1735,19 @@
         // --- Currency Converter Logic ---
         const currencySelect = document.getElementById('currency-select');
         const priceDisplays = document.querySelectorAll('.price-display');
-        let exchangeRates = {};
-        const API_KEY = ""; // LEFT BLANK AS PER INSTRUCTIONS
-        const BASE_CURRENCY = 'ZAR';
+        let exchangeRates = {}; // Store fetched exchange rates
+
+        const API_KEY = "40015d117bc7fff9495dcf28"; // Your provided API key
+        const BASE_CURRENCY = 'ZAR'; // Set to ZAR based on the updated data-original-price values
+
         async function fetchExchangeRates() {
             if (API_KEY === "") {
-                console.warn("Currency converter: API_KEY is missing. Please set it. Currency conversion will not work.");
+                console.warn("Currency converter: API_KEY is missing. Please get your API key from https://www.exchangerate-api.com/ and replace 'API_KEY' in the code. Currency conversion will not work without it.");
+                showMessageBox('Currency converter API key is missing. Please set it up for currency conversion to work.', 5000); // Use common message box
                 if (currencySelect) currencySelect.disabled = true;
                 return;
             }
+
             try {
                 const response = await fetch(`https://v6.exchangerate-api.com/v6/${API_KEY}/latest/${BASE_CURRENCY}`);
                 if (!response.ok) {
@@ -1648,16 +1758,19 @@
                 if (data && data.conversion_rates) {
                     exchangeRates = data.conversion_rates;
                     console.log('Exchange rates fetched:', exchangeRates);
-                    updatePrices();
+                    updatePrices(); // Update prices once rates are fetched
                 } else {
                     console.error('Failed to fetch conversion rates: Unexpected API response structure.', data);
+                    showMessageBox('Could not fetch exchange rates due to unexpected API response. Check console for details.', 5000);
                     if (currencySelect) currencySelect.disabled = true;
                 }
             } catch (error) {
                 console.error('Error fetching exchange rates:', error.message || error);
-                if (currencySelect) currencySelect.disabled = true;
+                showMessageBox('Could not fetch exchange rates. Please check your API key, network connection, and API usage limits.', 5000);
+                if (currencySelect) currencySelect.disabled = true; // Disable dropdown if fetch fails
             }
         }
+
         function getCurrencySymbol(currencyCode) {
             switch (currencyCode) {
                 case 'USD': return '$';
@@ -1667,29 +1780,92 @@
                 default: return currencyCode;
             }
         }
+
         function updatePrices() {
             if (!currencySelect) return;
             const selectedCurrency = currencySelect.value;
             const selectedSymbol = getCurrencySymbol(selectedCurrency);
+
             priceDisplays.forEach(priceSpan => {
                 const originalPriceValue = parseFloat(priceSpan.dataset.originalPrice);
                 let convertedPrice = originalPriceValue;
-                if (selectedCurrency !== BASE_CURRENCY && exchangeRates[selectedCurrency]) { convertedPrice = originalPriceValue * exchangeRates[selectedCurrency]; }
+
+                if (selectedCurrency !== BASE_CURRENCY && exchangeRates[selectedCurrency]) {
+                    convertedPrice = originalPriceValue * exchangeRates[selectedCurrency];
+                }
                 priceSpan.innerHTML = `${selectedSymbol}${convertedPrice.toFixed(2)} <span class="text-slate-500 text-base font-normal">/ month</span>`;
-                priceSpan.dataset.currencyCode = selectedCurrency;
+                priceSpan.dataset.currencyCode = selectedCurrency; // Update the data-currency-code
             });
         }
-        if (currencySelect) { currencySelect.addEventListener('change', updatePrices); fetchExchangeRates(); }
         // End Currency Converter Logic
 
-        // --- PayPal Subscription Initiation (MOCKED) ---
-        document.querySelectorAll('.buy-now-button').forEach(button => {
-            button.addEventListener('click', (event) => {
-                showMessageBox(`Simulating purchase of ${event.target.textContent.trim()}! (PayPal integration is not active in this demo)`, 4000);
-                console.log(`Simulating PayPal subscription for: ${event.target.textContent.trim()}`);
-            });
-        });
-        // End PayPal Subscription Initiation (MOCKED)
+        // --- PayPal Subscription Initiation ---
+        const PAYPAL_PLAN_IDS = {
+            "Starter Package_MONTHLY": "P-YOUR_STARTER_MONTHLY_LIVE_PLAN_ID",   // <--- !!! REPLACE WITH ACTUAL LIVE ID !!! --->
+            "Starter Package_ANNUAL": "P-YOUR_STARTER_ANNUAL_LIVE_PLAN_ID",     // <--- !!! REPLACE WITH ACTUAL LIVE ID !!! --->
+            "Business Package_MONTHLY": "P-YOUR_BUSINESS_MONTHLY_LIVE_PLAN_ID", // <--- !!! REPLACE WITH ACTUAL LIVE ID !!! --->
+            "Business Package_ANNUAL": "P-YOUR_BUSINESS_ANNUAL_LIVE_PLAN_ID",   // <--- !!! REPLACE WITH ACTUAL LIVE ID !!! --->
+            "Enterprise Package_MONTHLY": "P-YOUR_ENTERPRISE_MONTHLY_LIVE_PLAN_ID", // <--- !!! REPLACE WITH ACTUAL LIVE ID !!! --->
+            "Enterprise Package_ANNUAL": "P-YOUR_ENTERPRISE_ANNUAL_LIVE_PLAN_ID"  // <--- !!! REPLACE WITH ACTUAL LIVE ID !!! --->
+        };
+        const CURRENT_USER_ID = 'CURRENT_LOGGED_IN_USER_ID'; // <--- !!! REPLACE THIS !!! --->
+
+        async function initiatePayPalSubscription(event) {
+            const button = event.currentTarget; // The clicked button
+            button.disabled = true; // Disable button to prevent multiple clicks
+            const originalButtonText = button.textContent;
+            button.textContent = 'Processing...';
+
+            const productName = button.dataset.productName;
+            const billingCycle = button.dataset.billingCycle;
+            const planKey = button.dataset.planKey; // e.g., "Starter Package_MONTHLY"
+            const planId = PAYPAL_PLAN_IDS[planKey];
+
+            if (!planId || planId.includes('YOUR_')) {
+                showMessageBox(`Subscription plan ID not configured for ${productName} (${billingCycle}). Please update PAYPAL_PLAN_IDS in the script with LIVE Plan IDs.`, 7000);
+                console.error(`Missing or placeholder PayPal Plan ID for ${planKey}`);
+                button.disabled = false;
+                button.textContent = originalButtonText;
+                return;
+            }
+
+            const selectedCurrency = currencySelect.value;
+
+            try {
+                const response = await fetch(`/api/paypal?action=create-subscription`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        planId: planId,
+                        userId: CURRENT_USER_ID,
+                        productName: productName,
+                        billingCycle: billingCycle,
+                        currencyCode: selectedCurrency,
+                        amount: parseFloat(button.dataset.amount)
+                    }),
+                });
+
+                const result = await response.json();
+
+                if (!response.ok) {
+                    console.error('Backend create-subscription error:', result);
+                    throw new Error(result.error || 'Failed to create PayPal subscription on backend');
+                }
+
+                if (result.approveUrl) {
+                    window.location.href = result.approveUrl;
+                } else {
+                    throw new Error('No approval URL received from PayPal.');
+                }
+
+            } catch (error) {
+                console.error('Error initiating PayPal subscription:', error);
+                showMessageBox(`An error occurred: ${error.message}. Please try again.`, 5000);
+                button.disabled = false;
+                button.textContent = originalButtonText;
+            }
+        }
+        // End PayPal Subscription Initiation
 
         // --- General Polishing Script Integrations ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -1699,44 +1875,224 @@
                 window.addEventListener('resize', resizeHeaderPulseCanvas);
             }
 
-            // Other elements from polishing script (kept hidden or with null checks)
+            // --- Announcement Bar Close Button ---
             const announcementBar = document.getElementById('announcement-bar');
-            const closeBtn = document.querySelector('#announcement-bar .close-btn');
-            if (closeBtn && announcementBar) { /* ... */ }
+            const mainHeader = document.getElementById('main-header'); // Ensure this ID is present in your HTML header
 
+            if (announcementBar && mainHeader) {
+                document.querySelector('#announcement-bar .close-btn').addEventListener('click', () => {
+                    announcementBar.classList.add('hidden');
+                    document.documentElement.style.setProperty('--announcement-bar-height', '0px');
+                    localStorage.setItem('hideAnnouncementBar', 'true');
+                });
+
+                const updateHeaderTop = () => {
+                    if (!announcementBar.classList.contains('hidden')) {
+                        const announcementHeight = announcementBar.offsetHeight;
+                        document.documentElement.style.setProperty('--announcement-bar-height', `${announcementHeight}px`);
+                    } else {
+                        document.documentElement.style.setProperty('--announcement-bar-height', '0px');
+                    }
+                    // Removed --header-height setting, as it's not directly used by sticky positioning with top: var(--announcement-bar-height);
+                };
+
+                if (localStorage.getItem('hideAnnouncementBar') === 'true') {
+                    announcementBar.classList.add('hidden');
+                    document.documentElement.style.setProperty('--announcement-bar-height', '0px');
+                } else {
+                    announcementBar.classList.remove('hidden');
+                    updateHeaderTop();
+                }
+                window.addEventListener('resize', updateHeaderTop);
+                window.addEventListener('load', updateHeaderTop);
+            }
+
+            // --- Theme Switching Logic ---
+            // These buttons are in the global.html, not fox.html, so ensure they exist before adding listeners.
             const themeDayBtn = document.getElementById('theme-day-btn');
             const themeNightBtn = document.getElementById('theme-night-btn');
             const themeHyperBtn = document.getElementById('theme-hyper-btn');
-            function setTheme(theme) { /* ... */ }
-            if (themeDayBtn) { /* ... */ }
 
+            function setTheme(theme) {
+                document.body.classList.remove('dark-mode', 'hyper-mode');
+                themeDayBtn?.classList.remove('active');
+                themeNightBtn?.classList.remove('active');
+                themeHyperBtn?.classList.remove('active');
+
+                if (theme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                    themeNightBtn?.classList.add('active');
+                } else if (theme === 'hyper') {
+                    document.body.classList.add('hyper-mode');
+                    themeHyperBtn?.classList.add('active');
+                } else {
+                    themeDayBtn?.classList.add('active');
+                }
+                localStorage.setItem('fruitfulTheme', theme);
+                // Re-render charts/canvases to ensure they pick up new theme colors
+                drawChessBoard(); // Re-render chess board specifically on theme change
+            }
+
+            if (themeDayBtn) {
+                themeDayBtn.addEventListener('click', () => setTheme('day'));
+                themeNightBtn.addEventListener('click', () => setTheme('dark'));
+                themeHyperBtn.addEventListener('click', () => setTheme('hyper'));
+
+                const savedTheme = localStorage.getItem('fruitfulTheme') || 'day';
+                setTheme(savedTheme);
+            }
+
+            // --- Language Switcher Logic ---
             const languageSwitcher = document.getElementById('languageSwitcher');
-            if (languageSwitcher) { /* ... */ }
+            const languageMap = {
+                'en': 'English', 'es': 'Spanish', 'fr': 'French', 'de': 'German', 'zh': 'Chinese'
+            };
+            if (languageSwitcher) {
+                languageSwitcher.addEventListener('change', (e) => {
+                    const selectedLang = e.target.value;
+                    document.documentElement.lang = selectedLang;
+                    console.log(`Language changed to: ${languageMap[selectedLang] || selectedLang}`);
+                });
+                languageSwitcher.value = document.documentElement.lang || 'en';
+            }
 
-            const mainHeaderForPolishing = document.getElementById('main-header');
-            if (mainHeaderForPolishing) { /* ... */ }
+            // --- Load terminal iframe function ---
+            window.loadTerminal = function(iframeSrc) {
+                const vaultFrame = document.getElementById('vault-frame');
+                if (vaultFrame) {
+                    vaultFrame.src = iframeSrc;
+                    document.querySelectorAll('.terminal-btn').forEach(btn => btn.classList.remove('ring'));
+                }
+            };
+            loadTerminal('vault-master.html'); // Load default terminal on page load
 
-            window.loadTerminal = function(iframeSrc) { /* ... */ };
-            const vaultFrame = document.getElementById('vault-frame');
-            if (vaultFrame) { /* ... */ }
-
+            // --- Planet Pulse Text Logic (ensure element exists) ---
             const planetTextElement = document.getElementById('planet-text');
-            if (planetTextElement) { /* ... */ }
+            if (planetTextElement) {
+                const planetPhrases = [
+                    { text: "fruitful.planet.change", lang: "en" },
+                    { text: "cambio.planeta.fructífero", lang: "es" },
+                    { text: "changement.planète.fertile", lang: "fr" },
+                    { text: "fruchtbarer.planet.wandel", lang: "de" },
+                    { text: "富有成效的星球.变化", lang: "zh" }
+                ];
+                let currentPhraseIndex = 0;
+                function updatePlanetText() {
+                    planetTextElement.classList.remove('pulse-animation');
+                    void planetTextElement.offsetWidth;
+                    currentPhraseIndex = (currentPhraseIndex + 1) % planetPhrases.length;
+                    const nextPhrase = planetPhrases[currentPhraseIndex];
+                    planetTextElement.textContent = nextPhrase.text;
+                    planetTextElement.lang = nextPhrase.lang;
+                    planetTextElement.classList.add('pulse-animation');
+                }
+                setInterval(updatePlanetText, 3000);
+            }
 
+            // --- Gemini API Text Generation Logic (ensure elements exist) ---
             const generateTextBtn = document.getElementById('generateTextBtn');
-            if (generateTextBtn) { /* ... */ }
+            const promptInput = document.getElementById('promptInput');
+            const generatedTextOutput = document.getElementById('generatedTextOutput');
+            const loadingIndicator = document.getElementById('loadingIndicator');
 
-            showMessageBox("Fruitful™ Global Dashboard Loaded!");
+            if (generateTextBtn && promptInput && generatedTextOutput && loadingIndicator) {
+                generateTextBtn.addEventListener('click', async () => {
+                    const prompt = promptInput.value.trim();
+                    if (!prompt) {
+                        generatedTextOutput.textContent = "Please enter a prompt to generate text.";
+                        generatedTextOutput.style.color = "var(--tertiary-color)";
+                        return;
+                    }
+                    generatedTextOutput.textContent = '';
+                    generatedTextOutput.style.color = "var(--text-color)";
+                    loadingIndicator.classList.remove('hidden');
+                    generateTextBtn.disabled = true;
+                    try {
+                        let chatHistory = [];
+                        const apiPrompt = `Generate a concise, futuristic marketing slogan (5-10 words) and a brief strategic insight (2-3 sentences) for a brand based on this input: "${prompt}" within a decentralized, tech-sovereignty ecosystem called FAA.ZONE, which integrates music, aura enhancement, and global impact. Ensure the slogan captures innovation and the insight focuses on its unique value.`;
+                        chatHistory.push({ role: "user", parts: [{ text: apiPrompt }] });
+                        const payload = { contents: chatHistory };
+                        const apiKey = "";
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                        const response = await fetch(apiUrl, {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                        });
+                        const result = await response.json();
+                        if (result.candidates && result.candidates.length > 0 &&
+                            result.candidates[0].content && result.candidates[0].content.parts &&
+                            result.candidates[0].content.parts.length > 0) {
+                            const text = result.candidates[0].content.parts[0].text;
+                            generatedTextOutput.textContent = text;
+                        } else {
+                            generatedTextOutput.textContent = "Error: Could not generate text. Unexpected API response structure or no candidates found.";
+                            generatedTextOutput.style.color = "var(--tertiary-color)";
+                            if (result.error && result.error.message) {
+                                generatedTextOutput.textContent += ` Reason: ${result.error.message}`;
+                            }
+                        }
+                    } catch (error) {
+                        generatedTextOutput.textContent = `Error: Failed to connect to language model. Check console for network issues or API key.`;
+                        generatedTextOutput.style.color = "var(--tertiary-color)";
+                    } finally {
+                        loadingIndicator.classList.add('hidden');
+                        generateTextBtn.disabled = false;
+                    }
+                });
+            }
+
+            // --- Brand Insight Generator Logic (from global.html, now integrated) ---
+            const generateBrandInsightBtn = document.getElementById('generateBrandInsightBtn');
+            const brandNameInput = document.getElementById('brandNameInput');
+            const brandInsightOutput = document.getElementById('brandInsightOutput');
+            const brandInsightLoading = document.getElementById('brandInsightLoading');
+
+            if (generateBrandInsightBtn && brandNameInput && brandInsightOutput && brandInsightLoading) {
+                generateBrandInsightBtn.addEventListener('click', async () => {
+                    const brandName = brandNameInput.value.trim();
+                    if (!brandName) {
+                        brandInsightOutput.innerHTML = '<p class="text-red-500">Please enter a brand name.</p>';
+                        return;
+                    }
+                    brandInsightOutput.textContent = '';
+                    brandInsightLoading.classList.remove('hidden');
+                    generateBrandInsightBtn.disabled = true;
+                    try {
+                        let chatHistory = [];
+                        const prompt = `Generate a concise, futuristic marketing slogan (5-10 words) and a brief strategic insight (2-3 sentences) for a brand named "${brandName}" within a decentralized, tech-sovereignty ecosystem called FAA.ZONE, which integrates music, aura enhancement, and global impact. Ensure the slogan captures innovation and the insight focuses on its unique value.`;
+                        chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                        const payload = { contents: chatHistory };
+                        const apiKey = "";
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                        const response = await fetch(apiUrl, {
+                            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                        });
+                        const result = await response.json();
+                        if (result.candidates && result.candidates.length > 0 &&
+                            result.candidates[0].content && result.candidates[0].content.parts &&
+                            result.candidates[0].content.parts.length > 0) {
+                            const text = result.candidates[0].content.parts[0].text;
+                            brandInsightOutput.textContent = text;
+                        } else {
+                            brandInsightOutput.innerHTML = '<p class="text-red-500">Error: Could not generate insight. Unexpected API response or no content found.</p>';
+                            if (result.error && result.error.message) {
+                                brandInsightOutput.textContent += ` Reason: ${result.error.message}`;
+                            }
+                        }
+                    } catch (error) {
+                        brandInsightOutput.innerHTML = `<p class="text-red-500">Error: Failed to connect to Gemini API for insights. Check console for details.</p>`;
+                    } finally {
+                        brandInsightLoading.classList.add('hidden');
+                        generateBrandInsightBtn.disabled = false;
+                    }
+                });
+            }
         });
 
         // Initialize Ant Route and other canvas-specific elements on window load
         window.addEventListener('load', () => {
-            // Ant Route on Foxed Hero
             initAntRoute();
-            // Chess Board
             drawChessBoard();
-            // Noodle Mountain SVG
-            initNoodleMountainSvg();
+            initNoodleMountainSvg(); // Assuming Noodle Mountain is part of this page
 
             // Initialize dynamic stripe heights for stacked sections
             const redBlackStackSection = document.querySelector('.stacked-colors-section.red-black-stack');
@@ -1755,8 +2111,20 @@
                     stripe.style.height = `${stripeHeightPercentage}vh`;
                 });
             }
+
+            // Call fetchExchangeRates and attach event listener for currency converter AFTER DOM is fully loaded and elements exist
+            if (currencySelect) {
+                currencySelect.addEventListener('change', updatePrices);
+                fetchExchangeRates(); // Initial fetch
+            }
+
+            // Attach click listeners for PayPal buttons
+            document.querySelectorAll('.buy-now-button').forEach(button => {
+                button.addEventListener('click', initiatePayPalSubscription);
+            });
         });
 
+        // Handle window resize for canvases that need redrawing
         window.addEventListener('resize', () => {
             if (antRouteCanvasObj.canvas) {
                 antRouteCanvasObj.canvas.width = antRouteCanvasObj.canvas.offsetWidth;
@@ -1769,5 +2137,9 @@
             drawChessBoard(); // Redraw chess board on resize
         });
     </script>
+    <!-- PayPal SDK script - Client ID should be dynamic or pulled from a secure config -->
+    <!-- The client-id below is a placeholder. REPLACE IT WITH YOUR LIVE PAYPAL CLIENT ID -->
+    <script src="https://www.paypal.com/sdk/js?client-id=BAAThS_oBJJ22PM5R1nVJcO...&currency=ZAR&vault=true&intent=subscription"></script>
+
 </body>
 </html>

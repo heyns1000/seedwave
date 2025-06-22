@@ -7,8 +7,8 @@
     <!-- Content Security Policy (CSP) to allow Firebase, Xero, and Tailwind resources -->
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
-        script-src 'self' https://cdn.tailwindcss.com https://www.gstatic.com https://apis.google.com;
-        connect-src 'self' https://identity.xero.com https://api.xero.com https://firestore.googleapis.com https://securetoken.googleapis.com;
+        script-src 'self' https://cdn.tailwindcss.com https://www.gstatic.com https://apis.google.com 'unsafe-inline';
+        connect-src 'self' https://identity.xero.com https://api.xero.com https://firestore.googleapis.com https://securetoken.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://accounts.google.com https://www.googleapis.com https://firebaseauth.googleapis.com; /* Further expanded Firebase/Google domains */
         img-src 'self' data:;
         style-src 'self' 'unsafe-inline';
         font-src 'self';
@@ -165,7 +165,8 @@
         // Firebase Configuration (provided by Canvas environment)
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // CORRECTED: Reference __initial_auth_token instead of initialAuthToken
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null; 
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);

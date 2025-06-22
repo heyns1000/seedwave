@@ -148,6 +148,7 @@
 
     <!-- Firebase SDKs -->
     <script type="module">
+        console.log("Seedwave Admin Panel script loaded."); // Added for debugging
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
@@ -196,8 +197,7 @@
             if (currentUser) {
                 document.getElementById('welcome-message').textContent = `Welcome, ${currentUser.uid}!`;
                 console.log("Firebase User ID:", currentUser.uid);
-                // Optionally load initial content after auth
-                loadContent('dashboard');
+                // The initial loadContent call is now primarily handled in the window.onload event listener.
             } else {
                 document.getElementById('welcome-message').textContent = `Welcome! (Not logged in)`;
                 console.log("No Firebase user logged in.");
@@ -483,6 +483,7 @@
         const currentPageTitle = document.getElementById('current-page-title');
 
         window.loadContent = async (page) => {
+            console.log('loadContent called with:', page); // Added for debugging
             currentPageTitle.textContent = page.charAt(0).toUpperCase() + page.slice(1).replace('-', ' '); // Capitalize and format title
 
             let content = '';
@@ -604,6 +605,7 @@
 
         // Handle Xero OAuth callback on page load
         window.addEventListener('load', async () => {
+            console.log("Window loaded event fired."); // Added for debugging
             await firebaseAuth(); // Authenticate Firebase user on load
 
             const urlParams = new URLSearchParams(window.location.search);
@@ -620,8 +622,9 @@
             } else if (error) {
                 showMessageBox(`Xero OAuth Error: ${error}`, "error");
                 console.error("Xero OAuth Error:", error);
+                loadContent('dashboard'); // Still load content on error
             } else {
-                // Load default content if no OAuth redirect
+                // Load default content if no OAuth redirect, or if it's the initial page load
                 loadContent('dashboard');
             }
         });

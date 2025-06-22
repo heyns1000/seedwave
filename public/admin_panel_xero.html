@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seedwave Admin Panel</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar {
+            background-color: #2c3e50; /* Dark blue-grey */
+            color: #ecf0f1; /* Light grey */
+            width: 250px;
+            padding: 1.5rem;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        }
+        .sidebar a {
+            display: block;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            color: #ecf0f1;
+            transition: background-color 0.2s ease;
+        }
+        .sidebar a:hover {
+            background-color: #34495e; /* Slightly lighter dark blue-grey */
+        }
+        .header {
+            background-color: #ffffff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 2rem;
+            background-color: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin: 1.5rem;
+        }
+        /* Message Box Styling */
+        .message-box {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50; /* Green */
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none; /* Hidden by default */
+        }
+        .message-box.error {
+            background-color: #f44336; /* Red */
+        }
+    </style>
+</head>
+<body class="flex">
+    <div id="messageBox" class="message-box"></div>
+
+    <aside class="sidebar">
+        <h1 class="text-2xl font-bold mb-6 text-center">Seedwave Admin</h1>
+        <nav>
+            <a href="#" class="flex items-center space-x-2" onclick="loadContent('dashboard')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                </svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="#" class="flex items-center space-x-2" onclick="loadContent('users')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17.555 16.705a1 1 0 01-.767.319H3.212a1 1 0 01-.765-.319 4 4 0 01.127-5.918 4.002 4.002 0 014.606-.827 4.004 4.004 0 012.392-.152l1.645 1.645c.42.42.97.653 1.53.653.56 0 1.11-.233 1.53-.653l1.645-1.645a4.002 4.002 0 012.392.152 4 4 0 01.127 5.918z" />
+                </svg>
+                <span>Users</span>
+            </a>
+            <a href="#" class="flex items-center space-x-2" onclick="loadContent('orders')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v3a4 4 0 00-4 4v3a2 2 0 002 2h12a2 2 0 002-2v-3a4 4 0 00-4-4V6a4 4 0 00-4-4zm-4 4a2 2 0 114 0v3a2 2 0 11-4 0V6zm6 0a2 2 0 10-4 0v3a2 2 0 104 0V6z" clip-rule="evenodd" />
+                </svg>
+                <span>Orders</span>
+            </a>
+            <a href="#" class="flex items-center space-x-2" onclick="loadContent('products')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm12 12H4V6h12v10z" clip-rule="evenodd" />
+                </svg>
+                <span>Products</span>
+            </a>
+            <a href="#" class="flex items-center space-x-2" onclick="loadContent('reports')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm12 12H5V5h10v10zM10 7a1 1 0 011 1v4a1 1 0 11-2 0V8a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                <span>Reports</span>
+            </a>
+            <a href="#" class="flex items-center space-x-2" onclick="loadContent('settings')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.3-.874-2.823.715-2.126 2.056a1.532 1.532 0 01-.582 2.286c-1.56.38-1.56 2.6 0 2.98a1.532 1.532 0 01.582 2.286c-.874 1.3.715 2.823 2.056 2.126a1.532 1.532 0 012.286.582c.38 1.56 2.6 1.56 2.98 0a1.532 1.532 0 012.286-.582c1.3.874 2.823-.715 2.126-2.056a1.532 1.532 0 01.582-2.286c1.56-.38 1.56-2.6 0-2.98a1.532 1.532 0 01-.582-2.286c.874-1.3-.715-2.823-2.056-2.126a1.532 1.532 0 01-2.286-.582zM10 11a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+                </svg>
+                <span>Settings</span>
+            </a>
+             <a href="#" class="flex items-center space-x-2" onclick="loadContent('xero-integration')">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v4a1 1 0 102 0V8z" clip-rule="evenodd" />
+                </svg>
+                <span>Xero Integration</span>
+            </a>
+        </nav>
+    </aside>
+
+    <div class="flex-1 flex flex-col">
+        <header class="header">
+            <h2 class="text-2xl font-semibold text-gray-800" id="current-page-title">Dashboard</h2>
+            <div class="flex items-center space-x-4">
+                <span class="text-gray-600" id="welcome-message">Welcome, Admin!</span>
+                <button class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-200" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <main class="content" id="main-content">
+            <!-- Content will be loaded dynamically or replaced here -->
+            <h3 class="text-xl font-semibold text-gray-700 mb-4">Overview</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-gray-100 p-6 rounded-lg shadow">
+                    <p class="text-gray-500">Total Users</p>
+                    <p class="text-3xl font-bold text-gray-800">1,234</p>
+                </div>
+                <div class="bg-gray-100 p-6 rounded-lg shadow">
+                    <p class="text-gray-500">Total Orders</p>
+                    <p class="text-3xl font-bold text-gray-800">567</p>
+                </div>
+                <div class="bg-gray-100 p-6 rounded-lg shadow">
+                    <p class="text-gray-500">Revenue (Monthly)</p>
+                    <p class="text-3xl font-bold text-gray-800">$12,345</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+        // Firebase Configuration (provided by Canvas environment)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null; // Store current Firebase user
+
+        // Show a message box
+        function showMessageBox(message, type = 'success') {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.textContent = message;
+            messageBox.className = `message-box ${type}`;
+            messageBox.style.display = 'block';
+            setTimeout(() => {
+                messageBox.style.display = 'none';
+            }, 5000); // Hide after 5 seconds
+        }
+
+        // Authenticate with Firebase
+        async function firebaseAuth() {
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                console.log("Firebase authentication successful.");
+            } catch (error) {
+                console.error("Firebase authentication failed:", error);
+                showMessageBox("Failed to authenticate with Firebase.", "error");
+            }
+        }
+
+        // Listen for auth state changes to set currentUser and load initial content
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (currentUser) {
+                document.getElementById('welcome-message').textContent = `Welcome, ${currentUser.uid}!`;
+                console.log("Firebase User ID:", currentUser.uid);
+                // Optionally load initial content after auth
+                loadContent('dashboard');
+            } else {
+                document.getElementById('welcome-message').textContent = `Welcome! (Not logged in)`;
+                console.log("No Firebase user logged in.");
+                // If no user, prompt for login or handle as anonymous
+            }
+        });
+
+        // Logout function
+        window.logout = async () => {
+            try {
+                await signOut(auth);
+                showMessageBox("Logged out successfully.");
+                // Redirect or update UI for logged out state
+                location.reload(); // Simple reload for demonstration
+            } catch (error) {
+                console.error("Error logging out:", error);
+                showMessageBox("Error logging out.", "error");
+            }
+        };
+
+        // --- Xero Integration Constants ---
+        const XERO_CLIENT_ID = '81B3573D453040508996432C5DAD565B'; // YOUR ACTUAL Xero Client ID
+        const XERO_CLIENT_SECRET = '5G54kNOzAFx48tYMF8rym7u-NneTVes9Nw6GlHiOYYLw6eM-'; // YOUR ACTUAL Xero Client Secret
+        const XERO_REDIRECT_URI = 'https://seedwave.faa.zone/admin_panel_xero.html'; // Your live URL
+        const XERO_SCOPE = 'openid profile email accounting.transactions accounting.reports offline_access'; // Scopes needed
+
+        // --- Firestore Paths for Xero Tokens ---
+        const XERO_TOKENS_DOC_PATH = (userId) => `artifacts/${appId}/users/${userId}/xeroTokens/xero_oauth`;
+
+        let xeroTokens = null; // Store Xero tokens for the session
+        let xeroConnectionStatus = 'Disconnected';
+
+        // Function to initiate Xero OAuth flow
+        window.initiateXeroOAuth = () => {
+            if (!currentUser) {
+                showMessageBox("Please ensure you are authenticated with Firebase first.", "error");
+                return;
+            }
+
+            const authUrl = `https://login.xero.com/identity/connect/authorize?` +
+                            `response_type=code&` +
+                            `client_id=${XERO_CLIENT_ID}&` +
+                            `redirect_uri=${encodeURIComponent(XERO_REDIRECT_URI)}&` +
+                            `scope=${encodeURIComponent(XERO_SCOPE)}&` +
+                            `state=${currentUser.uid}`; // Use Firebase UID as state for security
+
+            window.location.href = authUrl;
+        };
+
+        // Function to exchange authorization code for tokens
+        async function exchangeCodeForTokens(code, state) {
+            if (!currentUser || currentUser.uid !== state) {
+                showMessageBox("Security error: State mismatch or no user. Aborting token exchange.", "error");
+                console.error("State mismatch or no user during token exchange.");
+                return;
+            }
+
+            // In a real application, this fetch request should be to YOUR backend server
+            // to prevent exposing XERO_CLIENT_SECRET on the client-side.
+            // For this Canvas example, we are showing the direct call for simplicity.
+            try {
+                const response = await fetch('https://identity.xero.com/connect/token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': 'Basic ' + btoa(`${XERO_CLIENT_ID}:${XERO_CLIENT_SECRET}`)
+                    },
+                    body: new URLSearchParams({
+                        'grant_type': 'authorization_code',
+                        'code': code,
+                        'redirect_uri': XERO_REDIRECT_URI
+                    }).toString()
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    xeroTokens = data;
+                    xeroConnectionStatus = 'Connected';
+                    await saveXeroTokens(currentUser.uid, data);
+                    showMessageBox("Xero connected successfully!");
+                    loadContent('xero-integration'); // Refresh Xero section
+                } else {
+                    showMessageBox(`Failed to connect to Xero: ${data.error_description || data.error}`, "error");
+                    console.error("Xero token exchange failed:", data);
+                }
+            } catch (error) {
+                showMessageBox("Error during Xero token exchange.", "error");
+                console.error("Error during Xero token exchange:", error);
+            }
+        }
+
+        // Function to refresh Xero access token
+        async function refreshXeroAccessToken() {
+            if (!xeroTokens || !xeroTokens.refresh_token) {
+                showMessageBox("No refresh token available to refresh Xero access.", "error");
+                return false;
+            }
+
+            try {
+                const response = await fetch('https://identity.xero.com/connect/token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Authorization': 'Basic ' + btoa(`${XERO_CLIENT_ID}:${XERO_CLIENT_SECRET}`)
+                    },
+                    body: new URLSearchParams({
+                        'grant_type': 'refresh_token',
+                        'refresh_token': xeroTokens.refresh_token,
+                        'client_id': XERO_CLIENT_ID,
+                        'scope': XERO_SCOPE // Must include original scopes
+                    }).toString()
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    xeroTokens.access_token = data.access_token;
+                    xeroTokens.expires_in = data.expires_in;
+                    xeroTokens.refresh_token = data.refresh_token || xeroTokens.refresh_token; // Refresh token might not change
+                    await saveXeroTokens(currentUser.uid, xeroTokens); // Save updated tokens
+                    console.log("Xero access token refreshed successfully.");
+                    return true;
+                } else {
+                    console.error("Failed to refresh Xero access token:", data);
+                    showMessageBox("Failed to refresh Xero connection. Please re-connect.", "error");
+                    xeroConnectionStatus = 'Disconnected';
+                    xeroTokens = null; // Invalidate tokens on refresh failure
+                    return false;
+                }
+            } catch (error) {
+                console.error("Error refreshing Xero access token:", error);
+                showMessageBox("Error refreshing Xero connection.", "error");
+                xeroConnectionStatus = 'Disconnected';
+                xeroTokens = null;
+                return false;
+            }
+        }
+
+        // Function to save Xero tokens to Firestore
+        async function saveXeroTokens(userId, tokens) {
+            try {
+                await setDoc(doc(db, XERO_TOKENS_DOC_PATH(userId)), tokens);
+                console.log("Xero tokens saved to Firestore.");
+            } catch (error) {
+                console.error("Error saving Xero tokens to Firestore:", error);
+                showMessageBox("Error saving Xero tokens. Check console.", "error");
+            }
+        }
+
+        // Function to load Xero tokens from Firestore
+        async function loadXeroTokens(userId) {
+            try {
+                const docRef = doc(db, XERO_TOKENS_DOC_PATH(userId));
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    xeroTokens = docSnap.data();
+                    xeroConnectionStatus = 'Connected';
+                    console.log("Xero tokens loaded from Firestore.");
+                    // Check if token is expired or about to expire
+                    const expiryTime = (xeroTokens.auth_event_timestamp || 0) + (xeroTokens.expires_in * 1000);
+                    if (Date.now() >= expiryTime - (60 * 1000)) { // Refresh if less than 1 minute to expiry
+                        console.log("Xero access token near expiry, attempting refresh...");
+                        await refreshXeroAccessToken();
+                    }
+                    return true;
+                } else {
+                    console.log("No Xero tokens found in Firestore.");
+                    xeroConnectionStatus = 'Disconnected';
+                    xeroTokens = null;
+                    return false;
+                }
+            } catch (error) {
+                console.error("Error loading Xero tokens from Firestore:", error);
+                showMessageBox("Error loading Xero tokens. Check console.", "error");
+                xeroConnectionStatus = 'Disconnected';
+                xeroTokens = null;
+                return false;
+            }
+        }
+
+        // Function to fetch Xero invoices (example API call)
+        async function fetchXeroInvoices() {
+            if (!xeroTokens || !xeroTokens.access_token) {
+                showMessageBox("Not connected to Xero or access token missing.", "error");
+                return [];
+            }
+
+            // Ensure we have the current tenant ID (connection specific)
+            const tenantId = xeroTokens.connections?.[0]?.tenantId;
+            if (!tenantId) {
+                showMessageBox("No Xero tenant found. Please reconnect to Xero.", "error");
+                return [];
+            }
+
+            try {
+                const response = await fetch(`https://api.xero.com/api.xro/2.0/Invoices`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${xeroTokens.access_token}`,
+                        'Xero-Tenant-Id': tenantId,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log("Xero Invoices:", data.Invoices);
+                    return data.Invoices;
+                } else if (response.status === 401) { // Unauthorized, token might be expired
+                    showMessageBox("Xero token expired. Attempting to refresh...", "error");
+                    const refreshed = await refreshXeroAccessToken();
+                    if (refreshed) {
+                        return await fetchXeroInvoices(); // Retry after refresh
+                    } else {
+                        return [];
+                    }
+                } else {
+                    const errorData = await response.json();
+                    console.error("Error fetching Xero invoices:", errorData);
+                    showMessageBox(`Error fetching Xero invoices: ${errorData.Message || 'Unknown error'}`, "error");
+                    return [];
+                }
+            } catch (error) {
+                console.error("Network error or other issue fetching Xero invoices:", error);
+                showMessageBox("Network error or issue fetching Xero invoices.", "error");
+                return [];
+            }
+        }
+
+
+        // --- Dynamic Content Loading ---
+        const mainContentDiv = document.getElementById('main-content');
+        const currentPageTitle = document.getElementById('current-page-title');
+
+        window.loadContent = async (page) => {
+            currentPageTitle.textContent = page.charAt(0).toUpperCase() + page.slice(1).replace('-', ' '); // Capitalize and format title
+
+            let content = '';
+            switch (page) {
+                case 'dashboard':
+                    content = `
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">Overview</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="bg-gray-100 p-6 rounded-lg shadow">
+                                <p class="text-gray-500">Total Users</p>
+                                <p class="text-3xl font-bold text-gray-800">1,234</p>
+                            </div>
+                            <div class="bg-gray-100 p-6 rounded-lg shadow">
+                                <p class="text-gray-500">Total Orders</p>
+                                <p class="text-3xl font-bold text-gray-800">567</p>
+                            </div>
+                            <div class="bg-gray-100 p-6 rounded-lg shadow">
+                                <p class="text-gray-500">Revenue (Monthly)</p>
+                                <p class="text-3xl font-bold text-gray-800">$12,345</p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'users':
+                    content = `<h3 class="text-xl font-semibold text-gray-700 mb-4">User Management</h3><p>Manage your users here.</p>`;
+                    break;
+                case 'orders':
+                    content = `<h3 class="text-xl font-semibold text-gray-700 mb-4">Order Management</h3><p>View and process orders.</p>`;
+                    break;
+                case 'products':
+                    content = `<h3 class="text-xl font-semibold text-gray-700 mb-4">Product Catalog</h3><p>Manage your products.</p>`;
+                    break;
+                case 'reports':
+                    content = `<h3 class="text-xl font-semibold text-gray-700 mb-4">Reports & Analytics</h3><p>Generate various reports.</p>`;
+                    break;
+                case 'settings':
+                    content = `<h3 class="text-xl font-semibold text-gray-700 mb-4">Settings</h3><p>Adjust application settings.</p>`;
+                    break;
+                case 'xero-integration':
+                    // Check Xero connection status and load data
+                    if (currentUser) {
+                        await loadXeroTokens(currentUser.uid); // Load latest tokens before rendering
+                    }
+
+                    let xeroDataHtml = '';
+                    if (xeroConnectionStatus === 'Connected' && xeroTokens) {
+                        xeroDataHtml = `
+                            <p class="text-lg text-green-600 mb-4">✅ Connected to Xero!</p>
+                            <button id="fetch-invoices-btn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200 mt-4">Fetch Recent Invoices</button>
+                            <div id="xero-invoices-list" class="mt-4">
+                                <p class="text-gray-600">Click "Fetch Recent Invoices" to see data.</p>
+                            </div>
+                        `;
+                    } else {
+                        xeroDataHtml = `
+                            <p class="text-lg text-red-600 mb-4">❌ Not connected to Xero.</p>
+                            <button id="connect-xero-btn" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-200">
+                                Connect to Xero
+                            </button>
+                        `;
+                    }
+
+                    content = `
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">Xero Integration</h3>
+                        <div class="p-6 bg-white rounded-lg shadow">
+                            ${xeroDataHtml}
+                        </div>
+                    `;
+                    break;
+                default:
+                    content = `<h3 class="text-xl font-semibold text-gray-700 mb-4">Page Not Found</h3><p>The requested page does not exist.</p>`;
+            }
+            mainContentDiv.innerHTML = content;
+
+            // Add event listeners after content is loaded
+            if (page === 'xero-integration') {
+                if (xeroConnectionStatus === 'Connected') {
+                    document.getElementById('fetch-invoices-btn').onclick = async () => {
+                        const invoices = await fetchXeroInvoices();
+                        const invoicesListDiv = document.getElementById('xero-invoices-list');
+                        if (invoices && invoices.length > 0) {
+                            let listHtml = '<h4 class="font-semibold mt-4 mb-2">Recent Invoices:</h4><ul class="list-disc list-inside">';
+                            invoices.forEach(invoice => {
+                                listHtml += `<li class="text-gray-700">Invoice #${invoice.InvoiceNumber || 'N/A'} - Contact: ${invoice.Contact.Name} - Total: ${invoice.Total} ${invoice.CurrencyCode} - Status: ${invoice.Status}</li>`;
+                            });
+                            listHtml += '</ul>';
+                            invoicesListDiv.innerHTML = listHtml;
+                        } else {
+                            invoicesListDiv.innerHTML = '<p class="text-gray-600">No invoices found or failed to fetch.</p>';
+                        }
+                    };
+                } else {
+                    const connectBtn = document.getElementById('connect-xero-btn');
+                    if (connectBtn) {
+                        connectBtn.onclick = window.initiateXeroOAuth;
+                    }
+                }
+            }
+        };
+
+        // Handle Xero OAuth callback on page load
+        window.addEventListener('load', async () => {
+            await firebaseAuth(); // Authenticate Firebase user on load
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const state = urlParams.get('state');
+            const error = urlParams.get('error');
+
+            if (code && state) {
+                console.log("Xero OAuth callback detected. Code:", code, "State:", state);
+                await exchangeCodeForTokens(code, state);
+                // Clear URL parameters to prevent re-processing on refresh
+                const newUrl = new URL(window.location.origin + window.location.pathname);
+                window.history.replaceState({}, document.title, newUrl.href);
+            } else if (error) {
+                showMessageBox(`Xero OAuth Error: ${error}`, "error");
+                console.error("Xero OAuth Error:", error);
+            } else {
+                // Load default content if no OAuth redirect
+                loadContent('dashboard');
+            }
+        });
+    </script>
+</body>
+</html>

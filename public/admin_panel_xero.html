@@ -4,11 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seedwave Admin Panel</title>
+    <!-- Google Analytics 4 (GA4) Tracking Code -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-S4ZB8QV782"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-S4ZB8QV782'); // Your actual GA4 Measurement ID
+    </script>
+
     <!-- Content Security Policy (CSP) to allow Firebase, Xero, and Tailwind resources -->
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
-        script-src 'self' https://cdn.tailwindcss.com https://www.gstatic.com https://apis.google.com 'unsafe-inline';
-        connect-src 'self' https://identity.xero.com https://api.xero.com https://firestore.googleapis.com https://securetoken.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://accounts.google.com https://www.googleapis.com https://firebaseauth.googleapis.com;
+        script-src 'self' https://cdn.tailwindcss.com https://www.gstatic.com https://apis.google.com https://www.googletagmanager.com 'unsafe-inline';
+        connect-src 'self' https://identity.xero.com https://api.xero.com https://firestore.googleapis.com https://securetoken.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://accounts.google.com https://www.googleapis.com https://firebaseauth.googleapis.com https://www.google-analytics.com https://stats.g.doubleclick.net;
         img-src 'self' data:;
         style-src 'self' 'unsafe-inline';
         font-src 'self';
@@ -162,11 +172,23 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-        // Firebase Configuration (provided by Canvas environment)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        // CORRECTED: Reference __initial_auth_token instead of initialAuthToken
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null; 
+        // Firebase Configuration (YOUR ACTUAL FIREBASE CONFIG)
+        // This was copied from your Firebase Console's "Add Firebase SDK" step.
+        const firebaseConfig = {
+            apiKey: "AIzaSyCR3mbgoiiCkRyaAm5BSWBWBFwut0MDCW8",
+            authDomain: "faa-nexus.firebaseapp.com",
+            projectId: "faa-nexus",
+            storageBucket: "faa-nexus.firebasestorage.app",
+            messagingSenderId: "459816542686",
+            appId: "1:459816542686:web:7fc0596fb70e2e6b753d4f",
+            measurementId: "G-S4ZB8QV782"
+        };
+
+        // Use Firebase project ID from your config for consistent appId
+        const appId = firebaseConfig.projectId; 
+        // In a live environment, initialAuthToken is not applicable unless you have a custom token generation process
+        // For simple deployment, signInAnonymously will be used if no custom token is provided.
+        const initialAuthToken = null; 
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
@@ -189,15 +211,16 @@
         // Authenticate with Firebase - Made globally accessible
         window.firebaseAuth = async function() {
             try {
-                if (initialAuthToken) {
+                // In a live environment, if no custom token, sign in anonymously
+                if (initialAuthToken) { // This will only be true if a custom token is explicitly provided
                     await signInWithCustomToken(auth, initialAuthToken);
                 } else {
-                    await signInAnonymously(auth);
+                    await signInAnonymously(auth); // Sign in anonymously for simple access in live deployment
                 }
                 console.log("Firebase authentication successful.");
             } catch (error) {
                 console.error("Firebase authentication failed:", error);
-                window.showMessageBox("Failed to authenticate with Firebase.", "error");
+                window.showMessageBox("Failed to authenticate with Firebase. Check console for details.", "error");
             }
         }
 
@@ -207,11 +230,9 @@
             if (currentUser) {
                 document.getElementById('welcome-message').textContent = `Welcome, ${currentUser.uid}!`;
                 console.log("Firebase User ID:", currentUser.uid);
-                // The initial loadContent call is now primarily handled in the window.onload event listener.
             } else {
                 document.getElementById('welcome-message').textContent = `Welcome! (Not logged in)`;
                 console.log("No Firebase user logged in.");
-                // If no user, prompt for login or handle as anonymous
             }
         });
 
@@ -220,7 +241,6 @@
             try {
                 await signOut(auth);
                 window.showMessageBox("Logged out successfully.");
-                // Redirect or update UI for logged out state
                 location.reload(); // Simple reload for demonstration
             } catch (error) {
                 console.error("Error logging out:", error);
@@ -265,9 +285,6 @@
                 return;
             }
 
-            // In a real application, this fetch request should be to YOUR backend server
-            // to prevent exposing XERO_CLIENT_SECRET on the client-side.
-            // For this Canvas example, we are showing the direct call for simplicity.
             try {
                 const response = await fetch('https://identity.xero.com/connect/token', {
                     method: 'POST',
@@ -642,4 +659,3 @@
     </script>
 </body>
 </html>
-

@@ -165,8 +165,8 @@
 
         let currentUser = null; // Store current Firebase user
 
-        // Show a message box
-        function showMessageBox(message, type = 'success') {
+        // Show a message box - Made globally accessible
+        window.showMessageBox = function(message, type = 'success') {
             const messageBox = document.getElementById('messageBox');
             messageBox.textContent = message;
             messageBox.className = `message-box ${type}`;
@@ -176,8 +176,8 @@
             }, 5000); // Hide after 5 seconds
         }
 
-        // Authenticate with Firebase
-        async function firebaseAuth() {
+        // Authenticate with Firebase - Made globally accessible
+        window.firebaseAuth = async function() {
             try {
                 if (initialAuthToken) {
                     await signInWithCustomToken(auth, initialAuthToken);
@@ -187,7 +187,7 @@
                 console.log("Firebase authentication successful.");
             } catch (error) {
                 console.error("Firebase authentication failed:", error);
-                showMessageBox("Failed to authenticate with Firebase.", "error");
+                window.showMessageBox("Failed to authenticate with Firebase.", "error");
             }
         }
 
@@ -205,16 +205,16 @@
             }
         });
 
-        // Logout function
-        window.logout = async () => {
+        // Logout function - Made globally accessible
+        window.logout = async function() {
             try {
                 await signOut(auth);
-                showMessageBox("Logged out successfully.");
+                window.showMessageBox("Logged out successfully.");
                 // Redirect or update UI for logged out state
                 location.reload(); // Simple reload for demonstration
             } catch (error) {
                 console.error("Error logging out:", error);
-                showMessageBox("Error logging out.", "error");
+                window.showMessageBox("Error logging out.", "error");
             }
         };
 
@@ -230,10 +230,10 @@
         let xeroTokens = null; // Store Xero tokens for the session
         let xeroConnectionStatus = 'Disconnected';
 
-        // Function to initiate Xero OAuth flow
-        window.initiateXeroOAuth = () => {
+        // Function to initiate Xero OAuth flow - Made globally accessible
+        window.initiateXeroOAuth = function() {
             if (!currentUser) {
-                showMessageBox("Please ensure you are authenticated with Firebase first.", "error");
+                window.showMessageBox("Please ensure you are authenticated with Firebase first.", "error");
                 return;
             }
 
@@ -247,10 +247,10 @@
             window.location.href = authUrl;
         };
 
-        // Function to exchange authorization code for tokens
-        async function exchangeCodeForTokens(code, state) {
+        // Function to exchange authorization code for tokens - Made globally accessible
+        window.exchangeCodeForTokens = async function(code, state) {
             if (!currentUser || currentUser.uid !== state) {
-                showMessageBox("Security error: State mismatch or no user. Aborting token exchange.", "error");
+                window.showMessageBox("Security error: State mismatch or no user. Aborting token exchange.", "error");
                 console.error("State mismatch or no user during token exchange.");
                 return;
             }
@@ -277,23 +277,23 @@
                 if (response.ok) {
                     xeroTokens = data;
                     xeroConnectionStatus = 'Connected';
-                    await saveXeroTokens(currentUser.uid, data);
-                    showMessageBox("Xero connected successfully!");
-                    loadContent('xero-integration'); // Refresh Xero section
+                    await window.saveXeroTokens(currentUser.uid, data);
+                    window.showMessageBox("Xero connected successfully!");
+                    window.loadContent('xero-integration'); // Refresh Xero section
                 } else {
-                    showMessageBox(`Failed to connect to Xero: ${data.error_description || data.error}`, "error");
+                    window.showMessageBox(`Failed to connect to Xero: ${data.error_description || data.error}`, "error");
                     console.error("Xero token exchange failed:", data);
                 }
             } catch (error) {
-                showMessageBox("Error during Xero token exchange.", "error");
+                window.showMessageBox("Error during Xero token exchange.", "error");
                 console.error("Error during Xero token exchange:", error);
             }
         }
 
-        // Function to refresh Xero access token
-        async function refreshXeroAccessToken() {
+        // Function to refresh Xero access token - Made globally accessible
+        window.refreshXeroAccessToken = async function() {
             if (!xeroTokens || !xeroTokens.refresh_token) {
-                showMessageBox("No refresh token available to refresh Xero access.", "error");
+                window.showMessageBox("No refresh token available to refresh Xero access.", "error");
                 return false;
             }
 
@@ -318,38 +318,38 @@
                     xeroTokens.access_token = data.access_token;
                     xeroTokens.expires_in = data.expires_in;
                     xeroTokens.refresh_token = data.refresh_token || xeroTokens.refresh_token; // Refresh token might not change
-                    await saveXeroTokens(currentUser.uid, xeroTokens); // Save updated tokens
+                    await window.saveXeroTokens(currentUser.uid, xeroTokens); // Save updated tokens
                     console.log("Xero access token refreshed successfully.");
                     return true;
                 } else {
                     console.error("Failed to refresh Xero access token:", data);
-                    showMessageBox("Failed to refresh Xero connection. Please re-connect.", "error");
+                    window.showMessageBox("Failed to refresh Xero connection. Please re-connect.", "error");
                     xeroConnectionStatus = 'Disconnected';
                     xeroTokens = null; // Invalidate tokens on refresh failure
                     return false;
                 }
             } catch (error) {
                 console.error("Error refreshing Xero access token:", error);
-                showMessageBox("Error refreshing Xero connection.", "error");
+                window.showMessageBox("Error refreshing Xero connection.", "error");
                 xeroConnectionStatus = 'Disconnected';
                 xeroTokens = null;
                 return false;
             }
         }
 
-        // Function to save Xero tokens to Firestore
-        async function saveXeroTokens(userId, tokens) {
+        // Function to save Xero tokens to Firestore - Made globally accessible
+        window.saveXeroTokens = async function(userId, tokens) {
             try {
                 await setDoc(doc(db, XERO_TOKENS_DOC_PATH(userId)), tokens);
                 console.log("Xero tokens saved to Firestore.");
             } catch (error) {
                 console.error("Error saving Xero tokens to Firestore:", error);
-                showMessageBox("Error saving Xero tokens. Check console.", "error");
+                window.showMessageBox("Error saving Xero tokens. Check console.", "error");
             }
         }
 
-        // Function to load Xero tokens from Firestore
-        async function loadXeroTokens(userId) {
+        // Function to load Xero tokens from Firestore - Made globally accessible
+        window.loadXeroTokens = async function(userId) {
             try {
                 const docRef = doc(db, XERO_TOKENS_DOC_PATH(userId));
                 const docSnap = await getDoc(docRef);
@@ -362,7 +362,7 @@
                     const expiryTime = (xeroTokens.auth_event_timestamp || 0) + (xeroTokens.expires_in * 1000);
                     if (Date.now() >= expiryTime - (60 * 1000)) { // Refresh if less than 1 minute to expiry
                         console.log("Xero access token near expiry, attempting refresh...");
-                        await refreshXeroAccessToken();
+                        await window.refreshXeroAccessToken();
                     }
                     return true;
                 } else {
@@ -373,24 +373,24 @@
                 }
             } catch (error) {
                 console.error("Error loading Xero tokens from Firestore:", error);
-                showMessageBox("Error loading Xero tokens. Check console.", "error");
+                window.showMessageBox("Error loading Xero tokens. Check console.", "error");
                 xeroConnectionStatus = 'Disconnected';
                 xeroTokens = null;
                 return false;
             }
         }
 
-        // Function to fetch Xero invoices (example API call)
-        async function fetchXeroInvoices() {
+        // Function to fetch Xero invoices (example API call) - Made globally accessible
+        window.fetchXeroInvoices = async function() {
             if (!xeroTokens || !xeroTokens.access_token) {
-                showMessageBox("Not connected to Xero or access token missing.", "error");
+                window.showMessageBox("Not connected to Xero or access token missing.", "error");
                 return [];
             }
 
             // Ensure we have the current tenant ID (connection specific)
             const tenantId = xeroTokens.connections?.[0]?.tenantId;
             if (!tenantId) {
-                showMessageBox("No Xero tenant found. Please reconnect to Xero.", "error");
+                window.showMessageBox("No Xero tenant found. Please reconnect to Xero.", "error");
                 return [];
             }
 
@@ -409,36 +409,36 @@
                     console.log("Xero Invoices:", data.Invoices);
                     return data.Invoices;
                 } else if (response.status === 401) { // Unauthorized, token might be expired
-                    showMessageBox("Xero token expired. Attempting to refresh...", "error");
-                    const refreshed = await refreshXeroAccessToken();
+                    window.showMessageBox("Xero token expired. Attempting to refresh...", "error");
+                    const refreshed = await window.refreshXeroAccessToken();
                     if (refreshed) {
-                        return await fetchXeroInvoices(); // Retry after refresh
+                        return await window.fetchXeroInvoices(); // Retry after refresh
                     } else {
                         return [];
                     }
                 } else {
                     const errorData = await response.json();
                     console.error("Error fetching Xero invoices:", errorData);
-                    showMessageBox(`Error fetching Xero invoices: ${errorData.Message || 'Unknown error'}`, "error");
+                    window.showMessageBox(`Error fetching Xero invoices: ${errorData.Message || 'Unknown error'}`, "error");
                     return [];
                 }
             } catch (error) {
                 console.error("Network error or other issue fetching Xero invoices:", error);
-                showMessageBox("Network error or issue fetching Xero invoices.", "error");
+                window.showMessageBox("Network error or issue fetching Xero invoices.", "error");
                 return [];
             }
         }
 
-        // Function to fetch Xero contacts (new example API call)
-        async function fetchXeroContacts() {
+        // Function to fetch Xero contacts (new example API call) - Made globally accessible
+        window.fetchXeroContacts = async function() {
             if (!xeroTokens || !xeroTokens.access_token) {
-                showMessageBox("Not connected to Xero or access token missing.", "error");
+                window.showMessageBox("Not connected to Xero or access token missing.", "error");
                 return [];
             }
 
             const tenantId = xeroTokens.connections?.[0]?.tenantId;
             if (!tenantId) {
-                showMessageBox("No Xero tenant found. Please reconnect to Xero.", "error");
+                window.showMessageBox("No Xero tenant found. Please reconnect to Xero.", "error");
                 return [];
             }
 
@@ -457,22 +457,22 @@
                     console.log("Xero Contacts:", data.Contacts);
                     return data.Contacts;
                 } else if (response.status === 401) { // Unauthorized, token might be expired
-                    showMessageBox("Xero token expired. Attempting to refresh...", "error");
-                    const refreshed = await refreshXeroAccessToken();
+                    window.showMessageBox("Xero token expired. Attempting to refresh...", "error");
+                    const refreshed = await window.refreshXeroAccessToken();
                     if (refreshed) {
-                        return await fetchXeroContacts(); // Retry after refresh
+                        return await window.fetchXeroContacts(); // Retry after refresh
                     } else {
                         return [];
                     }
                 } else {
                     const errorData = await response.json();
                     console.error("Error fetching Xero contacts:", errorData);
-                    showMessageBox(`Error fetching Xero contacts: ${errorData.Message || 'Unknown error'}`, "error");
+                    window.showMessageBox(`Error fetching Xero contacts: ${errorData.Message || 'Unknown error'}`, "error");
                     return [];
                 }
             } catch (error) {
                 console.error("Network error or other issue fetching Xero contacts:", error);
-                showMessageBox("Network error or issue fetching Xero contacts.", "error");
+                window.showMessageBox("Network error or issue fetching Xero contacts.", "error");
                 return [];
             }
         }
@@ -482,7 +482,8 @@
         const mainContentDiv = document.getElementById('main-content');
         const currentPageTitle = document.getElementById('current-page-title');
 
-        window.loadContent = async (page) => {
+        // loadContent function - Made globally accessible
+        window.loadContent = async function(page) {
             console.log('loadContent called with:', page); // Added for debugging
             currentPageTitle.textContent = page.charAt(0).toUpperCase() + page.slice(1).replace('-', ' '); // Capitalize and format title
 
@@ -525,7 +526,7 @@
                 case 'xero-integration':
                     // Check Xero connection status and load data
                     if (currentUser) {
-                        await loadXeroTokens(currentUser.uid); // Load latest tokens before rendering
+                        await window.loadXeroTokens(currentUser.uid); // Load latest tokens before rendering
                     }
 
                     let xeroDataHtml = '';
@@ -565,7 +566,7 @@
             if (page === 'xero-integration') {
                 if (xeroConnectionStatus === 'Connected') {
                     document.getElementById('fetch-invoices-btn').onclick = async () => {
-                        const invoices = await fetchXeroInvoices();
+                        const invoices = await window.fetchXeroInvoices();
                         const dataDisplayDiv = document.getElementById('xero-data-display');
                         if (invoices && invoices.length > 0) {
                             let listHtml = '<h4 class="font-semibold mt-4 mb-2">Recent Invoices:</h4><ul class="list-disc list-inside space-y-1">';
@@ -580,7 +581,7 @@
                     };
 
                     document.getElementById('fetch-contacts-btn').onclick = async () => {
-                        const contacts = await fetchXeroContacts();
+                        const contacts = await window.fetchXeroContacts();
                         const dataDisplayDiv = document.getElementById('xero-data-display');
                         if (contacts && contacts.length > 0) {
                             let listHtml = '<h4 class="font-semibold mt-4 mb-2">Recent Contacts:</h4><ul class="list-disc list-inside space-y-1">';
@@ -606,7 +607,7 @@
         // Handle Xero OAuth callback on page load
         window.addEventListener('load', async () => {
             console.log("Window loaded event fired."); // Added for debugging
-            await firebaseAuth(); // Authenticate Firebase user on load
+            await window.firebaseAuth(); // Authenticate Firebase user on load
 
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
@@ -615,17 +616,17 @@
 
             if (code && state) {
                 console.log("Xero OAuth callback detected. Code:", code, "State:", state);
-                await exchangeCodeForTokens(code, state);
+                await window.exchangeCodeForTokens(code, state);
                 // Clear URL parameters to prevent re-processing on refresh
                 const newUrl = new URL(window.location.origin + window.location.pathname);
                 window.history.replaceState({}, document.title, newUrl.href);
             } else if (error) {
-                showMessageBox(`Xero OAuth Error: ${error}`, "error");
+                window.showMessageBox(`Xero OAuth Error: ${error}`, "error");
                 console.error("Xero OAuth Error:", error);
-                loadContent('dashboard'); // Still load content on error
+                window.loadContent('dashboard'); // Still load content on error
             } else {
                 // Load default content if no OAuth redirect, or if it's the initial page load
-                loadContent('dashboard');
+                window.loadContent('dashboard');
             }
         });
     </script>

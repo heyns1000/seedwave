@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruitful Holdings | Repository</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Base Styles - Consistent with FAA.zone theme, optimized for product page */
+        :root {
+            --text-color-light: #1d1d1f;
+            --text-color-dark: #f5f5f7;
+            --bg-color-light: #f5f5f7;
+            --bg-color-dark: #1a1a1c;
+            --card-bg-light: #ffffff;
+            --card-bg-dark: #2a2a2e;
+            --border-color-light: #e8e8ed;
+            --border-color-dark: #3a3a3e;
+            --primary-color: #0071e3; /* Apple Blue */
+            --mindlift-color: #7B68EE; /* MediumPurple for MindLift theme */
+            --mindlift-accent-color: #9370DB; /* Brighter purple */
+            --muted-text-light: #6e6e73;
+            --muted-text-dark: #a0a0a5;
+
+            /* The specific green from your MindLift code for FCU/currency sections (used as the header green) */
+            --fcu-color: #4CAF50; /* Green for currency */
+            --fcu-accent-color: #66BB6A; /* Lighter green */
+
+            /* SecureSign button colors (from your previous instruction, integrated into MindLift theme) */
+            --secure-sign-purple: #8A2BE2;
+            --secure-sign-blue: #4169E1;
+            --secure-sign-purple-hover: #7b27cb;
+            --secure-sign-blue-hover: #375ac7;
+
+            /* New: Dynamic properties based on JS for header positioning */
+            --announcement-bar-height: 0px; /* Default to 0, adjusted by JS if visible */
+            --header-height: 80px; /* Example initial height, will be calculated by JS */
+
+            /* New: Hyper Mode colors */
+            --hyper-bg-color: #000033;
+            --hyper-text-color: #FFCCFF;
+            --hyper-card-bg: #110044;
+            --hyper-border-color: #330066;
+            --hyper-primary-color: #FF00FF; /* Magenta */
+            --hyper-accent-color: #FF69B4; /* HotPink */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Default to dark mode as per the checkout template, consistent with AgroChain now */
+            background-color: var(--bg-color-dark);
+            color: var(--text-color-dark);
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* NEW: Hyper Mode styles */
+        body.hyper-mode {
+            background-color: var(--hyper-bg-color);
+            color: var(--hyper-text-color);
+        }
+        .hyper-mode .app-header { /* Changed from .checkout-header */
+            background-color: var(--hyper-primary-color);
+            box-shadow: 0 10px 30px rgba(255, 0, 255, 0.4);
+        }
+        .hyper-mode .app-card { /* Changed from .checkout-card */
+            background-color: var(--hyper-card-bg);
+            border-color: var(--hyper-border-color);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+        .hyper-mode .app-card h2, /* Changed from .checkout-card */
+        .hyper-mode .app-card h3 { /* Changed from .checkout-card */
+            color: var(--hyper-text-color);
+        }
+        .hyper-mode .app-card h3 i { /* Changed from .checkout-card */
+            color: var(--hyper-accent-color);
+        }
+        .hyper-mode .form-label {
+            color: var(--hyper-text-color);
+        }
+        .hyper-mode .form-input, .hyper-mode .form-select {
+            background-color: #000022;
+            border-color: var(--hyper-border-color);
+            color: var(--hyper-text-color);
+        }
+        .hyper-mode .form-input::placeholder {
+            color: #AA44AA;
+        }
+        /* Removed checkout-step specific hyper mode styles as they are no longer relevant */
+        .hyper-mode .app-footer { /* Changed from .checkout-footer */
+            background-color: var(--hyper-card-bg);
+            border-top-color: var(--hyper-border-color);
+        }
+
+        .light-mode {
+            background-color: var(--bg-color-light);
+            color: var(--text-color-light);
+        }
+
+        .dark-mode {
+            background-color: var(--bg-color-dark);
+            color: var(--text-color-dark);
+        }
+
+
+        /* The .container class from your MindLift code will define max-width */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* NEW: Announcement Bar Styling */
+        #announcement-bar {
+            background-color: var(--fcu-color); /* Matches fcu-color */
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            position: sticky; /* Changed to sticky */
+            top: 0;
+            z-index: 1001; /* Higher than header sticky */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #announcement-bar .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        #announcement-bar.hidden {
+            display: none;
+        }
+
+        /* Header - Styled to perfectly match the MindLift banner from your screenshot */
+        .app-header { /* Renamed from .checkout-header */
+            background-color: var(--fcu-color); /* The solid green from the MindLift banner */
+            color: white;
+            min-height: 150px; /* Adjusted height based on visual comparison with screenshot */
+            padding: 20px; /* Adjusted to allow internal flexbox to control layout */
+            text-align: center; /* Fallback for content not managed by flex */
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.4); /* Green shadow */
+            border-bottom: none;
+            display: flex;
+            flex-direction: column; /* Allow vertical centering of content inside header */
+            justify-content: center; /* Center content vertically */
+            align-items: center; /* Center horizontally */
+            position: sticky; /* Sticky header */
+            top: var(--announcement-bar-height); /* Position header below announcement bar */
+            z-index: 1000;
+        }
+        .app-header .header-content-wrapper {
+            display: flex;
+            flex-direction: column; /* Changed to column for text and sub-text */
+            justify-content: center; /* Center vertically */
+            align-items: center; /* Center horizontally */
+            max-width: 1000px;
+            width: 100%;
+            padding: 0;
+            text-align: center;
+        }
+        /* Adjusted h1 for Fruitful Holdings */
+        .app-header h1 {
+            font-family: 'Inter', sans-serif;
+            font-size: 3.2rem; /* Slightly adjusted for new title */
+            font-weight: 800;
+            line-height: 1.1;
+            margin: 0;
+            letter-spacing: -0.05em;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            color: white;
+            word-break: break-word;
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.2);
+        }
+        /* New styling for the slogan/sub-headline */
+        .app-header .slogan {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.5rem; /* Larger than default p, similar to MindLift hero p */
+            color: rgba(255, 255, 255, 0.9); /* Slightly muted white */
+            margin-top: 10px; /* Space from h1 */
+            line-height: 1.5;
+            max-width: 800px; /* Constrain width for readability */
+        }
+        /* Removed back-link styles as it's no longer present */
+
+        /* Main Content Area - Dark theme, using MindLift card background for main wrapper */
+        .main-content-area {
+            flex-grow: 1;
+            padding: 40px 20px;
+            background-color: var(--bg-color-dark); /* Overall dark background from MindLift */
+        }
+
+        /* Individual Cards/Sections (Renamed to app-card) */
+        .app-card { /* Renamed from .checkout-card */
+            background-color: var(--card-bg-dark); /* Dark card background from MindLift code */
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3); /* Dark shadow from MindLift pricing card */
+            border: 1px solid var(--border-color-dark); /* Dark border from MindLift code */
+            padding: 30px;
+            margin-bottom: 30px;
+            color: var(--text-color-dark); /* Light text on dark card */
+        }
+        .app-card h2 { /* Renamed from .checkout-card */
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-color-dark); /* From MindLift section title */
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .app-card h3 { /* Renamed from .checkout-card */
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-color-dark); /* From MindLift feature card h3 */
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .app-card h3 i { /* Renamed from .checkout-card */
+            color: var(--mindlift-accent-color); /* Icon color, using MindLift's purple accent */
+            margin-right: 15px;
+            font-size: 1.8rem;
+        }
+
+        /* Input field styling for dark theme */
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--muted-text-dark); /* Muted light text for labels */
+        }
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color-dark); /* Dark border for inputs */
+            border-radius: 8px; /* Corrected typo 8-px to 8px */
+            background-color: #3a3a3e; /* Slightly darker input background, from MindLift inputs */
+            color: var(--text-color-dark); /* Light text for input values */
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+        }
+        .form-input::placeholder {
+            color: #718096; /* Muted placeholder text */
+        }
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color); /* Apple Blue focus ring, from MindLift inputs */
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
+        }
+
+        /* Action Buttons (SecureSign style within MindLift theme) - Renamed to app-action-button */
+        .app-action-button { /* Renamed from .checkout-action-button */
+            display: block;
+            width: 100%;
+            height: 56px;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .app-action-button.purple {
+            background-color: var(--secure-sign-purple);
+        }
+        .app-action-button.purple:hover {
+            background-color: var(--secure-sign-purple-hover);
+            transform: translateY(-2px);
+        }
+
+        .app-action-button.blue {
+            background-color: var(--secure-sign-blue);
+        }
+        .app-action-button.blue:hover {
+            background-color: var(--secure-sign-blue-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Removed order summary and checkout step styles as they are no longer relevant */
+
+        /* Planet Pulse Text Styling (No Blur) */
+        #planet-text {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-top: 40px;
+            margin-bottom: 40px;
+            color: var(--mindlift-color); /* Use MindLift purple accent */
+            overflow: hidden; /* Hide overflow during animation */
+            white-space: nowrap; /* Prevent text wrapping */
+            animation: pulse-glow 3s infinite alternate; /* Apply animation */
+            transition: all 0.5s ease-in-out;
+            text-shadow: none; /* Explicitly remove text shadow that might cause blur */
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.05);
+                opacity: 0.9;
+            }
+        }
+
+        /* Styles for theme buttons in footer */
+        .theme-controls button {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid transparent;
+            /* Flex properties for buttons */
+            flex-shrink: 0; /* Prevent shrinking too much */
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+
+        /* Default (Light) Mode button styling */
+        .theme-controls #theme-day-btn {
+            background-color: var(--card-bg-light);
+            color: var(--text-color-light);
+            border-color: var(--border-color-light);
+        }
+        .light-mode .theme-controls #theme-day-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        .light-mode .theme-controls #theme-night-btn,
+        .light-mode .theme-controls #theme-hyper-btn {
+            background-color: var(--card-bg-light);
+            color: var(--muted-text-light);
+            border-color: var(--border-color-light);
+        }
+
+        /* Dark Mode button styling */
+        .theme-controls #theme-night-btn {
+            background-color: var(--card-bg-dark);
+            color: var(--text-color-dark);
+            border-color: var(--border-color-dark);
+        }
+        .dark-mode .theme-controls #theme-night-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        .dark-mode .theme-controls #theme-day-btn,
+        .dark-mode .theme-controls #theme-hyper-btn {
+            background-color: var(--card-bg-dark);
+            color: var(--muted-text-dark);
+            border-color: var(--border-color-dark);
+        }
+
+        /* Hyper Mode button styling */
+        .theme-controls #theme-hyper-btn {
+            background-color: var(--hyper-card-bg);
+            color: var(--hyper-text-color);
+            border-color: var(--hyper-border-color);
+        }
+        .hyper-mode .theme-controls #theme-hyper-btn.active {
+            background-color: var(--hyper-primary-color);
+            color: white;
+            border-color: var(--hyper-primary-color);
+        }
+        .hyper-mode .theme-controls #theme-day-btn,
+        .hyper-mode .theme-controls #theme-night-btn {
+            background-color: var(--hyper-card-bg);
+            color: var(--muted-text-dark); /* Use a muted version of hyper-text for non-active */
+            border-color: var(--hyper-border-color);
+        }
+
+        /* Language Switcher - NOW WITH PRECISE WIDTH CONTROL */
+        .theme-controls #languageSwitcher {
+            padding: 8px 16px; /* Consistent padding */
+            border-radius: 20px; /* Consistent rounded corners */
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid var(--border-color-dark); /* Default border in dark mode */
+            background-color: var(--card-bg-dark); /* Default background in dark mode */
+            color: var(--text-color-dark); /* Default text color in dark mode */
+
+            /* REMOVE DEFAULT ARROW AND ADD CUSTOM */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.5em;
+
+            /* Set the custom arrow SVG based on theme */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23a0a0a5'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+            padding-right: 2.5rem; /* Space for the custom arrow */
+
+            /* KEY FIX: Width control for compact layout */
+            width: fit-content; /* Allow it to shrink to content */
+            min-width: 120px; /* Minimum width for readability (adjust as needed) */
+            max-width: 180px; /* Maximum width to keep it compact (adjust as needed) */
+            flex-grow: 0; /* Prevent it from taking up extra space */
+            flex-shrink: 1; /* Allow it to shrink if needed */
+        }
+
+        .light-mode .theme-controls #languageSwitcher {
+            background-color: var(--card-bg-light);
+            color: var(--text-color-light);
+            border-color: var(--border-color-light);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236e6e73'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+        }
+        .hyper-mode .theme-controls #languageSwitcher {
+            background-color: var(--hyper-card-bg);
+            color: var(--hyper-text-color);
+            border-color: var(--hyper-border-color);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23FFCCFF'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E");
+        }
+
+        /* Styling for generated text output to preserve whitespace */
+        #generatedTextOutput {
+            white-space: pre-wrap; /* Preserve whitespace and allow wrapping */
+            word-break: break-word; /* Break long words */
+        }
+
+        /* Specific styles for the footer, extracted from the original document - Renamed to app-footer */
+        .app-footer { /* Renamed from .new-footer */
+            background-color: #1a1a1a; /* bg-gray-900 from Tailwind, equivalent to this dark gray */
+            color: white;
+            padding: 2rem 1.5rem; /* py-8 px-6 */
+            text-align: center;
+            margin-top: auto; /* Pushes the footer to the bottom */
+        }
+
+        @media (min-width: 768px) {
+            .app-footer {
+                padding-left: 5rem; /* md:px-20 */
+                padding-right: 5rem; /* md:px-20 */
+            }
+        }
+
+        .app-footer-content { /* Renamed from .banimal-footer-content */
+            max-width: 48rem; /* max-w-2xl */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .app-footer-content h1 {
+            font-size: 2rem; /* text-3xl */
+            line-height: 1.25; /* leading-tight */
+            font-weight: 800; /* font-extrabold */
+            color: #ffffff; /* text-white */
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+
+        @media (min-width: 768px) {
+            .app-footer-content h1 {
+                font-size: 2.25rem; /* md:text-4xl */
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .app-footer-content h1 {
+                font-size: 3rem; /* lg:text-5xl */
+            }
+        }
+
+        .app-footer-content .text-blue-400 {
+            color: #60a5fa; /* Tailwind's blue-400 */
+        }
+
+        .app-footer-content p {
+            font-size: 1rem; /* text-base */
+            line-height: 1.625; /* leading-relaxed */
+            color: #d1d5db; /* text-gray-300 */
+            margin-bottom: 1.5rem; /* mb-6 */
+        }
+
+        @media (min-width: 768px) {
+            .app-footer-content p {
+                font-size: 1.125rem; /* md:text-lg */
+            }
+        }
+
+        .app-footer .cta-button {
+            background-color: #3b82f6; /* bg-blue-600 */
+            color: #ffffff; /* text-white */
+            font-weight: 600; /* font-semibold */
+            padding: 0.75rem 1.5rem; /* py-3 px-6 */
+            border-radius: 9999px; /* rounded-full */
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition-property: background-color;
+            transition-duration: 0.2s; /* duration-200 */
+            text-decoration: none; /* Ensure it looks like a button, not a plain link */
+        }
+
+        .app-footer .cta-button:hover {
+            background-color: #2563eb; /* hover:bg-blue-700 */
+        }
+
+        .app-footer .cta-button .ml-2 {
+            margin-left: 0.5rem; /* ml-2 */
+        }
+
+        .app-footer .copyright {
+            font-size: 0.875rem; /* text-sm */
+            color: #6b7280; /* text-gray-500 */
+            margin-top: 2rem; /* mt-8 */
+        }
+
+        .app-footer .copyright a {
+            color: #60a5fa; /* text-blue-400 */
+            text-decoration: none;
+        }
+
+        .app-footer .copyright a:hover {
+            text-decoration: underline;
+        }
+
+        /* Styles for Repository List */
+        .repository-item {
+            display: flex;
+            align-items: center;
+            background-color: var(--card-bg-dark);
+            border: 1px solid var(--border-color-dark);
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease; /* Added border-color */
+            cursor: pointer; /* Indicate clickable */
+        }
+        .repository-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+        }
+        .repository-item.selected {
+            border-color: var(--primary-color); /* Highlight selected item with Apple Blue */
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.4); /* Add a subtle glow */
+        }
+        .repository-item i {
+            font-size: 1.5rem;
+            color: var(--mindlift-color); /* Purple icon */
+            margin-right: 15px;
+        }
+        .repository-item .repo-name {
+            font-weight: 600;
+            color: var(--text-color-dark);
+            flex-grow: 1;
+        }
+        .repository-item .repo-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .repository-item .repo-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Loading spinner for repositories */
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body lang="en" class="dark-mode">
+
+    <!-- NEW: Announcement Bar -->
+    <div id="announcement-bar" class="bg-fcu-color text-white text-center p-2 text-sm relative z-50">
+        <div class="container flex justify-center items-center">
+            <span data-lang-key="announcement-text"></span>
+            <button class="close-btn text-white text-lg ml-4" aria-label="Close Announcement">&times;</button>
+        </div>
+    </div>
+
+    <!-- Header Section (MindLift FCU Hero style) - Adapted for Repository -->
+    <header class="app-header" id="main-header">
+        <div class="header-content-wrapper">
+            <h1 class="text-white">Fruitful Holdings (Pty) Ltd</h1>
+            <p class="slogan">Repository global growth</p>
+            <!-- Back link removed as it's not relevant for a repository page -->
+        </div>
+    </header>
+
+    <main class="main-content-area">
+        <div class="container max-w-3xl mx-auto">
+            <div class="app-card">
+                <h2 data-lang-key="repository-heading"></h2>
+
+                <!-- Repository Search and List Section -->
+                <section class="mb-8">
+                    <h3 data-lang-key="find-repo-heading"><i class="fas fa-search"></i></h3>
+                    <div class="mb-4">
+                        <label for="repoSearchInput" class="form-label" data-lang-key="search-repo-label"></label>
+                        <input type="text" id="repoSearchInput" class="form-input" data-lang-key="search-repo-placeholder">
+                    </div>
+                    <div id="repositoryList" class="space-y-4">
+                        <!-- Repositories will be dynamically loaded here -->
+                        <div id="repoLoadingIndicator" class="loading-spinner hidden"></div>
+                        <p id="noReposMessage" class="text-center text-muted-text-dark hidden" data-lang-key="no-repos-found"></p>
+                    </div>
+                    <div id="selectedRepoDetails" class="mt-4 p-4 rounded-lg border border-gray-600 bg-gray-700 hidden">
+                        <p class="text-sm text-gray-400" data-lang-key="selected-repo-name-label">Selected Repository:</p>
+                        <p id="displaySelectedRepoName" class="font-semibold text-lg"></p>
+                        <p class="text-sm text-gray-400 mt-2" data-lang-key="selected-repo-url-label">URL:</p>
+                        <p id="displaySelectedRepoUrl" class="text-blue-400 break-words"></p>
+                    </div>
+                </section>
+
+                <!-- Add New Repository Section -->
+                <section class="app-card mt-8">
+                    <h3 data-lang-key="add-new-repo-heading"><i class="fas fa-plus-circle"></i></h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="newRepoName" class="form-label" data-lang-key="new-repo-name-label"></label>
+                            <input type="text" id="newRepoName" class="form-input" data-lang-key="new-repo-name-placeholder">
+                        </div>
+                        <div>
+                            <label for="newRepoUrl" class="form-label" data-lang-key="new-repo-url-label"></label>
+                            <input type="text" id="newRepoUrl" class="form-input" data-lang-key="new-repo-url-placeholder">
+                        </div>
+                        <button id="addRepoBtn" class="app-action-button purple mt-4" data-lang-key="add-repo-button"></button>
+                        <div id="addRepoMessage" class="hidden text-center mt-2"></div>
+                    </div>
+                </section>
+
+                <!-- AI-Powered Help/FAQ Section -->
+                <section class="app-card mt-8">
+                    <h3 data-lang-key="ai-help-heading"><i class="fas fa-question-circle"></i></h3>
+                    <p class="text-sm mb-4 text-center text-muted-text-dark" data-lang-key="ai-help-slogan"></p>
+                    <div class="form-group">
+                        <label for="faqPromptInput" class="form-label" data-lang-key="your-question-label"></label>
+                        <textarea id="faqPromptInput" class="form-input" rows="4" data-lang-key="faq-placeholder"></textarea>
+                    </div>
+                    <button id="getFaqAnswerBtn" class="app-action-button purple mt-4" data-lang-key="get-answer-button"></button>
+                    <div id="faqLoadingIndicator" class="hidden text-center mt-2 text-blue-400">
+                        <i class="fas fa-spinner fa-spin mr-2"></i> <span data-lang-key="generating-answer-loading"></span>
+                    </div>
+                    <p id="faqAnswerOutput" class="result-text mt-4 whitespace-pre-wrap"></p>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Planet Pulse Text -->
+    <p id="planet-text" class="text-center text-xl font-bold mt-8 mb-8" data-lang-key="planet-pulse-text"></p>
+
+    <!-- User ID Display -->
+    <div class="text-center text-sm text-gray-500 mb-4">
+        User ID: <span id="displayUserId">Loading...</span>
+    </div>
+
+    <!-- === CONSOLIDATED FOOTER SECTION === -->
+    <footer class="app-footer">
+        <div class="app-footer-content text-center max-w-2xl mx-auto">
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight text-white mb-2">
+                <span data-lang-key="footer-heading"></span> <br>
+                <span class="text-blue-400" data-lang-key="footer-slogan"></span>
+            </h1>
+            <p class="text-base md:text-lg text-gray-300 leading-relaxed mb-6" data-lang-key="footer-text"></p>
+            <a href="#" class="cta-button">
+                <span data-lang-key="explore-button"></span> <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+        <p class="copyright text-sm text-gray-500 mt-8" data-lang-key="copyright-text-footer"></p>
+        <p class="copyright text-sm text-gray-500" data-lang-key="powered-by-text"></p>
+
+        <!-- Theme & Language Controls in Footer -->
+        <div class="theme-controls flex items-center justify-center space-x-4 mt-4 flex-wrap gap-2">
+            <button id="theme-day-btn" data-lang-key="light-mode-button"></button>
+            <button id="theme-night-btn" data-lang-key="dark-mode-button"></button>
+            <button id="theme-hyper-btn" data-lang-key="hyper-mode-button"></button>
+            <select id="languageSwitcher" class="form-select">
+                <!-- Options populated dynamically by JS -->
+            </select>
+        </div>
+    </footer>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, query, onSnapshot, addDoc, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Object to hold all translations
+        const translations = {
+            en: {
+                "lang-name": "English",
+                "announcement-text": "Welcome to Fruitful Holdings Repository! Explore our open-source projects.",
+                "repository-heading": "Our Repositories",
+                "find-repo-heading": "Find a Repository",
+                "search-repo-label": "Search Repository:",
+                "search-repo-placeholder": "e.g., faa.zone or baobab",
+                "no-repos-found": "No repositories found matching your search.",
+                "selected-repo-name-label": "Selected Repository:",
+                "selected-repo-url-label": "URL:",
+                "add-new-repo-heading": "Add New Repository",
+                "new-repo-name-label": "Repository Name (e.g., heyns1000/my-new-project)",
+                "new-repo-name-placeholder": "e.g., heyns1000/new-awesome-project",
+                "new-repo-url-label": "Repository URL (e.g., https://github.com/heyns1000/my-new-project)",
+                "new-repo-url-placeholder": "e.g., https://github.com/heyns1000/new-awesome-project",
+                "add-repo-button": "Add Repository",
+                "add-repo-success": "Repository added successfully!",
+                "add-repo-error": "Error adding repository:",
+                "add-repo-validation-error": "Please enter both repository name and a valid URL.",
+                "ai-help-heading": "AI Help & FAQ Answers",
+                "ai-help-slogan": "Ask your question about Fruitful Holdings or our repositories, and our AI will answer.",
+                "your-question-label": "Your Question:",
+                "faq-placeholder": "e.g., What is Fruitful Holdings?",
+                "get-answer-button": "Get Answer ✨",
+                "generating-answer-loading": "Generating answer...",
+                "error-no-ai-answer": "Error: No answer from AI. Please try again later.",
+                "reason": "Reason:",
+                "error-ai-connection": "Error: Could not connect to language model. Check console for network issues.",
+                "please-enter-question": "Please enter a question to get an answer.",
+                "planet-pulse-text": "fruchtbarer.planet.wandel",
+                "footer-heading": "Fruitful Holdings:",
+                "footer-slogan": "Repository Global Growth",
+                "footer-text": "Fruitful Holdings (Pty) Ltd is dedicated to fostering innovation and growth across various sectors. Our open-source initiatives aim to contribute to global progress.",
+                "explore-button": "Explore Our World",
+                "copyright-text-footer": "&copy; 2025 Fruitful Holdings (Pty) Ltd. All rights reserved.",
+                "powered-by-text": "A proud initiative of Fruitful™ Treaty System™",
+                "light-mode-button": "Light Mode",
+                "dark-mode-button": "Dark Mode",
+                "hyper-mode-button": "Hyper Mode"
+            },
+            lb: { // Luxembourgish translations
+                "lang-name": "Lëtzebuergesch",
+                "announcement-text": "Wëllkomm bei Fruitful Holdings Repository! Entdeckt eis Open-Source Projeten.",
+                "repository-heading": "Eis Repositories",
+                "find-repo-heading": "E Repositorium fannen",
+                "search-repo-label": "Sich Repositorium:",
+                "search-repo-placeholder": "z.B. faa.zone oder baobab",
+                "no-repos-found": "Keng Repositories fonnt déi Ärer Sich entspriechen.",
+                "selected-repo-name-label": "Ausgewielte Repositorium:",
+                "selected-repo-url-label": "URL:",
+                "add-new-repo-heading": "Nei Repositorium derbäisetzen",
+                "new-repo-name-label": "Repositorium Numm (z.B. heyns1000/my-new-project)",
+                "new-repo-name-placeholder": "z.B. heyns1000/neit-fantastescht-projet",
+                "new-repo-url-label": "Repositorium URL (z.B. https://github.com/heyns1000/my-new-project)",
+                "new-repo-url-placeholder": "z.B. https://github.com/heyns1000/neit-fantastescht-projet",
+                "add-repo-button": "Repositorium derbäisetzen",
+                "add-repo-success": "Repositorium erfollegräich derbäigesat!",
+                "add-repo-error": "Feeler beim derbäisetzen vum Repositorium:",
+                "add-repo-validation-error": "Gitt w.e.g. béid Repositorium Numm an eng gëlteg URL an.",
+                "ai-help-heading": "AI Hëllef & FAQ Äntwerten",
+                "ai-help-slogan": "Stellt Är Fro iwwer Fruitful Holdings oder eis Repositories, an eis KI äntwert.",
+                "your-question-label": "Är Fro:",
+                "faq-placeholder": "z.B. Wat ass Fruitful Holdings?",
+                "get-answer-button": "Kritt Äntwert ✨",
+                "generating-answer-loading": "Äntwert gëtt generéiert...",
+                "error-no-ai-answer": "Feeler: Keng Äntwert vun der KI. Probéiert et w.e.g. méi spéit nach eng Kéier.",
+                "reason": "Grond:",
+                "error-ai-connection": "Feeler: Konnt net mat der Sproochemodell verbannen. Kuckt d'Konsol fir Netzproblemer.",
+                "please-enter-question": "Gitt w.e.g. eng Fro an, fir eng Äntwert ze kréien.",
+                "planet-pulse-text": "fruchtbarer.planet.wandel",
+                "footer-heading": "Fruitful Holdings:",
+                "footer-slogan": "Repository Global Wuesstem",
+                "footer-text": "Fruitful Holdings (Pty) Ltd ass engagéiert fir Innovatioun a Wuesstem a verschiddene Secteuren ze förderen. Eis Open-Source Initiativen zielen dozou bäizedroen, de globale Fortschrëtt ze förderen.",
+                "explore-button": "Entdeckt Eis Welt",
+                "copyright-text-footer": "&copy; 2025 Fruitful Holdings (Pty) Ltd. All Rechter reservéiert.",
+                "powered-by-text": "A proud initiative of Fruitful™ Treaty System™",
+                "light-mode-button": "Liicht Modus",
+                "dark-mode-button": "Däischter Modus",
+                "hyper-mode-button": "Hyper Modus"
+            },
+            es: { // Spanish translations
+                "lang-name": "Español",
+                "announcement-text": "¡Bienvenido al Repositorio de Fruitful Holdings! Explora nuestros proyectos de código abierto.",
+                "repository-heading": "Nuestros Repositorios",
+                "find-repo-heading": "Buscar un Repositorio",
+                "search-repo-label": "Buscar Repositorio:",
+                "search-repo-placeholder": "Ejemplo: faa.zone o baobab",
+                "no-repos-found": "No se encontraron repositorios que coincidan con tu búsqueda.",
+                "selected-repo-name-label": "Repositorio Seleccionado:",
+                "selected-repo-url-label": "URL:",
+                "add-new-repo-heading": "Agregar Nuevo Repositorio",
+                "new-repo-name-label": "Nombre del Repositorio (Ej. heyns1000/my-new-project)",
+                "new-repo-name-placeholder": "Ej. heyns1000/nuevo-proyecto-increíble",
+                "new-repo-url-label": "URL del Repositorio (Ej. https://github.com/heyns1000/my-new-project)",
+                "new-repo-url-placeholder": "Ej. https://github.com/heyns1000/nuevo-proyecto-increíble",
+                "add-repo-button": "Agregar Repositorio",
+                "add-repo-success": "Repositorio agregado exitosamente!",
+                "add-repo-error": "Error al agregar repositorio:",
+                "add-repo-validation-error": "Por favor, ingresa tanto el nombre del repositorio como una URL válida.",
+                "ai-help-heading": "Ayuda de IA y Preguntas Frecuentes",
+                "ai-help-slogan": "Haz tu pregunta sobre Fruitful Holdings o nuestros repositorios, y nuestra IA te responderá.",
+                "your-question-label": "Tu Pregunta:",
+                "faq-placeholder": "Ejemplo: ¿Qué es Fruitful Holdings?",
+                "get-answer-button": "Obtener Respuesta ✨",
+                "generating-answer-loading": "Generando respuesta...",
+                "error-no-ai-answer": "Error: No hay respuesta de la IA. Por favor, inténtalo de nuevo más tarde.",
+                "reason": "Razón:",
+                "error-ai-connection": "Error: No se pudo conectar al modelo de lenguaje. Verifica la consola por problemas de red.",
+                "please-enter-question": "Por favor, introduce una pregunta para obtener una respuesta.",
+                "planet-pulse-text": "fruchtbarer.planet.wandel",
+                "footer-heading": "Fruitful Holdings:",
+                "footer-slogan": "Crecimiento Global del Repositorio",
+                "footer-text": "Fruitful Holdings (Pty) Ltd se dedica a fomentar la innovación y el crecimiento en varios sectores. Nuestras iniciativas de código abierto tienen como objetivo contribuir al progreso global.",
+                "explore-button": "Explora Nuestro Mundo",
+                "copyright-text-footer": "&copy; 2025 Fruitful Holdings (Pty) Ltd. Todos los derechos reservados.",
+                "powered-by-text": "Una orgullosa iniciativa de Fruitful™ Treaty System™"
+            },
+            fr: { // French translations
+                "lang-name": "Français",
+                "announcement-text": "Bienvenue au dépôt de Fruitful Holdings ! Explorez nos projets open-source.",
+                "repository-heading": "Nos Dépôts",
+                "find-repo-heading": "Trouver un Dépôt",
+                "search-repo-label": "Rechercher un Dépôt :",
+                "search-repo-placeholder": "Ex: faa.zone ou baobab",
+                "no-repos-found": "Aucun dépôt trouvé correspondant à votre recherche.",
+                "selected-repo-name-label": "Dépôt sélectionné :",
+                "selected-repo-url-label": "URL :",
+                "add-new-repo-heading": "Ajouter un nouveau dépôt",
+                "new-repo-name-label": "Nom du dépôt (Ex: heyns1000/my-new-project)",
+                "new-repo-name-placeholder": "Ex: heyns1000/nouveau-projet-génial",
+                "new-repo-url-label": "URL du dépôt (Ex: https://github.com/heyns1000/my-new-project)",
+                "new-repo-url-placeholder": "Ex: https://github.com/heyns1000/nouveau-projet-génial",
+                "add-repo-button": "Ajouter le dépôt",
+                "add-repo-success": "Dépôt ajouté avec succès !",
+                "add-repo-error": "Erreur lors de l'ajout du dépôt :",
+                "add-repo-validation-error": "Veuillez entrer le nom du dépôt et une URL valide.",
+                "ai-help-heading": "Aide IA & Réponses FAQ",
+                "ai-help-slogan": "Posez votre question sur Fruitful Holdings ou nos dépôts, et notre IA vous répondra.",
+                "your-question-label": "Votre Question :",
+                "faq-placeholder": "Ex: Qu'est-ce que Fruitful Holdings ?",
+                "get-answer-button": "Obtenir la Réponse ✨",
+                "generating-answer-loading": "Génération de la réponse...",
+                "error-no-ai-answer": "Erreur : Pas de réponse de l'IA. Veuillez réessayer plus tard.",
+                "reason": "Raison :",
+                "error-ai-connection": "Erreur : Impossible de se connecter au modèle de langage. Vérifiez la console pour les problèmes de réseau.",
+                "please-enter-question": "Veuillez saisir une question pour obtenir une réponse.",
+                "planet-pulse-text": "fruchtbarer.planet.wandel",
+                "footer-heading": "Fruitful Holdings :",
+                "footer-slogan": "Croissance Mondiale du Dépôt",
+                "footer-text": "Fruitful Holdings (Pty) Ltd se consacre à la promotion de l'innovation et de la croissance dans divers secteurs. Nos initiatives open-source visent à contribuer au progrès mondial.",
+                "explore-button": "Explorer Notre Monde",
+                "copyright-text-footer": "&copy; 2025 Fruitful Holdings (Pty) Ltd. Tous droits réservés.",
+                "powered-by-text": "Une fière initiative de Fruitful™ Treaty System™"
+            },
+            de: { // German translations
+                "lang-name": "Deutsch",
+                "announcement-text": "Willkommen im Fruitful Holdings Repository! Entdecken Sie unsere Open-Source-Projekte.",
+                "repository-heading": "Unsere Repositories",
+                "find-repo-heading": "Ein Repository finden",
+                "search-repo-label": "Repository suchen:",
+                "search-repo-placeholder": "z.B. faa.zone oder baobab",
+                "no-repos-found": "Keine Repositories gefunden, die Ihrer Suche entsprechen.",
+                "selected-repo-name-label": "Ausgewähltes Repository:",
+                "selected-repo-url-label": "URL:",
+                "add-new-repo-heading": "Neues Repository hinzufügen",
+                "new-repo-name-label": "Repository Name (z.B. heyns1000/my-new-project)",
+                "new-repo-name-placeholder": "z.B. heyns1000/neues-fantastisches-projekt",
+                "new-repo-url-label": "Repository URL (z.B. https://github.com/heyns1000/my-new-project)",
+                "new-repo-url-placeholder": "z.B. https://github.com/heyns1000/neues-fantastisches-projekt",
+                "add-repo-button": "Repository hinzufügen",
+                "add-repo-success": "Repository erfolgreich hinzugefügt!",
+                "add-repo-error": "Fehler beim Hinzufügen des Repositorys:",
+                "add-repo-validation-error": "Bitte geben Sie sowohl den Repository-Namen als auch eine gültige URL ein.",
+                "ai-help-heading": "KI-Hilfe & FAQ-Antworten",
+                "ai-help-slogan": "Stellen Sie Ihre Frage zu Fruitful Holdings oder unseren Repositories, und unsere KI wird antworten.",
+                "your-question-label": "Ihre Frage:",
+                "faq-placeholder": "z.B. Was ist Fruitful Holdings?",
+                "get-answer-button": "Antwort erhalten ✨",
+                "generating-answer-loading": "Antwort wird generiert...",
+                "error-no-ai-answer": "Fehler: Keine Antwort von der KI. Bitte versuchen Sie es später noch einmal.",
+                "reason": "Grund:",
+                "error-ai-connection": "Fehler: Verbindung zum Sprachmodell konnte nicht hergestellt werden. Überprüfen Sie die Konsole auf Netzwerkprobleme.",
+                "please-enter-question": "Bitte geben Sie eine Frage ein, um eine Antwort zu erhalten.",
+                "planet-pulse-text": "fruchtbarer.planet.wandel",
+                "footer-heading": "Fruitful Holdings:",
+                "footer-slogan": "Repository Globales Wachstum",
+                "footer-text": "Fruitful Holdings (Pty) Ltd widmet sich der Förderung von Innovation und Wachstum in verschiedenen Sektoren. Unsere Open-Source-Initiativen sollen zum globalen Fortschritt beitragen.",
+                "explore-button": "Entdecken Sie unsere Welt",
+                "copyright-text-footer": "&copy; 2025 Fruitful Holdings (Pty) Ltd. Alle Rechte vorbehalten.",
+                "powered-by-text": "Eine stolze Initiative von Fruitful™ Treaty System™"
+            },
+            zh: { // Chinese Simplified translations
+                "lang-name": "简体中文",
+                "announcement-text": "欢迎来到 Fruitful Holdings 仓库！探索我们的开源项目。",
+                "repository-heading": "我们的仓库",
+                "find-repo-heading": "查找仓库",
+                "search-repo-label": "搜索仓库：",
+                "search-repo-placeholder": "例如：faa.zone 或 baobab",
+                "no-repos-found": "未找到与您的搜索匹配的仓库。",
+                "selected-repo-name-label": "已选择的仓库：",
+                "selected-repo-url-label": "URL：",
+                "add-new-repo-heading": "添加新仓库",
+                "new-repo-name-label": "仓库名称（例如：heyns1000/my-new-project）",
+                "new-repo-name-placeholder": "例如：heyns1000/新的优秀项目",
+                "new-repo-url-label": "仓库 URL（例如：https://github.com/heyns1000/my-new-project）",
+                "new-repo-url-placeholder": "例如：https://github.com/heyns1000/新的优秀项目",
+                "add-repo-button": "添加仓库",
+                "add-repo-success": "仓库添加成功！",
+                "add-repo-error": "添加仓库时出错：",
+                "add-repo-validation-error": "请输入仓库名称和有效的 URL。",
+                "ai-help-heading": "AI 帮助和常见问题解答",
+                "ai-help-slogan": "提出您关于 Fruitful Holdings 或我们仓库的问题，我们的 AI 将为您解答。",
+                "your-question-label": "您的问题：",
+                "faq-placeholder": "例如：什么是 Fruitful Holdings？",
+                "get-answer-button": "获取答案 ✨",
+                "generating-answer-loading": "正在生成答案...",
+                "error-no-ai-answer": "错误：AI 没有返回答案。请稍后再试。",
+                "reason": "原因：",
+                "error-ai-connection": "错误：无法连接到语言模型。请检查控制台以查看网络问题。",
+                "please-enter-question": "请输入问题以获取答案。",
+                "planet-pulse-text": "fruchtbarer.planet.wandel",
+                "footer-heading": "Fruitful Holdings：",
+                "footer-slogan": "仓库全球增长",
+                "footer-text": "Fruitful Holdings (Pty) Ltd 致力于促进各行各业的创新和增长。我们的开源计划旨在为全球进步做出贡献。",
+                "explore-button": "探索我们的世界",
+                "copyright-text-footer": "&copy; 2025 Fruitful Holdings (Pty) Ltd。保留所有权利。",
+                "powered-by-text": "Fruitful™ Treaty System™ 的一项自豪倡议"
+            },
+            hi: { // Hindi translations
+                "lang-name": "हिंदी",
+                "announcement-text": "फ्रूटफुल होल्डिंग्स रिपोजिटरी में आपका स्वागत है! हमारे ओपन-सोर्स प्रोजेक्ट देखें।",
+                "repository-heading": "हमारे रिपोजिटरी",
+                "find-repo-heading": "एक रिपोजिटरी ढूंढें",
+                "search-repo-label": "रिपोजिटरी खोजें:",
+                "search-repo-placeholder": "जैसे, faa.zone या baobab",
+                "no-repos-found": "आपकी खोज से मेल खाने वाली कोई रिपोजिटरी नहीं मिली।",
+                "selected-repo-name-label": "चयनित रिपोजिटरी:",
+                "selected-repo-url-label": "यूआरएल:",
+                "add-new-repo-heading": "नई रिपोजिटरी जोड़ें",
+                "new-repo-name-label": "रिपोजिटरी नाम (जैसे, heyns1000/my-new-project)",
+                "new-repo-name-placeholder": "जैसे, heyns1000/नया-शानदार-प्रोजेक्ट",
+                "new-repo-url-label": "रिपोजिटरी यूआरएल (जैसे, https://github.com/heyns1000/my-new-project)",
+                "new-repo-url-placeholder": "जैसे, https://github.com/heyns1000/नया-शानदार-प्रोजेक्ट",
+                "add-repo-button": "रिपोजिटरी जोड़ें",
+                "add-repo-success": "रिपोजिटरी सफलतापूर्वक जोड़ी गई!",
+                "add-repo-error": "रिपोजिटरी जोड़ने में त्रुटि:",
+                "add-repo-validation-error": "कृपया रिपोजिटरी का नाम और एक वैध यूआरएल दोनों दर्ज करें।",
+                "ai-help-heading": "एआई मदद और अक्सर पूछे जाने वाले प्रश्न",
+                "ai-help-slogan": "फ्रूटफुल होल्डिंग्स या हमारी रिपोजिटरी के बारे में अपना प्रश्न पूछें, और हमारी एआई जवाब देगी।",
+                "your-question-label": "आपका प्रश्न:",
+                "faq-placeholder": "उदाहरण के लिए, फ्रूटफुल होल्डिंग्स क्या है?",
+                "get-answer-button": "उत्तर प्राप्त करें ✨",
+                "generating-answer-loading": "उत्तर उत्पन्न हो रहा है...",
+                "error-no-ai-answer": "त्रुटि: एआई से कोई जवाब नहीं। कृपया बाद में पुनः प्रयास करें।",
+                "reason": "कारण:",
+                "error-ai-connection": "त्रुटि: भाषा मॉडल से कनेक्ट नहीं हो सका। नेटवर्क समस्याओं के लिए कंसोल जांचें।",
+                "please-enter-question": "कृपया उत्तर प्राप्त करने के लिए एक प्रश्न दर्ज करें।",
+                "planet-pulse-text": "fruchtbarer.planet.wandel",
+                "footer-heading": "फ्रूटफुल होल्डिंग्स:",
+                "footer-slogan": "रिपोजिटरी वैश्विक विकास",
+                "footer-text": "फ्रूटफुल होल्डिंग्स (पीटीवाई) लिमिटेड विभिन्न क्षेत्रों में नवाचार और विकास को बढ़ावा देने के लिए समर्पित है। हमारी ओपन-सोर्स पहल का उद्देश्य वैश्विक प्रगति में योगदान करना है।",
+                "explore-button": "हमारी दुनिया का अन्वेषण करें",
+                "copyright-text-footer": "&copy; 2025 फ्रूटफुल होल्डिंग्स (पीटीवाई) लिमिटेड। सभी अधिकार सुरक्षित।",
+                "powered-by-text": "फ्रूटफुल™ ट्रीटी सिस्टम™ की एक गर्वपूर्ण पहल"
+            },
+            ar: { // Arabic translations
+                "lang-name": "العربية",
+                "announcement-text": "مرحبًا بك في مستودع Fruitful Holdings! استكشف مشاريعنا مفتوحة المصدر.",
+                "repository-heading": "مستودعاتنا",
+                "find-repo-heading": "ابحث عن مستودع",
+                "search-repo-label": "ابحث في المستودع:",
+                "search-repo-placeholder": "مثال: faa.zone أو baobab",
+                "no-repos-found": "لم يتم العثور على مستودعات مطابقة لبحثك.",
+                "selected-repo-name-label": "المستودع المحدد:",
+                "selected-repo-url-label": "الرابط:",
+                "add-new-repo-heading": "أضف مستودعًا جديدًا",
+                "new-repo-name-label": "اسم المستودع (مثال: heyns1000/my-new-project)",
+                "new-repo-name-placeholder": "مثال: heyns1000/مشروع-جديد-رائع",
+                "new-repo-url-label": "رابط المستودع (مثال: https://github.com/heyns1000/my-new-project)",
+                "new-repo-url-placeholder": "مثال: https://github.com/heyns1000/مشروع-جديد-رائع",
+                "add-repo-button": "أضف مستودعًا",
+                "add-repo-success": "تمت إضافة المستودع بنجاح!",
+                "add-repo-error": "خطأ في إضافة المستودع:",
+                "add-repo-validation-error": "الرجاء إدخال اسم المستودع ورابط صالح.",
+                "ai-help-heading": "مساعدة الذكاء الاصطناعي والإجابات الشائعة",
+                "ai-help-slogan": "اطرح سؤالك حول Fruitful Holdings أو مستودعاتنا، وسيقوم الذكاء الاصطناعي لدينا بالإجابة.",
+                "your-question-label": "سؤالك:",
+                "faq-placeholder": "مثال: ما هي Fruitful Holdings؟",
+                "get-answer-button": "احصل على الإجابة ✨",
+                "generating-answer-loading": "جارٍ إنشاء الإجابة...",
+                "error-no-ai-answer": "خطأ: لا توجد إجابة من الذكاء الاصطناعي. يرجى المحاولة مرة أخرى لاحقًا.",
+                "reason": "السبب:",
+                "error-ai-connection": "خطأ: لم يتمكن من الاتصال بنموذج اللغة. تحقق من وحدة التحكم لمشاكل الشبكة.",
+                "please-enter-question": "الرجاء إدخال سؤال للحصول على إجابة.",
+                "planet-pulse-text": "fruchtbarer.planet.wandel",
+                "footer-heading": "Fruitful Holdings:",
+                "footer-slogan": "نمو المستودعات العالمي",
+                "footer-text": "تلتزم Fruitful Holdings (Pty) Ltd بتعزيز الابتكار والنمو في مختلف القطاعات. تهدف مبادراتنا مفتوحة المصدر إلى المساهمة في التقدم العالمي.",
+                "explore-button": "استكشف عالمنا",
+                "copyright-text-footer": "&copy; 2025 Fruitful Holdings (Pty) Ltd. جميع الحقوق محفوظة.",
+                "powered-by-text": "مبادرة فخرية من Fruitful™ Treaty System™"
+            }
+        };
+
+        // Firebase variables - will be initialized after DOM content loaded
+        let app, db, auth;
+        let userId;
+
+        // Function to set the current language and update all translatable elements
+        function setLanguage(lang) {
+            document.body.lang = lang; // Update the HTML body's lang attribute
+            localStorage.setItem('selectedLanguage', lang); // Save user preference
+
+            // Update all elements with data-lang-key
+            document.querySelectorAll('[data-lang-key]').forEach(element => {
+                const key = element.getAttribute('data-lang-key');
+                if (translations[lang] && translations[lang][key] !== undefined) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        element.placeholder = translations[lang][key];
+                    } else if (['get-answer-button', 'explore-button', 'add-repo-button'].includes(key)) {
+                        const iconHtml = element.innerHTML.match(/<i class=".*"><\/i>/);
+                        if (iconHtml) {
+                            element.innerHTML = translations[lang][key] + ' ' + iconHtml[0];
+                        } else {
+                            element.textContent = translations[lang][key];
+                        }
+                    } else if (['repository-heading', 'find-repo-heading', 'ai-help-heading', 'add-new-repo-heading'].includes(key)) {
+                        const iconHtml = element.innerHTML.match(/<i class=".*"><\/i>/);
+                        if (iconHtml) {
+                            element.innerHTML = iconHtml[0] + ' ' + translations[lang][key];
+                        } else {
+                            element.textContent = translations[lang][key];
+                        }
+                    } else {
+                        element.textContent = translations[lang][key];
+                    }
+                } else {
+                    console.warn(`Missing translation for key '${key}' in language '${lang}'`);
+                    // Fallback to English if translation is missing
+                    if (translations['en'] && translations['en'][key] !== undefined) {
+                        if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                            element.placeholder = translations['en'][key];
+                        } else if (['get-answer-button', 'explore-button', 'add-repo-button'].includes(key)) {
+                            const iconHtml = element.innerHTML.match(/<i class=".*"><\/i>/);
+                            if (iconHtml) {
+                                element.innerHTML = translations['en'][key] + ' ' + iconHtml[0];
+                            } else {
+                                element.textContent = translations['en'][key];
+                            }
+                        } else if (['repository-heading', 'find-repo-heading', 'ai-help-heading', 'add-new-repo-heading'].includes(key)) {
+                            const iconHtml = element.innerHTML.match(/<i class=".*"><\/i>/);
+                            if (iconHtml) {
+                                element.innerHTML = iconHtml[0] + ' ' + translations['en'][key];
+                            } else {
+                                element.textContent = translations['en'][key];
+                            }
+                        } else {
+                            element.textContent = translations[lang][key]; // Ensure text content is set for missing keys in current lang
+                        }
+                    }
+                }
+            });
+
+            // Update AI response area message if it's an error/prompt message
+            const faqAnswerOutput = document.getElementById('faqAnswerOutput');
+            const faqPromptInput = document.getElementById('faqPromptInput');
+            if (faqAnswerOutput && faqPromptInput) {
+                if (!faqPromptInput.value.trim() && faqAnswerOutput.textContent === translations['en']['please-enter-question']) {
+                    faqAnswerOutput.textContent = translations[lang]['please-enter-question'];
+                }
+                if (faqAnswerOutput.textContent.startsWith(translations['en']['error-no-ai-answer'])) {
+                    faqAnswerOutput.textContent = translations[lang]['error-no-ai-answer'];
+                } else if (faqAnswerOutput.textContent.startsWith(translations['en']['error-ai-connection'])) {
+                    faqAnswerOutput.textContent = translations[lang]['error-ai-connection'];
+                }
+            }
+        }
+
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const body = document.body;
+            const mainHeader = document.getElementById('main-header');
+            const announcementBar = document.getElementById('announcement-bar');
+            const displayUserId = document.getElementById('displayUserId');
+
+
+            // Function to update header top position based on announcement bar visibility
+            const updateHeaderTop = () => {
+                const announcementHeight = announcementBar && !announcementBar.classList.contains('hidden') ? announcementBar.offsetHeight : 0;
+                document.documentElement.style.setProperty('--announcement-bar-height', `${announcementHeight}px`);
+                document.documentElement.style.setProperty('--header-height', `${mainHeader.offsetHeight}px`);
+            };
+
+            // --- Announcement Bar Close Button ---
+            if (announcementBar && announcementBar.querySelector('.close-btn')) {
+                announcementBar.querySelector('.close-btn').addEventListener('click', () => {
+                    announcementBar.classList.add('hidden');
+                    updateHeaderTop();
+                    localStorage.setItem('hideAnnouncementBar', 'true');
+                });
+            }
+
+            // --- Theme Switching Logic ---
+            const themeDayBtn = document.getElementById('theme-day-btn');
+            const themeNightBtn = document.getElementById('theme-night-btn');
+            const themeHyperBtn = document.getElementById('theme-hyper-btn');
+
+            function setTheme(theme) {
+                document.body.classList.remove('light-mode', 'dark-mode', 'hyper-mode');
+                themeDayBtn?.classList.remove('active');
+                themeNightBtn?.classList.remove('active');
+                themeHyperBtn?.classList.remove('active');
+
+                if (theme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                    themeNightBtn?.classList.add('active');
+                } else if (theme === 'hyper') {
+                    document.body.classList.add('hyper-mode');
+                    themeHyperBtn?.classList.add('active');
+                } else {
+                    document.body.classList.add('light-mode');
+                    themeDayBtn?.classList.add('active');
+                }
+                localStorage.setItem('themeMode', theme);
+            }
+
+            if (themeDayBtn && themeNightBtn && themeHyperBtn) {
+                themeDayBtn.addEventListener('click', () => setTheme('day'));
+                themeNightBtn.addEventListener('click', () => setTheme('dark'));
+                themeHyperBtn.addEventListener('click', () => setTheme('hyper'));
+
+                const savedTheme = localStorage.getItem('themeMode') || 'dark';
+                setTheme(savedTheme);
+            }
+
+            // --- Language Switcher Logic ---
+            const languageSwitcher = document.getElementById('languageSwitcher');
+            if (languageSwitcher) {
+                for (const langCode in translations) {
+                    const option = document.createElement('option');
+                    option.value = langCode;
+                    option.textContent = translations[langCode]["lang-name"] || langCode.toUpperCase();
+                    languageSwitcher.appendChild(option);
+                }
+
+                languageSwitcher.addEventListener('change', (e) => {
+                    const selectedLang = e.target.value;
+                    setLanguage(selectedLang);
+                    console.log(`Language changed to: ${selectedLang}`);
+                });
+
+                const initialLang = localStorage.getItem('selectedLanguage') || 'en';
+                languageSwitcher.value = initialLang;
+                setLanguage(initialLang);
+            }
+
+
+            // --- On Load Initializations (for announcement bar and header position) ---
+            window.addEventListener('DOMContentLoaded', () => {
+                if (announcementBar && mainHeader) {
+                    if (localStorage.getItem('hideAnnouncementBar') === 'true') {
+                        announcementBar.classList.add('hidden');
+                        document.documentElement.style.setProperty('--announcement-bar-height', '0px');
+                    } else {
+                        announcementBar.classList.remove('hidden');
+                        updateHeaderTop();
+                    }
+                    window.addEventListener('resize', updateHeaderTop);
+                    window.addEventListener('load', updateHeaderTop);
+                }
+            });
+
+            // --- Planet Pulse Text Logic ---
+            const planetTextElement = document.getElementById('planet-text');
+            const planetPhrases = [
+                { text: "fruchtbarer.planet.wandel", lang: "de" }
+            ];
+            let currentPhraseIndex = 0;
+
+            function updatePlanetText() {
+                if (planetTextElement) {
+                    planetTextElement.classList.remove('pulse-animation');
+                    void planetTextElement.offsetWidth; // Trigger reflow
+
+                    currentPhraseIndex = (currentPhraseIndex + 1) % planetPhrases.length;
+                    const nextPhrase = planetPhrases[currentPhraseIndex];
+
+                    planetTextElement.textContent = nextPhrase.text;
+                    planetTextElement.lang = nextPhrase.lang;
+
+                    planetTextElement.classList.add('pulse-animation');
+                }
+            }
+            if (planetTextElement) {
+                setInterval(updatePlanetText, 3000);
+                updatePlanetText();
+            }
+
+            // --- Firebase Initialization ---
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+
+            if (Object.keys(firebaseConfig).length > 0) {
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                // Authenticate anonymously or with custom token
+                if (typeof __initial_auth_token !== 'undefined') {
+                    try {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                        userId = auth.currentUser?.uid;
+                        if(displayUserId) displayUserId.textContent = userId;
+                        console.log("Signed in with custom token:", userId);
+                    } catch (error) {
+                        console.error("Error signing in with custom token:", error);
+                        await signInAnonymously(auth);
+                        userId = auth.currentUser?.uid;
+                        if(displayUserId) displayUserId.textContent = userId;
+                        console.log("Signed in anonymously due to token error:", userId);
+                    }
+                } else {
+                    await signInAnonymously(auth);
+                    userId = auth.currentUser?.uid;
+                    if(displayUserId) displayUserId.textContent = userId;
+                    console.log("Signed in anonymously:", userId);
+                }
+
+                // Add a listener to ensure userId is always up-to-date
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        if(displayUserId) displayUserId.textContent = userId;
+                        console.log("Auth state changed, userId:", userId);
+                    } else {
+                        userId = null;
+                        if(displayUserId) displayUserId.textContent = "Not authenticated";
+                        console.log("User signed out or not authenticated.");
+                    }
+                    // Only load repositories once auth state is confirmed
+                    if (userId) {
+                        loadRepositories();
+                    }
+                });
+
+            } else {
+                console.error("Firebase config is not available. Firestore will not function.");
+                document.getElementById('repoLoadingIndicator').classList.add('hidden');
+                document.getElementById('noReposMessage').textContent = "Firebase is not configured. Cannot load repositories.";
+                document.getElementById('noReposMessage').classList.remove('hidden');
+                 if(displayUserId) displayUserId.textContent = "Firebase not configured";
+            }
+
+
+            // --- Repository Loading and Search Logic ---
+            const repoSearchInput = document.getElementById('repoSearchInput');
+            const repositoryListDiv = document.getElementById('repositoryList');
+            const repoLoadingIndicator = document.getElementById('repoLoadingIndicator');
+            const noReposMessage = document.getElementById('noReposMessage');
+            const selectedRepoDetails = document.getElementById('selectedRepoDetails');
+            const displaySelectedRepoName = document.getElementById('displaySelectedRepoName');
+            const displaySelectedRepoUrl = document.getElementById('displaySelectedRepoUrl');
+
+
+            let allRepositories = []; // To store all fetched repositories
+            let selectedRepository = null; // To store the currently selected repository object
+
+
+            async function loadRepositories() {
+                if (!db || !userId) {
+                    console.error("Firestore or User ID not available for loading repositories.");
+                    return;
+                }
+
+                repoLoadingIndicator.classList.remove('hidden');
+                noReposMessage.classList.add('hidden');
+                repositoryListDiv.innerHTML = '<div id="repoLoadingIndicator" class="loading-spinner"></div>'; // Clear and show spinner
+
+                try {
+                    // Public collection for repositories
+                    const q = query(collection(db, `artifacts/${appId}/public/data/repositories`));
+
+                    onSnapshot(q, (snapshot) => {
+                        allRepositories = []; // Clear previous data
+                        snapshot.forEach((doc) => {
+                            allRepositories.push({ id: doc.id, ...doc.data() });
+                        });
+                        console.log("Fetched repositories:", allRepositories);
+                        filterAndDisplayRepositories(); // Display after fetching
+                        repoLoadingIndicator.classList.add('hidden');
+                    }, (error) => {
+                        console.error("Error listening to repositories:", error);
+                        repositoryListDiv.innerHTML = `<p class="text-red-500 text-center">${translations[document.body.lang]['error-ai-connection']} Error: ${error.message}</p>`;
+                        repoLoadingIndicator.classList.add('hidden');
+                    });
+
+                    // Add some initial dummy data if the collection is empty (for first run)
+                    const initialDocs = await getDocs(collection(db, `artifacts/${appId}/public/data/repositories`));
+                    if (initialDocs.empty) {
+                        console.log("Adding initial dummy repository data...");
+                        await addDoc(collection(db, `artifacts/${appId}/public/data/repositories`), {
+                            name: "heyns1000/faa.zone",
+                            url: "https://github.com/heyns1000/faa.zone",
+                            createdAt: serverTimestamp()
+                        });
+                        await addDoc(collection(db, `artifacts/${appId}/public/data/repositories`), {
+                            name: "heyns1000/seedwave",
+                            url: "https://github.com/heyns1000/seedwave",
+                            createdAt: serverTimestamp()
+                        });
+                        await addDoc(collection(db, `artifacts/${appId}/public/data/repositories`), {
+                            name: "heyns1000/vaultmesh",
+                            url: "https://github.com/heyns1000/vaultmesh",
+                            createdAt: serverTimestamp()
+                        });
+                         await addDoc(collection(db, `artifacts/${appId}/public/data/repositories`), {
+                            name: "heyns1000/baobab",
+                            url: "https://github.com/heyns1000/baobab",
+                            createdAt: serverTimestamp()
+                        });
+                        await addDoc(collection(db, `artifacts/${appId}/public/data/repositories`), {
+                            name: "heyns1000/fruitful",
+                            url: "https://github.com/heyns1000/fruitful",
+                            createdAt: serverTimestamp()
+                        });
+                         await addDoc(collection(db, `artifacts/${appId}/public/data/repositories`), {
+                            name: "heyns1000/samfox",
+                            url: "https://github.com/heyns1000/samfox",
+                            createdAt: serverTimestamp()
+                        });
+                        await addDoc(collection(db, `artifacts/${appId}/public/data/repositories`), {
+                            name: "heyns1000/portal",
+                            url: "https://github.com/heyns1000/portal",
+                            createdAt: serverTimestamp()
+                        });
+                         await addDoc(collection(db, `artifacts/${appId}/public/data/repositories`), {
+                            name: "heyns1000/faa-zone-admin-portal",
+                            url: "https://github.com/heyns1000/faa-zone-admin-portal",
+                            createdAt: serverTimestamp()
+                        });
+                         await addDoc(collection(db, `artifacts/${appId}/public/data/repositories`), {
+                            name: "heyns1000/astrowind",
+                            url: "https://github.com/heyns1000/astrowind",
+                            createdAt: serverTimestamp()
+                        });
+                        await addDoc(collection(db, `artifacts/${appId}/public/data/repositories`), {
+                            name: "heyns1000/cloudflare-docs",
+                            url: "https://github.com/heyns1000/cloudflare-docs",
+                            createdAt: serverTimestamp()
+                        });
+                        console.log("Initial dummy data added.");
+                    }
+
+                } catch (error) {
+                    console.error("Error setting up Firestore listener or adding initial data:", error);
+                    repositoryListDiv.innerHTML = `<p class="text-red-500 text-center">Failed to load repositories. Error: ${error.message}</p>`;
+                    repoLoadingIndicator.classList.add('hidden');
+                }
+            }
+
+            function filterAndDisplayRepositories() {
+                const searchTerm = repoSearchInput.value.toLowerCase().trim();
+                const filteredRepos = allRepositories.filter(repo =>
+                    repo.name.toLowerCase().includes(searchTerm)
+                ).sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
+
+                repositoryListDiv.innerHTML = ''; // Clear current list
+
+                if (filteredRepos.length === 0) {
+                    noReposMessage.classList.remove('hidden');
+                } else {
+                    noReposMessage.classList.add('hidden');
+                    filteredRepos.forEach(repo => {
+                        const repoItem = document.createElement('div'); // Changed to div for easier selection
+                        repoItem.classList.add('repository-item');
+                        if (selectedRepository && selectedRepository.id === repo.id) {
+                            repoItem.classList.add('selected');
+                        }
+                        repoItem.dataset.repoId = repo.id; // Store Firestore document ID
+                        repoItem.innerHTML = `
+                            <i class="fas fa-code-branch"></i>
+                            <span class="repo-name">${repo.name}</span>
+                            <a href="${repo.url || '#'}" target="_blank" rel="noopener noreferrer" class="repo-link ml-auto">
+                                <i class="fas fa-external-link-alt text-sm opacity-75"></i>
+                            </a>
+                        `;
+                        repoItem.addEventListener('click', () => {
+                            // Remove 'selected' from all items
+                            document.querySelectorAll('.repository-item').forEach(item => {
+                                item.classList.remove('selected');
+                            });
+                            // Add 'selected' to clicked item
+                            repoItem.classList.add('selected');
+                            selectedRepository = repo; // Set the selected repository object
+                            displaySelectedRepo();
+                        });
+                        repositoryListDiv.appendChild(repoItem);
+                    });
+                }
+            }
+
+            function displaySelectedRepo() {
+                if (selectedRepository) {
+                    displaySelectedRepoName.textContent = selectedRepository.name;
+                    displaySelectedRepoUrl.textContent = selectedRepository.url;
+                    selectedRepoDetails.classList.remove('hidden');
+                } else {
+                    selectedRepoDetails.classList.add('hidden');
+                }
+            }
+
+            if (repoSearchInput) {
+                repoSearchInput.addEventListener('input', filterAndDisplayRepositories);
+            }
+
+            // --- Add New Repository Logic ---
+            const newRepoNameInput = document.getElementById('newRepoName');
+            const newRepoUrlInput = document.getElementById('newRepoUrl');
+            const addRepoBtn = document.getElementById('addRepoBtn');
+            const addRepoMessage = document.getElementById('addRepoMessage');
+
+            if (addRepoBtn && newRepoNameInput && newRepoUrlInput && addRepoMessage) {
+                addRepoBtn.addEventListener('click', async () => {
+                    const name = newRepoNameInput.value.trim();
+                    const url = newRepoUrlInput.value.trim();
+
+                    if (!name || !url || !url.startsWith('http')) {
+                        addRepoMessage.textContent = translations[document.body.lang]['add-repo-validation-error'];
+                        addRepoMessage.style.color = "red";
+                        addRepoMessage.classList.remove('hidden');
+                        return;
+                    }
+
+                    addRepoBtn.disabled = true;
+                    addRepoMessage.classList.add('hidden');
+
+                    try {
+                        await addDoc(collection(db, `artifacts/${appId}/public/data/repositories`), {
+                            name: name,
+                            url: url,
+                            createdAt: serverTimestamp()
+                        });
+                        addRepoMessage.textContent = translations[document.body.lang]['add-repo-success'];
+                        addRepoMessage.style.color = "green";
+                        addRepoMessage.classList.remove('hidden');
+                        newRepoNameInput.value = '';
+                        newRepoUrlInput.value = '';
+                    } catch (error) {
+                        console.error("Error adding document: ", error);
+                        addRepoMessage.textContent = `${translations[document.body.lang]['add-repo-error']} ${error.message}`;
+                        addRepoMessage.style.color = "red";
+                        addRepoMessage.classList.remove('hidden');
+                    } finally {
+                        addRepoBtn.disabled = false;
+                    }
+                });
+            }
+
+
+            // --- Gemini API Text Generation Logic (AI Help/FAQ) ---
+            const getFaqAnswerBtn = document.getElementById('getFaqAnswerBtn');
+            const faqPromptInput = document.getElementById('faqPromptInput');
+            const faqAnswerOutput = document.getElementById('faqAnswerOutput');
+            const faqLoadingIndicator = document.getElementById('faqLoadingIndicator');
+
+            if (getFaqAnswerBtn && faqPromptInput && faqAnswerOutput && faqLoadingIndicator) {
+                getFaqAnswerBtn.addEventListener('click', async () => {
+                    const prompt = faqPromptInput.value.trim();
+                    if (!prompt) {
+                        faqAnswerOutput.textContent = translations[document.body.lang]['please-enter-question'];
+                        faqAnswerOutput.style.color = "red";
+                        return;
+                    }
+
+                    faqAnswerOutput.textContent = '';
+                    faqAnswerOutput.style.color = "var(--text-color-dark)";
+                    faqLoadingIndicator.classList.remove('hidden');
+                    getFaqAnswerBtn.disabled = true;
+
+                    try {
+                        const currentLang = document.body.lang;
+                        // Craft the prompt carefully to guide the AI
+                        const fullPrompt = `You are an AI assistant for "Fruitful Holdings (Pty) Ltd" repository page.
+                        Answer the user's question as concisely and accurately as possible, specifically regarding "Fruitful Holdings (Pty) Ltd" operations, its open-source repositories, or its mission of "Repository global growth".
+                        If the question is not directly related to these topics, or if you don't have enough information, politely state that you can only answer questions about Fruitful Holdings and its repositories.
+                        Translate the response into the user's current language, which is "${currentLang}".
+
+                        User's question: "${prompt}"
+
+                        Context for Fruitful Holdings:
+                        - Name: Fruitful Holdings (Pty) Ltd
+                        - Mission/Slogan: Repository global growth
+                        - Activities: Fostering innovation and growth across various sectors, open-source initiatives to contribute to global progress.
+                        - Associated terms/projects: faa.zone, seedwave, vaultmesh, baobab, fruitful, samfox, portal, faa-zone-admin-portal, astrowind, cloudflare-docs.
+
+                        Answer:`;
+
+                        let chatHistory = [];
+                        chatHistory.push({ role: "user", parts: [{ text: fullPrompt }] });
+                        const payload = { contents: chatHistory };
+                        const apiKey = ""; // Canvas will automatically provide this during runtime
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                        console.log("Attempting to call Gemini API with prompt:", fullPrompt);
+                        const response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        console.log("Raw API Response Object:", response);
+                        const result = await response.json();
+                        console.log("Parsed API Result JSON:", result);
+
+                        if (result.candidates && result.candidates.length > 0 &&
+                            result.candidates[0].content && result.candidates[0].content.parts &&
+                            result.candidates[0].content.parts.length > 0) {
+                            const text = result.candidates[0].content.parts[0].text;
+                            console.log("Extracted Generated Text:", text);
+                            faqAnswerOutput.textContent = text;
+                        } else {
+                            faqAnswerOutput.textContent = translations[document.body.lang]['error-no-ai-answer'];
+                            faqAnswerOutput.style.color = "red";
+                            console.error("Gemini API response was unexpected or missing content:", result);
+                            if (result.error && result.error.message) {
+                                faqAnswerOutput.textContent += ` ${translations[document.body.lang]['reason']} ${result.error.message}`;
+                            }
+                        }
+
+                    } catch (error) {
+                        faqAnswerOutput.textContent = translations[document.body.lang]['error-ai-connection'];
+                        faqAnswerOutput.style.color = "red";
+                        console.error("Error calling Gemini API:", error);
+                    } finally {
+                        faqLoadingIndicator.classList.add('hidden');
+                        getFaqAnswerBtn.disabled = false;
+                    }
+                });
+            } else {
+                console.warn("AI text generation elements (button, input, output, or loading indicator) not found in DOM. Please check IDs.");
+            }
+        });
+    </script>
+</body>
+</html>

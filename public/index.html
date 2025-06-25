@@ -1,0 +1,2448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fruitful Innovations - Your Future, Today (Merged)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Leaflet CSS for OpenStreetMap (from Dashboard) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Define a consistent color palette for Dashboard components within the overall dark theme */
+        :root {
+            --primary-color: #22c55e; /* Vibrant green */
+            --secondary-color: #3b82f6; /* Blue for accents */
+            --dark-bg-dashboard: #1a1a1d; /* Deep charcoal for dashboard specific elements */
+            --medium-dark-bg-dashboard: #2a2a2e; /* Slightly lighter charcoal for dashboard specifics */
+            --card-bg-dashboard: #374151; /* Dark gray for dashboard cards */
+            --text-light-dashboard: #e0e0e0;
+            --text-muted-dashboard: #9ca3af;
+            --border-color-dashboard: #4b5563;
+
+            /* Banimal Specific Colors - softer, warmer palette */
+            --banimal-soft-peach: #FFF0ED; /* A soft, warm background tone */
+            --banimal-soft-pink: #F8DCDC;
+            --banimal-accent-blue: #66B2FF; /* A gentle blue */
+            --banimal-dark-text: #333333;
+            --banimal-muted-text: #666666;
+            --banimal-cream: #FFFAF5;
+            --banimal-button-green: #90EE90; /* Soft green for the new button */
+
+            /* Consolidated Fruitful Logo Color (now white) */
+            --fruitful-corporate-white: #ffffff;
+        }
+
+        /* Base Styles - Cooler, darker, more vibrant (from Landing Page, prioritized) */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117; /* Darker base background */
+            color: #e2e8f0; /* Lighter text for contrast */
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            display: flex; /* Make body a flex container for full height */
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Custom Scrollbar Styling for Dark Theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1a1b20; /* Darker track */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4a4d5c; /* Muted gray thumb */
+            border-radius: 10px;
+            transition: background 0.3s ease;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b6e7f; /* Lighter on hover */
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Header - Sleek and modern */
+        header {
+            background-color: rgba(26, 32, 44, 0.9); /* Darker, slightly transparent */
+            backdrop-filter: blur(12px); /* Stronger frosted glass */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* More visible border */
+            padding-top: 1.2rem;
+            padding-bottom: 1.2rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.4); /* Deeper shadow */
+            position: sticky;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 50;
+            display: flex; /* Ensure it's a flex container */
+            justify-content: space-between; /* Space out logo and nav */
+            align-items: center;
+        }
+        header h1 {
+            color: #e2e8f0; /* Light text for logo */
+            font-weight: 800;
+            font-size: 1.6rem;
+            letter-spacing: -0.03em;
+            background: linear-gradient(90deg, #6366f1, #a855f7); /* Vibrant gradient for logo text */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        header nav a {
+            color: #a0aec0; /* Muted gray for nav links */
+            font-size: 0.95rem;
+            font-weight: 500;
+            padding: 0.6rem 1rem;
+            border-radius: 8px; /* Softer rounding */
+            transition: all 0.2s ease-in-out;
+            position: relative;
+        }
+        header nav a:hover {
+            color: #e2e8f0; /* Brighter on hover */
+            background-color: rgba(99, 102, 241, 0.1); /* Subtle purple tint on hover */
+            transform: translateY(-2px); /* Slight lift */
+        }
+        header nav a::after { /* Underline effect */
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -2px;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #a855f7, #6366f1);
+            transition: all 0.3s ease-out;
+            transform: translateX(-50%);
+            border-radius: 1px;
+        }
+        header nav a:hover::after {
+            width: 80%;
+        }
+        header nav a.bg-purple-600 { /* Sign Up button */
+            background: linear-gradient(90deg, #6366f1, #a855f7); /* Vibrant gradient */
+            color: white;
+            padding: 0.7rem 1.4rem;
+            border-radius: 25px; /* More pill-shaped */
+            font-weight: 700;
+            font-size: 0.95rem;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+            transition: all 0.3s ease-out;
+        }
+        header nav a.bg-purple-600:hover {
+            filter: brightness(1.15);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4), 0 0 15px rgba(168, 85, 247, 0.5); /* Subtle glow */
+        }
+        /* Active link for both landing page sections and dashboard toggle */
+        .header-nav-active {
+            color: white !important;
+            font-weight: 700 !important;
+        }
+        .header-nav-active::after {
+            width: 100% !important;
+            background: linear-gradient(90deg, #c084fc, #8b5cf6) !important;
+        }
+
+        /* Hero Section - Dynamic and impactful */
+        .hero-section {
+            background: linear-gradient(135deg, #1f215a, #2b2d74, #3b0764); /* Deeper, richer gradient */
+            min-height: 80vh;
+            padding: 8rem 2rem;
+            border-bottom-left-radius: 60px;
+            border-bottom-right-radius: 60px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.7);
+            color: #e2e8f0;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInScale 1s ease-out;
+        }
+        .hero-section::before { /* Animated background pattern */
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -20%;
+            width: 140%;
+            height: 140%;
+            background: radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.1), transparent 70%),
+                        radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.1), transparent 70%);
+            animation: rotateAndZoom 40s linear infinite;
+            opacity: 0.6;
+            z-index: 1;
+        }
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes rotateAndZoom {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.05); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        .hero-content {
+            z-index: 10;
+            position: relative;
+        }
+        .hero-section h2 {
+            font-size: 4.5rem; /* Even larger, bolder headline */
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            line-height: 1.05;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .hero-section h2 span {
+            background: linear-gradient(90deg, #fcd34d, #f97316); /* Warm gradient accent */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-section p {
+            font-size: 1.3rem;
+            font-weight: 300; /* Lighter weight for body text */
+            color: #d1d8e0; /* Slightly muted white */
+            margin-top: 2rem;
+            margin-bottom: 3rem;
+            max-width: 900px;
+        }
+        .cta-button {
+            display: inline-flex; /* Changed from landing to match banimal button */
+            align-items: center; /* Changed from landing to match banimal button */
+            gap: 10px; /* Changed from landing to match banimal button */
+            background: linear-gradient(90deg, #8b5cf6, #c084fc); /* Brighter purple gradient */
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.15rem;
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+        .cta-button:hover {
+            filter: brightness(1.2);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5), 0 0 25px rgba(192, 132, 252, 0.8); /* Stronger glow */
+        }
+        .cta-button span { /* Re-add emoji for "cooler" vibe if desired */
+            display: inline-block;
+            margin-left: 0.5rem;
+            animation: bounceEmoji 1s infinite alternate;
+        }
+        @keyframes bounceEmoji {
+            from { transform: translateY(0); }
+            to { transform: translateY(-3px); }
+        }
+
+
+        /* Sections - Layered and defined */
+        .landing-section { /* Applied to all main landing sections */
+            padding: 8rem 2rem;
+            background-color: #121317; /* Darker section background */
+            box-shadow: inset 0 5px 20px rgba(0,0,0,0.2); /* Inner shadow for depth */
+            border-bottom: 1px solid rgba(255,255,255,0.08); /* Subtle separator */
+            color: #e2e8f0;
+        }
+        .landing-section:nth-of-type(odd) { /* Alternate background for sections */
+            background-color: #0d1117;
+        }
+        .landing-section:last-of-type {
+            border-bottom: none;
+        }
+        .landing-section h2, .landing-section h3 {
+            color: #e2e8f0;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 2.5rem;
+            font-size: 2.8rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .landing-section p {
+            color: #a0aec0;
+            font-size: 1.15rem;
+            line-height: 1.6;
+        }
+
+        /* Feature Cards - Glowing and interactive */
+        .feature-card {
+            background-color: #1a1b20; /* Dark card background */
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease-in-out, border-color 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7), 0 0 25px rgba(168, 85, 247, 0.5); /* Stronger glow on hover */
+            border-color: #a855f7; /* Purple border on hover */
+        }
+        .feature-card div:first-child { /* Icon */
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: #00bfff; /* Electric blue for icons */
+            text-shadow: 0 0 15px rgba(0, 191, 255, 0.6); /* Icon glow */
+        }
+        .feature-card h4 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 0.75rem;
+        }
+        .feature-card p {
+            font-size: 1rem;
+            color: #a0aec0;
+        }
+
+        /* Share Signal Section - Digital display feel */
+        #shareprice {
+            background-color: #1a1b20;
+            color: #e2e8f0;
+            padding: 5rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            box-shadow: inset 0 5px 20px rgba(0,0,0,0.2);
+        }
+        #shareprice h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #e2e8f0;
+        }
+        #price {
+            font-size: 4rem;
+            font-weight: 800;
+            color: #00e393; /* Neon green for price */
+            letter-spacing: -0.03em;
+            text-shadow: 0 0 20px rgba(0, 227, 147, 0.6); /* Strong glow */
+            animation: pricePulse 2s infinite alternate;
+        }
+        @keyframes pricePulse {
+            from { text-shadow: 0 0 10px rgba(0, 227, 147, 0.4); }
+            to { text-shadow: 0 0 25px rgba(0, 227, 147, 0.8); }
+        }
+        #timestamp {
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        /* Seedwave Growth - Dynamic chart */
+        #seedwave {
+            background-color: #0d1117;
+            padding: 6rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            box-shadow: inset 0 5px 20px rgba(0,0,0,0.2);
+        }
+        #seedwave h2 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            margin-bottom: 3rem;
+            color: #e2e8f0;
+        }
+        #seedwave .w-full {
+            background-color: #1a1b20;
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.6);
+        }
+
+        /* Founder's Note - Evocative text block */
+        .landing-section.bg-gray-700 { /* Founder's Note */
+            background-color: #121317;
+            color: #e2e8f0;
+            padding: 6rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            box-shadow: inset 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .landing-section.bg-gray-700 h2 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #e2e8f0;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            animation: textGlow 3s infinite alternate;
+        }
+        @keyframes textGlow {
+            from { text-shadow: 0 0 5px rgba(255,255,255,0.2); }
+            to { text-shadow: 0 0 15px rgba(255,255,255,0.5); }
+        }
+        .landing-section.bg-gray-700 p {
+            font-size: 1.2rem;
+            color: #a0aec0;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .landing-section.bg-gray-700 p.italic {
+            color: #b0b8c4;
+            font-style: italic;
+        }
+        .landing-section.bg-gray-700 p.font-semibold {
+            color: #00bfff; /* Electric blue signature */
+            font-weight: 600;
+            margin-top: 2.5rem;
+            text-shadow: 0 0 8px rgba(0, 191, 255, 0.4);
+        }
+
+        /* Vault Terminal Access - Futuristic interface */
+        #vault-access {
+            background-color: #0d1117;
+            padding: 6rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            box-shadow: inset 0 5px 20px rgba(0,0,0,0.2);
+        }
+        #vault-access h3 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #e2e8f0;
+            margin-bottom: 3rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        #vault-access .w-full.h-\[800px\] { /* Iframe container */
+            background-color: #000000;
+            border: 3px solid #00e393; /* Neon green border */
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0, 227, 147, 0.5); /* Stronger glow */
+            overflow: hidden;
+        }
+        .terminal-btn {
+            background-color: #1a1b20;
+            color: #00bfff; /* Electric blue text */
+            padding: 1.2rem 1.8rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+            border: 1px solid #333333;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .terminal-btn:hover {
+            background-color: #2a2c33;
+            color: #e2e8f0;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5), 0 0 20px rgba(0, 191, 255, 0.6);
+            border-color: #00bfff;
+        }
+        .terminal-btn.ring { /* Active state */
+            border-color: #00e393; /* Neon green active ring */
+            box-shadow: 0 0 0 3px rgba(0, 227, 147, 0.5);
+        }
+
+        /* Sector Scrolls - Grid of glowing links */
+        .landing-section.bg-gray-800.text-center { /* Sector Scrolls */
+            background-color: #121317;
+            padding: 6rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            box-shadow: inset 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .landing-section.bg-gray-800.text-center h2 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #e2e8f0;
+            margin-bottom: 3rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .glyph {
+            background-color: #1a1b20;
+            color: #00bfff; /* Electric blue text */
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+            border: 1px solid #333333;
+        }
+        .glyph:hover {
+            background-color: #2a2c33;
+            color: #e2e8f0;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5), 0 0 15px rgba(0, 191, 255, 0.5);
+            border-color: #00bfff;
+        }
+
+        /* Treaty Section - Powerful statement */
+        #treaty {
+            background-color: #0d1117;
+            padding: 6rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            box-shadow: inset 0 5px 20px rgba(0,0,0,0.2);
+        }
+        #treaty h2 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #e2e8f0;
+            margin-bottom: 2rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        #treaty p {
+            font-size: 1.2rem;
+            color: #a0aec0;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 2.5rem;
+        }
+        #treaty blockquote {
+            font-size: 1.8rem;
+            color: #00e393; /* Neon green for quote */
+            font-weight: 700;
+            line-height: 1.4;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            text-shadow: 0 0 15px rgba(0, 227, 147, 0.5);
+        }
+        #treaty blockquote::before, #treaty blockquote::after {
+            content: '“';
+            font-size: 3em;
+            line-height: 0.1;
+            vertical-align: -0.4em;
+            color: #333333; /* Muted quote color */
+            margin-right: 0.1em;
+        }
+        #treaty blockquote::after {
+            content: '”';
+            margin-left: 0.05em;
+        }
+
+        /* Signal Packet - Hacker console feel */
+        .landing-section.py-10.text-xs.text-center { /* Signal Packet */
+            background-color: #0a0a0a;
+            color: #00e393;
+            padding: 4rem 2rem;
+            border-bottom: 1px solid #333;
+            box-shadow: inset 0 5px 20px rgba(0,0,0,0.4);
+        }
+        .landing-section.py-10.text-xs.text-center pre {
+            background-color: #000000;
+            border: 1px solid #00e393; /* Neon green border */
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 0 20px rgba(0, 227, 147, 0.4); /* Strong glow */
+            white-space: pre-wrap;
+            word-break: break-all;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+            font-size: 0.9rem;
+        }
+
+        /* VaultMesh Executive Summary - Structured and powerful */
+        #vaultmesh {
+            background-color: #121317;
+            padding: 6rem 2rem;
+            color: #e2e8f0;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            box-shadow: inset 0 5px 20px rgba(0,0,0,0.2);
+        }
+        #vaultmesh h2 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #e2e8f0;
+            margin-bottom: 2rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        #vaultmesh h2.text-purple-400 {
+            background: linear-gradient(90deg, #8b5cf6, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        #vaultmesh h3 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-top: 3rem;
+            margin-bottom: 1.2rem;
+        }
+        #vaultmesh p {
+            font-size: 1.1rem;
+            color: #a0aec0;
+            line-height: 1.6;
+        }
+        #vaultmesh ul {
+            list-style-type: none; /* Remove default bullets */
+            padding-left: 0;
+            margin-left: 0;
+            color: #a0aec0;
+        }
+        #vaultmesh ul li {
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        #vaultmesh ul li::before { /* Custom bullet point */
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #00bfff; /* Electric blue bullet */
+            font-size: 1.2em;
+            line-height: 1;
+            top: 0.1em;
+        }
+        #vaultmesh ul.list-decimal li::before { /* Ensure decimal still works if applied */
+            content: counter(list-item) ".";
+            color: #00e393; /* Neon green for numbered lists */
+        }
+        #vaultmesh code {
+            background-color: #2a2c33;
+            padding: 0.3em 0.6em;
+            border-radius: 6px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+            color: #00e393;
+            border: 1px solid #444444;
+        }
+
+        /* About Section - Clean and impactful */
+        #about {
+            background-color: #0d1117;
+            padding: 6rem 2rem;
+            color: #e2e8f0;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            box-shadow: inset 0 5px 20px rgba(0,0,0,0.2);
+        }
+        #about h3 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #e2e8f0;
+            margin-bottom: 2rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        #about p {
+            font-size: 1.2rem;
+            color: #a0aec0;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Call to Action Section - Bold and inviting */
+        #cta-landing { /* Renamed to avoid conflict with dashboard CTA button */
+            background: linear-gradient(135deg, #3b0764, #5b21b6, #7c3aed); /* Strong purple gradient */
+            padding: 8rem 2rem;
+            color: white;
+            text-align: center;
+            border-top-left-radius: 60px; /* Rounded top corners */
+            border-top-right-radius: 60px;
+            box-shadow: 0 -15px 50px rgba(0,0,0,0.7);
+        }
+        #cta-landing h3 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: white;
+            margin-bottom: 2rem;
+            line-height: 1.1;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        #cta-landing p {
+            font-size: 1.3rem;
+            color: #e2e8f0;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 3rem;
+        }
+        #cta-landing .cta-button {
+            background: #00e393; /* Neon green button */
+            color: #1a1a1a;
+            padding: 1.2rem 3rem;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 1.25rem;
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        #cta-landing .cta-button:hover {
+            filter: brightness(1.2);
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5), 0 0 30px rgba(0, 227, 147, 0.8);
+        }
+        #cta-landing .cta-button span {
+            display: inline-block;
+            margin-left: 0.75rem;
+            animation: bounceEmoji 1s infinite alternate;
+        }
+
+        /* Footer - Subtly integrated */
+        footer {
+            background-color: #0a0a0a;
+            color: #6e6e73;
+            padding: 2.5rem;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            box-shadow: inset 0 5px 15px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        footer a {
+            color: #6e6e73;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        footer a:hover {
+            color: #e2e8f0;
+        }
+
+        /* Dashboard Specific Styles (Adapted for overall theme) */
+        #fruitful-dashboard-wrapper {
+            background-color: #0d1117; /* Use main body background for wrapper */
+        }
+        .dashboard-header-bg { background-color: var(--medium-dark-bg-dashboard); }
+        .dashboard-sidebar-bg { background-color: var(--medium-dark-bg-dashboard); }
+        .dashboard-main-content-bg { background-color: #121317; } /* Use a slightly different dark tone */
+        .dashboard-card-bg { background-color: var(--card-bg-dashboard); }
+        .dashboard-primary-text { color: var(--primary-color); }
+        .dashboard-secondary-text { color: var(--secondary-color); }
+        .dashboard-muted-text { color: var(--text-muted-dashboard); }
+        .dashboard-border-dark { border-color: var(--border-color-dashboard); }
+        .dashboard-hover-bg-light { background-color: rgba(255, 255, 255, 0.1); }
+
+        /* Responsive adjustments for Dashboard elements */
+        .dashboard-container {
+            display: flex;
+            flex-grow: 1; /* Allow dashboard container to grow */
+        }
+        .dashboard-sidebar {
+            width: 64; /* Tailwind w-64 */
+            padding: 1.5rem; /* Tailwind p-6 */
+            border-right: 1px solid var(--border-color-dashboard);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem; /* Tailwind space-y-4 converted to gap */
+        }
+        .dashboard-sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem; /* Tailwind gap-3 */
+            width: 100%;
+            padding: 0.75rem; /* Tailwind p-3 */
+            border-radius: 0.5rem; /* Tailwind rounded-lg */
+            font-size: 1.125rem; /* Tailwind text-lg */
+            font-weight: 500; /* Tailwind font-medium */
+            transition: all 0.2s;
+            color: var(--text-light-dashboard);
+        }
+        .dashboard-sidebar-nav-item:hover {
+             background-color: var(--hover-bg-light);
+        }
+
+        .dashboard-active-nav-item {
+            background-color: var(--primary-color);
+            color: white !important;
+        }
+        .dashboard-active-nav-item:hover {
+            background-color: var(--primary-color) !important;
+        }
+
+        .dashboard-main-content {
+            flex-grow: 1;
+            padding: 2rem; /* Tailwind p-8 */
+            overflow-y: auto;
+        }
+
+        /* Music Sub-Sidebar */
+        .music-sub-sidebar {
+            width: 48; /* Tailwind w-48 */
+            padding: 1rem; /* Tailwind p-4 */
+            border-right: 1px solid var(--border-color-dashboard);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem; /* Tailwind space-y-3 */
+            margin-right: 2rem; /* Tailwind mr-8 */
+        }
+        .music-sub-sidebar .dashboard-sidebar-nav-item {
+            font-size: 1rem; /* Tailwind text-base */
+            padding: 0.5rem; /* Tailwind p-2 */
+            gap: 0.5rem; /* Tailwind gap-2 */
+        }
+        .music-content-area {
+            flex-grow: 1;
+        }
+
+        /* Dashboard Card Styles */
+        .dashboard-card {
+            padding: 1.5rem; /* Tailwind p-6 */
+            background-color: var(--card-bg-dashboard);
+            border-radius: 0.5rem; /* Tailwind rounded-lg */
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); /* Tailwind shadow-xl */
+            border: 1px solid var(--border-color-dashboard);
+        }
+        .dashboard-sub-card {
+            padding: 1.25rem; /* Tailwind p-5 */
+            background-color: #4a5568; /* a bit lighter gray for internal cards */
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .api-key-warning {
+            color: #ef4444; /* red-500 */
+            background-color: #fecaca; /* red-200 */
+            border-left: 4px solid #ef4444;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+        /* Styles for map containers */
+        gmp-map, #leaflet-map-container { /* Updated selector for gmp-map */
+            height: 400px; /* Adjust height as needed */
+            width: 100%;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: #374151; /* card-bg */
+        }
+
+
+        /* Responsive Adjustments (from Dashboard CSS, adapted) */
+        @media (max-width: 768px) {
+            .dashboard-sidebar {
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color-dashboard);
+                padding-bottom: 1rem;
+            }
+            .dashboard-sidebar-nav-item {
+                justify-content: center; /* Center items on small screens */
+            }
+            .dashboard-container {
+                flex-direction: column;
+            }
+            .dashboard-main-content {
+                width: 100%;
+            }
+            .grid-cols-2-md {
+                grid-template-columns: 1fr; /* Stack columns on small screens */
+            }
+            /* Adjust main content padding when sidebars stack */
+            .dashboard-main-content-wrapper {
+                flex-direction: column;
+            }
+            .music-sub-sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color-dashboard);
+                padding-bottom: 1rem;
+            }
+            .music-content-area {
+                width: 100%;
+            }
+        }
+
+        /* Banimal Specific Styles (integrated and adapted) */
+        #banimal-landing-page {
+            padding-top: 8rem; /* Space for fixed header */
+            padding-bottom: 8rem;
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start; /* Align content to top for header */
+            position: relative;
+            overflow: hidden; /* For canvas background */
+            background: linear-gradient(135deg, var(--banimal-soft-peach) 0%, var(--banimal-cream) 100%); /* Soft gradient */
+            color: var(--banimal-dark-text); /* Darker text for light background */
+        }
+
+        #banimal-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none; /* Allow clicks to pass through */
+            opacity: 0.7; /* Slightly more subtle overlay */
+        }
+
+        .banimal-hero-content {
+            position: relative;
+            z-index: 1; /* Ensure content is above canvas */
+            max-width: 900px;
+            margin: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 16rem); /* Adjust min-height to push footer down */
+            padding: 1rem;
+            box-sizing: border-box;
+            text-align: center; /* Ensure text is centered within the content block */
+        }
+        .banimal-hero-content h1 {
+            font-size: 5rem; /* Enlarge Banimal™ */
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 0.5rem; /* Reduce space after Banimal™ */
+            color: var(--banimal-dark-text); /* Stronger text color */
+            text-shadow: 0 4px 10px rgba(0,0,0,0.1); /* Soft shadow */
+            max-width: 700px;
+        }
+        .banimal-hero-content h1 span {
+            font-size: 0.5em; /* Reduce "Kind Creatures. Global Impact." relative to Banimal™ */
+            font-weight: 700; /* Keep bold for slogan */
+            color: var(--banimal-accent-blue); /* Accent color for slogan */
+            display: block; /* Ensure it's on a new line */
+            line-height: 1.2; /* Adjust line height for subtitle */
+            margin-top: 0.5rem; /* Space between Banimal and slogan */
+        }
+        .banimal-hero-content p {
+            font-size: 1.3rem; /* Slightly reduced body text */
+            color: var(--banimal-muted-text);
+            margin-bottom: 2.5rem;
+            max-width: 700px;
+        }
+
+        .shop-now-button {
+            background: linear-gradient(45deg, var(--banimal-button-green), #6B8E23); /* Soft green gradient */
+            box-shadow: 0 8px 25px rgba(144, 238, 144, 0.4);
+            border: 1px solid rgba(144, 238, 144, 0.5);
+        }
+
+        .shop-now-button:hover {
+            background: linear-gradient(45deg, #6B8E23, var(--banimal-button-green));
+            box-shadow: 0 10px 30px rgba(144, 238, 144, 0.6);
+            border-color: rgba(144, 238, 144, 0.8);
+        }
+
+        /* Responsive adjustments for Banimal section */
+        @media (max-width: 768px) {
+            #banimal-landing-page { padding-top: 6rem; padding-bottom: 6rem; }
+            .banimal-hero-content h1 { font-size: 3rem; }
+            .banimal-hero-content h1 span { font-size: 0.6em; }
+            .banimal-hero-content p { font-size: 1rem; }
+            .button-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="py-4 px-6 md:px-12 flex justify-between items-center text-white">
+        <h1 class="text-2xl font-extrabold tracking-tight">Fruitful™</h1>
+        <nav class="flex items-center space-x-4">
+            <a href="#hero-section" class="header-nav-item transition-colors duration-200" onclick="showMainSection('hero-section')">Home</a>
+            <a href="#features" class="header-nav-item transition-colors duration-200" onclick="showMainSection('features')">Features</a>
+            <a href="#shareprice" class="header-nav-item transition-colors duration-200" onclick="showMainSection('shareprice')">Signal</a>
+            <a href="#vault-access" class="header-nav-item transition-colors duration-200" onclick="showMainSection('vault-access')">Vault</a>
+            <a href="#treaty" class="header-nav-item transition-colors duration-200" onclick="showMainSection('treaty')">Treaty</a>
+            <a href="#vaultmesh" class="header-nav-item transition-colors duration-200" onclick="showMainSection('vaultmesh')">VaultMesh</a>
+            <a href="#about" class="header-nav-item transition-colors duration-200" onclick="showMainSection('about')">About</a>
+            <a href="#cta-landing" class="header-nav-item px-4 py-2 rounded-full font-semibold transition-colors duration-200" onclick="showMainSection('cta-landing')">Sign Up</a>
+            <a href="#fruitful-dashboard-wrapper" class="header-nav-item transition-colors duration-200" onclick="showMainSection('fruitful-dashboard-wrapper')">Dashboard</a>
+            <a href="#banimal-landing-page" class="header-nav-item transition-colors duration-200" onclick="showMainSection('banimal-landing-page')">Banimal</a>
+        </nav>
+    </header>
+
+    <!-- Landing Page Sections -->
+    <section id="hero-section" class="landing-section text-center">
+        <div class="hero-content">
+            <h2 class="text-5xl md:text-6xl font-extrabold mb-6 leading-tight">
+                Innovate. Connect. <span class="text-yellow-300">Thrive.</span>
+            </h2>
+            <p class="text-xl md:text-2xl mb-10 max-w-2xl mx-auto">
+                Discover a new era of collaboration and sustainable growth with Fruitful's cutting-edge platform.
+            </p>
+            <a href="#cta-landing" class="cta-button">
+                Get Started Today <span>🚀</span>
+            </a>
+        </div>
+    </section>
+
+    <section id="features" class="landing-section py-16 md:py-24 px-6 md:px-12 text-center">
+        <div class="max-w-6xl mx-auto">
+            <h3 class="text-4xl font-bold text-center mb-16">
+                Unlock Your Potential with Our Core Features
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="feature-card">
+                    <div>💡</div>
+                    <h4>AI-Powered Insights</h4>
+                    <p>
+                        Leverage advanced AI to gain deep insights, optimize operations, and make smarter decisions.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div>🤝</div>
+                    <h4>Global Collaboration</h4>
+                    <p>
+                        Connect with thousands of independent brands and partners worldwide, fostering a network of mutual growth.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div>🌱</div>
+                    <h4>Sustainable Solutions</h4>
+                    <p>
+                        Champion eco-friendly practices and contribute to a healthier planet through our curated marketplace.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div>🔒</div>
+                    <h4>Secure VaultMesh™</h4>
+                    <p>
+                        Protect your data and transactions with our state-of-the-art blockchain-inspired security protocols.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div>📈</div>
+                    <h4>Real-time Analytics</h4>
+                    <p>
+                        Monitor your progress and impact with intuitive dashboards and real-time performance metrics.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div>🌐</div>
+                    <h4>OmniScroll Integration</h4>
+                    <p>
+                        Seamlessly integrate with our OmniScroll ledger for transparent and efficient record-keeping.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="shareprice" class="landing-section py-12 text-center">
+        <h2 class="text-3xl font-semibold mb-2">FAA™ Share Signal</h2>
+        <div id="price" class="text-5xl font-bold">$88.88</div>
+        <div class="text-sm text-gray-400 mt-1">Last updated: <span id="timestamp">Live</span></div>
+    </section>
+
+    <section id="seedwave" class="landing-section py-16 px-6 text-center">
+        <h2 class="text-4xl font-bold mb-8">🌱 Seedwave Brand Growth 🌱</h2>
+        <div class="w-full max-w-4xl mx-auto p-6 rounded-xl shadow-lg">
+            <canvas id="brandChart"></canvas>
+        </div>
+    </section>
+
+    <section id="founder-glyph" class="landing-section py-16 px-6 text-center bg-gray-700">
+        <h2 class="text-4xl font-bold mb-6">🧬 Founder's Glyph™</h2>
+        <p class="max-w-3xl mx-auto text-xl leading-relaxed">
+            FAA™ wasn’t built like a typical startup. It emerged — out of silence, out of signal, out of glyphs and patterns that refused to be ignored.
+            What you're seeing isn't a site. It’s a vault interface. A codebase of culture. A trust-machine powered by real human intelligence.
+        </p>
+        <p class="mt-6 max-w-2xl mx-auto italic">
+            Where others scale with speed, we scale with meaning. Every brand here agreed to something deeper than growth — they signed a Treaty.
+            That’s why this isn’t eCommerce. It’s TreatyCommerce™.
+        </p>
+        <p class="mt-6 font-semibold">— Written from the edge of code & culture 🌍 FAA.Zone Founder Glyph Activated™</p>
+    </section>
+
+    <section id="vault-access" class="landing-section py-16 px-6">
+        <h3 class="text-4xl font-bold text-center mb-10">🔐 Sector Terminals</h3>
+
+        <div class="w-full max-w-6xl mx-auto mb-10">
+            <div class="w-full h-[800px] border-4 rounded-xl shadow-2xl overflow-hidden">
+                <iframe
+                    id="vault-frame"
+                    src=""
+                    class="w-full h-full rounded-xl"
+                    frameborder="0"
+                    title="VaultMaster Terminal"
+                    sandbox="allow-scripts allow-same-origin allow-forms"
+                ></iframe>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            <button onclick="loadTerminal('vault-master.html')" class="terminal-btn p-6">🦍 VaultMaster Terminal</button>
+            <button onclick="loadTerminal('cube-lattice.html')" class="terminal-btn p-6">🧱 Cube Lattice GPT</button>
+            <button onclick="loadTerminal('global-view.html')" class="terminal-btn p-6">🌍 Global View GPT</button>
+            <button onclick="loadTerminal('freight-ops.html')" class="terminal-btn p-6">🚚 Freight Ops GPT</button>
+            <button onclick="loadTerminal('loop-watch.html')" class="terminal-btn p-6">♻️ Loop Watch GPT</button>
+            <button onclick="loadTerminal('seedwave.html')" class="terminal-btn p-6">🌱 Seedwave GPT</button>
+            <button onclick="loadTerminal('distribution.html')" class="terminal-btn p-6">📦 Distribution GPT</button>
+            <button onclick="loadTerminal('signal.html')" class="terminal-btn p-6">🔐 Signal GPT</button>
+            <button onclick="loadTerminal('faa-brands.html')" class="terminal-btn p-6">📦 7038 FAA Brands</button>
+        </div>
+    </section>
+
+    <section id="sector-scrolls" class="landing-section py-16 px-6 text-center bg-gray-800">
+        <h2 class="text-4xl font-bold mb-8">🧬 Sector Scrolls</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
+            <a href="#sector-payroll" class="glyph" data-vault="payroll" onclick="showSectorPanel('embedded-payroll-snapshot')">💰 Payroll Core Systems</a>
+            <a href="#sector-retail" class="glyph" data-vault="retail" onclick="showSectorPanel('embedded-retail-snapshot')">🛍️ Retail, Vendor & Trade</a>
+            <a href="#sector-ai-logic" class="glyph" data-vault="ai-logic" onclick="showSectorPanel('embedded-ai-logic-snapshot')">🧠 AI, Logic & Grid Systems</a>
+            <a href="#sector-design" class="glyph" data-vault="design" onclick="showSectorPanel('embedded-design-snapshot')">✒️ Creative & Design Systems</a>
+            <a href="#sector-finance" class="glyph" data-vault="finance" onclick="showSectorPanel('embedded-finance-snapshot')">₿ Finance & Token Yield</a>
+            <a href="#sector-webless" class="glyph" data-vault="webless" onclick="showSectorPanel('embedded-webless-snapshot')">⚙️ Webless Tech & Nodes</a>
+            <a href="#sector-logistics" class="glyph" data-vault="logistics" onclick="showSectorPanel('embedded-logistics-snapshot')">📦 Logistics & Packaging</a>
+            <a href="#sector-food" class="glyph" data-vault="food" onclick="showSectorPanel('embedded-food-snapshot')">🥦 Food, Soil & Farming</a>
+            <a href="#sector-education" class="glyph" data-vault="education" onclick="showSectorPanel('embedded-education-snapshot')">🧒 Youth & Education</a>
+            <a href="#sector-health" class="glyph" data-vault="health" onclick="showSectorPanel('embedded-health-snapshot')">🧴 Health & Hygiene</a>
+            <a href="#sector-culture" class="glyph" data-vault="culture" onclick="showSectorPanel('embedded-culture-snapshot')">🪷 Aura, Ritual & Culture</a>
+            <a href="#sector-housing" class="glyph" data-vault="housing" onclick="showSectorPanel('embedded-housing-snapshot')">🏛️ Housing & Infrastructure</a>
+            <a href="#sector-nft" class="glyph" data-vault="nft" onclick="showSectorPanel('embedded-nft-snapshot')">🪪 NFT, IP, Ownership Grid</a>
+            <a href="#sector-media" class="glyph" data-vault="media" onclick="showSectorPanel('embedded-media-snapshot')">🌐 Motion, Media, Sonic</a>
+            <a href="#sector-mining" class="glyph" data-vault="mining" onclick="showSectorPanel('embedded-mining-snapshot')">⛏️ Mining & Material Yields</a>
+            <a href="#sector-wildlife" class="glyph" data-vault="wildlife" onclick="showSectorPanel('embedded-wildlife-snapshot')">🚁 Wildlife Sector</a>
+        </div>
+    </section>
+
+    <div id="sector-content-container" class="mt-10 px-6 max-w-6xl mx-auto">
+        <!-- Dynamic sector content will be loaded here -->
+        <!-- Admin Panel Snapshot boxes (moved from dashboard HTML for consistency) -->
+        <div id="embedded-payroll-snapshot" class="brand-snapshot hidden">
+            <h4 class="text-xl font-bold mb-2 text-white">Payroll Core Systems Snapshot</h4>
+            <p class="text-gray-400">Payroll system overview. [Mock Data]</p>
+            <!-- Add more detailed mock data or actual data here -->
+        </div>
+        <div id="embedded-retail-snapshot" class="brand-snapshot hidden">
+            <h4 class="text-xl font-bold mb-2 text-white">Retail, Vendor & Trade Snapshot</h4>
+            <p class="text-gray-400">Retail sales and vendor management insights. [Mock Data]</p>
+        </div>
+        <div id="embedded-ai-logic-snapshot" class="brand-snapshot hidden">
+            <h4 class="text-xl font-bold mb-2 text-white">AI, Logic & Grid Systems Snapshot</h4>
+            <p class="text-gray-400">AI model performance and grid utilization. [Mock Data]</p>
+        </div>
+        <div id="embedded-design-snapshot" class="brand-snapshot hidden">
+            <h4 class="text-xl font-bold mb-2 text-white">Creative & Design Systems Snapshot</h4>
+            <p class="text-gray-400">Design asset management and creative pipeline. [Mock Data]</p>
+        </div>
+        <div id="embedded-finance-snapshot" class="brand-snapshot hidden">
+            <h4 class="text-xl font-bold mb-2 text-white">Finance & Token Yield Snapshot</h4>
+            <p class="text-gray-400">Financial performance and token analytics. [Mock Data]</p>
+        </div>
+        <div id="embedded-webless-snapshot" class="brand-snapshot hidden">
+            <h4 class="text-xl font-bold mb-2 text-white">Webless Tech & Nodes Snapshot</h4>
+            <p class="text-gray-400">Webless network status and node health. [Mock Data]</p>
+        </div>
+        <div id="embedded-logistics-snapshot" class="brand-snapshot hidden">
+            <h4 class="text-xl font-bold mb-2 text-white">Logistics & Packaging Snapshot</h4>
+            <p class="text-gray-400">Supply chain efficiency and packaging optimization. [Mock Data]</p>
+        </div>
+        <div id="embedded-food-snapshot" class="brand-snapshot hidden">
+            <h4 class="text-xl font-bold mb-2 text-white">Food, Soil & Farming Snapshot</h4>
+            <p class="text-gray-400">Agricultural data and food supply chain insights. [Mock Data]</p>
+        </div>
+        <div id="embedded-education-snapshot" class="brand-snapshot hidden">
+            <h4 class="text-xl font-bold mb-2 text-white">Youth & Education Snapshot</h4>
+            <p class="text-gray-400">Educational program metrics and youth engagement. [Mock Data]</p>
+        </div>
+        <div id="embedded-health-snapshot" class="brand-snapshot hidden">
+            <h4 class="text-xl font-bold mb-2 text-white">Health & Hygiene Snapshot</h4>
+            <p class="text-gray-400">Public health data and hygiene initiatives. [Mock Data]</p>
+        </div>
+        <div id="embedded-culture-snapshot" class="brand-snapshot hidden">
+            <h4 class="text-xl font-bold mb-2 text-white">Aura, Ritual & Culture Snapshot</h4>
+            <p class="text-gray-400">Cultural trends and community engagement. [Mock Data]</p>
+        </div>
+        <div id="embedded-housing-snapshot" class="brand-snapshot hidden">
+            <h4 class="text-xl font-bold mb-2 text-white">Housing & Infrastructure Snapshot</h4>
+            <p class="text-gray-400">Infrastructure development and housing project status. [Mock Data]</p>
+        </div>
+        <div id="embedded-nft-snapshot" class="brand-snapshot hidden">
+            <h4 class="text-xl font-bold mb-2 text-white">NFT, IP, Ownership Grid Snapshot</h4>
+            <p class="text-gray-400">NFT market trends and intellectual property tracking. [Mock Data]</p>
+        </div>
+        <div id="embedded-media-snapshot" class="brand-snapshot hidden">
+            <h4 class="text-xl font-bold mb-2 text-white">Motion, Media, Sonic Snapshot</h4>
+            <div class="scroll-cards flex flex-col space-y-6">
+                <!-- Media scroll profiles will load here dynamically -->
+                <p class="text-gray-400">Loading media scroll profiles...</p>
+            </div>
+        </div>
+        <div id="embedded-mining-snapshot" class="brand-snapshot hidden">
+            <h4 class="text-xl font-bold mb-2 text-white">Mining & Material Yields Snapshot</h4>
+            <p class="text-gray-400">Mining operations data and material yields. [Mock Data]</p>
+        </div>
+        <div id="embedded-wildlife-snapshot" class="brand-snapshot hidden">
+            <h4 class="text-xl font-bold mb-2 text-white">Wildlife Sector Snapshot</h4>
+            <p class="text-gray-400">Wildlife population data and conservation efforts. [Mock Data]</p>
+        </div>
+    </div>
+
+
+    <section id="treaty" class="landing-section py-16 px-6 text-center">
+        <h2 class="text-4xl font-bold mb-6">📜 Treaty System™</h2>
+        <p class="max-w-2xl mx-auto text-lg mb-8">The FAA™ Treaty Layer binds interface to intention. This is not UI. This is glyph-encoded law.</p>
+        <blockquote class="text-2xl italic font-semibold">"FAA™ isn't a site. It's the shape of alignment — and 🦍 holds the flame."</blockquote>
+    </section>
+
+    <section id="signal-packet" class="landing-section py-10 text-xs text-center">
+        <pre class="max-w-2xl mx-auto p-4 rounded-lg overflow-auto"><code>{
+    "signal": "omnidrop",
+    "origin": "If you dont like the fruits you are growing, change the seed™ / FAA Vault Layer",
+    "payload": {
+        "type": "scroll",
+        "value": "homepage + VaultRouter + all terminal iframe buttons live + Treaty Grid"
+    }
+}</code></pre>
+    </section>
+
+    <section id="vaultmesh" class="landing-section py-20 px-6">
+        <div class="max-w-4xl mx-auto text-left space-y-6">
+
+            <h2 class="text-4xl font-bold">🧠 VaultMesh™: Executive Summary</h2>
+
+            <p>VaultMesh™ is an intelligent data orchestration framework designed for the segmentation, synchronization, and secure deployment of high-value digital assets—referred to as scrolls—across decentralized and permissioned networks such as FAA.Zone™.</p>
+
+            <ul class="list-disc ml-6 space-y-2">
+                <li>Captures metadata-rich content streams (chats, code, brands, assets)</li>
+                <li>Assigns them to programmable claim structures (ScrollClaims™)</li>
+                <li>Secures their lineage using OmniSignal™, PulseGrid™, and GhostTrace™ layers</li>
+                <li>Enforces royalty logic, scroll integrity, and traceability on-chain and off-grid</li>
+            </ul>
+
+            <p>VaultMesh™ powers high-tier operations like HSOMNI9000™, enabling Diamond-tier deployments, cross-sector scroll claims, and enterprise-scale content monetization with full compliance and provenance.</p>
+
+            <p>The framework is deeply integrated with platforms such as <code>vault.faa.zone™</code>, where scrolls tied to brands like Fruitful Global Planet™ are securely hosted, organized into structured sectors, and deployed through FAA.Zone™-compliant channels.</p>
+
+            <p>A critical operator in this ecosystem is HSOMNI9000™, the certified scroll class which governs Diamond-tier logic, enforces 10–11% royalty triggers, and auto-deploys ScrollClaims™ with real-time ClaimRoot™ verification.</p>
+
+            <h3 class="text-2xl font-semibold mt-10">📖 VaultMesh™ Index</h3>
+            <ul class="list-decimal ml-6 space-y-1">
+                <li>Introduction to VaultMesh™</li>
+                <li>Core System Components</li>
+                <li>ScrollClaim™ Infrastructure</li>
+                <li>Data Flow and Claim Lifecycle</li>
+                <li>Tiering, Royalties, and Compliance</li>
+                <li>Integration with FAA.Zone™</li>
+                <li>Market Segments & Use Cases</li>
+                <li>Revenue Streams & Monetization</li>
+                <li>Technology Roadmap</li>
+                <li>Team & Governance</li>
+            </ul>
+
+            <h3 class="text-xl font-bold mt-10">☑️ 1. Introduction to VaultMesh™</h3>
+            <p>VaultMesh™ transforms disorganized digital content into claimable, trackable assets. It bridges enterprise content systems, decentralized data vaults, and monetization layers through FAA-compliant infrastructure.</p>
+
+            <h3 class="text-xl font-bold mt-10">⚒️ 2. Core System Components</h3>
+            <ul class="list-disc ml-6 space-y-1">
+                <li>VaultDNA™: Immutable identifiers for scroll content</li>
+                <li>ClaimRoot™: Origin anchor & timestamp</li>
+                <li>ScrollClaim™ Contracts: Programmable wrappers</li>
+                <li>PulseGrid™ Sync: Real-time scroll presence & sync</li>
+                <li>OmniSignal™: Global scroll verification</li>
+                <li>GhostTrace™ Gen2: Scroll interaction backtrace</li>
+            </ul>
+
+            <h3 class="text-xl font-bold mt-10">🛠️ 3. ScrollClaim™ Infrastructure</h3>
+            <ul class="list-disc ml-6 space-y-1">
+                <li>Set tier access (e.g., Diamond)</li>
+                <li>Define royalty logic (10–11%)</li>
+                <li>Lock scrolls with PulseGrid™ sync and OmniSignal™</li>
+                <li>Deploy via FAA.Zone™ with compliant ZIP bundles</li>
+            </ul>
+
+            <h3 class="text-xl font-bold mt-10">📀 4. Data Flow and Claim Lifecycle</h3>
+            <ul class="list-decimal ml-6 space-y-1">
+                <li>Ingest — content enters VaultMesh™</li>
+                <li>Encode — metadata & VaultDNA™ attached</li>
+                <li>Wrap — ScrollClaim™ smart-wrapped</li>
+                <li>Deploy — FAA.Zone™ push (ZIP, manifest, HTML)</li>
+                <li>Sync — PulseGrid™ status & OmniSignal™ locked</li>
+                <li>Enforce — Royalties, access & scroll activity logged via GhostTrace™</li>
+            </ul>
+
+            <h3 class="text-xl font-bold mt-10">💸 5. Tiering, Royalties, and Compliance</h3>
+            <ul class="list-disc ml-6 space-y-1">
+                <li>Diamond Tier: 10–11% royalty enforced</li>
+                <li>SmartWallet Integration: ScrollClaim™ payments and transfers</li>
+                <li>VaultPay™ Tier III: Required for commercial deployments</li>
+                <li>Compliance: FAA scroll ID, ClaimRoot™ hash, and royalty schema</li>
+            </ul>
+
+            <h3 class="text-xl font-bold mt-10">📡 6. Integration with FAA.Zone™</h3>
+            <ul class="list-disc ml-6 space-y-1">
+                <li>Native support for /public/diamond/ structure</li>
+                <li>ZIP, HTML, Manifest deployment bundles</li>
+                <li>ClaimRoot™ timestamp validation</li>
+                <li>Seamless PulseGrid™ auto-sync for live claim state</li>
+                <li>Brand hosting via vault.faa.zone™</li>
+            </ul>
+
+            <h3 class="text-xl font-bold mt-10">🏢 7. Market Segments & Use Cases</h3>
+            <ul class="list-disc ml-6 space-y-1">
+                <li>GPT Conversations & Expert Threads</li>
+                <li>Knowledge/Training Archives</li>
+                <li>Creative IP Scrolls (music, literature, visuals)</li>
+                <li>GeoSector Deployment Archives</li>
+                <li>Enterprise Scroll Logs & Audit Trails</li>
+            </ul>
+
+            <h3 class="text-xl font-bold mt-10">💰 8. Revenue Streams & Monetization</h3>
+            <ul class="list-disc ml-6 space-y-1">
+                <li>Diamond Royalties (10–11%)</li>
+                <li>Scroll Packaging Fees</li>
+                <li>VaultMesh™ API Subscriptions</li>
+                <li>PulseGrid™ and OmniSignal™ Licensing</li>
+            </ul>
+
+            <h3 class="text-xl font-bold mt-10 text-white">⚖️ 9. Technology Roadmap</h3>
+            <ul class="list-disc ml-6 space-y-1">
+                <li>Q2 2025: ScrollClaim™ v2.2 with multi-claim staking</li>
+                <li>Q3 2025: GhostTrace™ Gen3 with forensic backtrace tooling</li>
+                <li>Q4 2025: Autonomous AI Sector Agents</li>
+                <li>Q1 2026: Inter-vault Federation</li>
+            </ul>
+
+            <h3 class="text-xl font-bold mt-10">🔧 10. Team & Governance</h3>
+            <ul class="list-disc ml-6 space-y-1">
+                <li>FAA-certified engineers (scroll claimers)</li>
+                <li>Scroll Ministers: Compliance + tiering</li>
+                <li>Vault Admins: Metadata + ClaimRoot™ enforcement</li>
+                <li>HSOMNI9000™ Operators: Diamond-tier execution agents</li>
+            </ul>
+
+            <p class="text-sm mt-10">📎 This plan can now be exported as HTML, PDF, or ZIP.</p>
+        </div>
+    </section>
+
+    <section id="about" class="landing-section py-16 md:py-24 px-6 md:px-12 text-center">
+        <div class="max-w-4xl mx-auto">
+            <h3 class="text-4xl font-bold mb-8">About Fruitful Innovations</h3>
+            <p class="text-lg leading-relaxed mb-6">
+                At Fruitful, we believe in a future where technology empowers positive change. Our platform is designed to break down traditional barriers, fostering a collaborative ecosystem where businesses and individuals can thrive while making a meaningful impact on the world.
+            </p>
+            <p class="text-lg leading-relaxed">
+                We are committed to transparency, sustainability, and innovation, driven by a powerful AI that ensures fairness, efficiency, and personalized experiences for every user. Join us in building a more fruitful planet.
+            </p>
+        </div>
+    </section>
+
+    <section id="cta-landing" class="landing-section py-16 md:py-24 px-6 md:px-12 text-center">
+        <div class="max-w-3xl mx-auto">
+            <h3 class="text-4xl font-extrabold mb-8 leading-tight">
+                Ready to Transform Your Future?
+            </h3>
+            <p class="text-xl mb-10">
+                Join the Fruitful community today and start your journey towards innovation, connection, and a sustainable tomorrow.
+            </p>
+            <a href="#" class="cta-button">
+                Sign Up Now
+            </a>
+        </div>
+    </section>
+
+    <!-- Fruitful Dashboard Content (initially hidden) -->
+    <div id="fruitful-dashboard-wrapper" class="hidden flex-grow main-content-bg">
+        <div class="flex flex-grow dashboard-container">
+            <nav class="dashboard-sidebar-bg dashboard-sidebar">
+                <h2 class="text-xl font-semibold dashboard-primary-text mb-4">Navigation</h2>
+                <a href="#" class="dashboard-sidebar-nav-item" onclick="showDashboardSection('overview')">
+                    <i class="fas fa-tachometer-alt"></i> Overview
+                </a>
+                <a href="#" class="dashboard-sidebar-nav-item" onclick="showDashboardSection('analytics')">
+                    <i class="fas fa-chart-line"></i> Data Analytics
+                </a>
+                <a href="#" class="dashboard-sidebar-nav-item" onclick="showDashboardSection('admin-panel')">
+                    <i class="fas fa-users-cog"></i> Admin Panel
+                </a>
+                <a href="#" class="dashboard-sidebar-nav-item" onclick="showDashboardSection('music')">
+                    <i class="fas fa-music"></i> Music & Media
+                </a>
+                <a href="#" class="dashboard-sidebar-nav-item" onclick="showDashboardSection('ai-gemini')">
+                    <i class="fas fa-robot"></i> AI Gemini
+                </a>
+                <a href="#" class="dashboard-sidebar-nav-item" onclick="showDashboardSection('maps')">
+                    <i class="fas fa-map-marked-alt"></i> Maps
+                </a>
+                <a href="#" class="dashboard-sidebar-nav-item" onclick="showDashboardSection('meeting-minutes')">
+                    <i class="fas fa-clipboard-list"></i> Meeting Minutes
+                </a>
+                <a href="#" class="dashboard-sidebar-nav-item">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+            </nav>
+
+            <main class="flex-grow p-8 dashboard-main-content-bg overflow-y-auto dashboard-main-content">
+                <div class="flex h-full dashboard-main-content-wrapper">
+                    <nav id="musicSubSidebar" class="dashboard-sidebar-bg music-sub-sidebar hidden">
+                        <h3 class="text-lg font-semibold dashboard-primary-text mb-3">Music Library</h3>
+                        <a href="#" class="dashboard-sidebar-nav-item" onclick="showMusicSubSection('allMusic')">
+                            <i class="fas fa-compact-disc"></i> All Music
+                        </a>
+                        <a href="#" class="dashboard-sidebar-nav-item" onclick="showMusicSubSection('musicPlaylists')">
+                            <i class="fas fa-list-music"></i> Playlists
+                        </a>
+                        <a href="#" class="dashboard-sidebar-nav-item" onclick="showMusicSubSection('artists')">
+                            <i class="fas fa-microphone-alt"></i> Artists
+                        </a>
+                    </nav>
+
+                    <div class="flex-grow">
+                        <section id="overview" class="mb-8 dashboard-card">
+                            <h2 class="text-3xl font-bold dashboard-primary-text mb-6">Dashboard Overview</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div class="dashboard-sub-card">
+                                    <h3 class="text-xl font-semibold dashboard-text-light mb-2">Total Users</h3>
+                                    <p class="text-4xl font-bold dashboard-primary-text">15,420</p>
+                                </div>
+                                <div class="dashboard-sub-card">
+                                    <h3 class="text-xl font-semibold dashboard-text-light mb-2">Active Projects</h3>
+                                    <p class="text-4xl font-bold dashboard-secondary-text">245</p>
+                                </div>
+                                <div class="dashboard-sub-card">
+                                    <h3 class="text-xl font-semibold dashboard-text-light mb-2">Data Processed (TB)</h3>
+                                    <p class="text-4xl font-bold text-teal-400">89.5</p>
+                                </div>
+                            </div>
+                            <div class="mt-8">
+                                <h3 class="text-2xl font-semibold dashboard-text-light mb-4">Quick Stats</h3>
+                                <ul class="list-disc list-inside dashboard-muted-text space-y-2">
+                                    <li>Daily Active Users: 3,120</li>
+                                    <li>New Registrations This Week: 125</li>
+                                    <li>Average Session Duration: 12 min</li>
+                                    <li>System Uptime: 99.9%</li>
+                                </ul>
+                            </div>
+                        </section>
+
+                        <section id="analytics" class="hidden mb-8 dashboard-card">
+                            <h2 class="text-3xl font-bold dashboard-primary-text mb-6">Data Analytics</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 grid-cols-2-md">
+                                <div class="dashboard-sub-card">
+                                    <h3 class="text-xl font-semibold dashboard-text-light mb-2">Usage Trends</h3>
+                                    <p class="dashboard-muted-text">Graph showing daily user activity and data consumption.</p>
+                                    <div class="mt-4 bg-gray-800 h-48 flex items-center justify-center rounded-md">
+                                        <span class="dashboard-muted-text">Placeholder Chart</span>
+                                    </div>
+                                </div>
+                                <div class="dashboard-sub-card">
+                                    <h3 class="text-xl font-semibold dashboard-text-light mb-2">Performance Metrics</h3>
+                                    <p class="dashboard-muted-text">Key performance indicators over time.</p>
+                                    <div class="mt-4 bg-gray-800 h-48 flex items-center justify-center rounded-md">
+                                        <span class="dashboard-muted-text">Placeholder Chart</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section id="admin-panel" class="hidden mb-8 dashboard-card">
+                            <h2 class="text-3xl font-bold dashboard-primary-text mb-6">Admin Panel</h2>
+                            <p class="dashboard-muted-text mb-4">Manage users, review content, and configure system settings.</p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                                <div class="dashboard-sub-card">
+                                    <h3 class="text-xl font-semibold dashboard-text-light mb-2">Total Active Admins</h3>
+                                    <p class="text-4xl font-bold dashboard-secondary-text">7</p>
+                                </div>
+                                <div class="dashboard-sub-card">
+                                    <h3 class="text-xl font-semibold dashboard-text-light mb-2">Pending Approvals</h3>
+                                    <p class="text-4xl font-bold text-yellow-400">12</p>
+                                </div>
+                                <div class="dashboard-sub-card">
+                                    <h3 class="text-xl font-semibold dashboard-text-light mb-2">System Health</h3>
+                                    <p class="text-4xl font-bold text-green-400">Optimal</p>
+                                </div>
+                            </div>
+
+                            <h3 class="text-2xl font-semibold dashboard-text-light mb-4">User Management</h3>
+                            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                                <input
+                                    type="text"
+                                    placeholder="Search users..."
+                                    class="flex-grow px-4 py-2 rounded-lg bg-gray-700 border dashboard-border-dark dashboard-text-light placeholder-dashboard-muted-text focus:outline-none focus:ring-2 focus:ring-primary-color"
+                                >
+                                <select class="px-4 py-2 rounded-lg bg-gray-700 border dashboard-border-dark dashboard-text-light focus:outline-none focus:ring-2 focus:ring-primary-color">
+                                    <option value="">Filter by Role</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="user">User</option>
+                                    <option value="moderator">Moderator</option>
+                                </select>
+                                <button class="px-4 py-2 bg-primary-color text-white font-semibold rounded-lg hover:bg-green-600 transition duration-200">Apply Filters</button>
+                            </div>
+                            <div class="overflow-x-auto mb-8">
+                                <table class="min-w-full bg-gray-700 rounded-lg shadow-md">
+                                    <thead>
+                                        <tr>
+                                            <th class="py-3 px-4 text-left text-sm font-semibold dashboard-muted-text uppercase tracking-wider border-b dashboard-border-dark">User ID</th>
+                                            <th class="py-3 px-4 text-left text-sm font-semibold dashboard-muted-text uppercase tracking-wider border-b dashboard-border-dark">Name</th>
+                                            <th class="py-3 px-4 text-left text-sm font-semibold dashboard-muted-text uppercase tracking-wider border-b dashboard-border-dark">Email</th>
+                                            <th class="py-3 px-4 text-left text-sm font-semibold dashboard-muted-text uppercase tracking-wider border-b dashboard-border-dark">Role</th>
+                                            <th class="py-3 px-4 text-left text-sm font-semibold dashboard-muted-text uppercase tracking-wider border-b dashboard-border-dark">Status</th>
+                                            <th class="py-3 px-4 text-left text-sm font-semibold dashboard-muted-text uppercase tracking-wider border-b dashboard-border-dark">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="hover:bg-gray-600 transition duration-200">
+                                            <td class="py-3 px-4 border-b dashboard-border-dark">FRTL-001</td>
+                                            <td class="py-3 px-4 border-b dashboard-border-dark">Alice Smith</td>
+                                            <td class="py-3 px-4 border-b dashboard-border-dark">alice@example.com</td>
+                                            <td class="py-3 px-4 border-b dashboard-border-dark">Admin</td>
+                                            <td class="py-3 px-4 border-b dashboard-border-dark"><span class="bg-green-500 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full">Active</span></td>
+                                            <td class="py-3 px-4 border-b dashboard-border-dark">
+                                                <button class="text-blue-400 hover:text-blue-300 mr-2">Edit</button>
+                                                <button class="text-red-400 hover:text-red-300">Delete</button>
+                                            </td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-600 transition duration-200">
+                                            <td class="py-3 px-4 border-b dashboard-border-dark">FRTL-002</td>
+                                            <td class="py-3 px-4 border-b dashboard-border-dark">Bob Johnson</td>
+                                            <td class="py-3 px-4 border-b dashboard-border-dark">bob@example.com</td>
+                                            <td class="py-3 px-4 border-b dashboard-border-dark">User</td>
+                                            <td class="py-3 px-4 border-b dashboard-border-dark"><span class="bg-yellow-500 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full">Pending</span></td>
+                                            <td class="py-3 px-4 border-b dashboard-border-dark">
+                                                <button class="text-blue-400 hover:text-blue-300 mr-2">Edit</button>
+                                                <button class="text-red-400 hover:text-red-300">Delete</button>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                </table>
+                            </div>
+
+                            <h3 class="text-2xl font-semibold dashboard-text-light mb-4">Admin Assistant (AI Powered)</h3>
+                            <p class="dashboard-muted-text mb-3">Ask Gemini AI for insights on administrative tasks, user trends, or content moderation advice.</p>
+                            <textarea id="adminAIPrompt" rows="4" class="w-full p-3 rounded-lg bg-gray-700 border dashboard-border-dark dashboard-text-light placeholder-dashboard-muted-text focus:outline-none focus:ring-2 focus:ring-purple-400" placeholder="e.g., 'Summarize recent user activity trends for the past week.', 'Suggest a policy for handling spam content.'"></textarea>
+                            <button id="sendAdminAIPrompt" class="px-6 py-3 bg-purple-500 text-white font-semibold rounded-lg hover:bg-purple-600 transition duration-200 mt-4 self-end">
+                                Ask Admin Assistant
+                            </button>
+                            <div class="mt-4 p-4 bg-gray-700 rounded-lg border dashboard-border-dark">
+                                <h4 class="text-lg font-semibold dashboard-text-light mb-2">Admin Assistant Response:</h4>
+                                <div id="adminAIResponse" class="dashboard-text-light whitespace-pre-wrap">
+                                    Your AI-powered admin assistant response will appear here.
+                                </div>
+                                <div id="adminAIError" class="text-red-400 mt-2 hidden"></div>
+                            </div>
+
+                        </section>
+
+                        <section id="music" class="hidden mb-8 dashboard-card flex-grow music-content-area">
+                            <h2 class="text-3xl font-bold dashboard-primary-text mb-6">Music & Media</h2>
+                            <p class="dashboard-muted-text text-center mb-6">Explore curated music and media content from our partners.</p>
+
+                            <div id="allMusicContent" class="flex flex-col items-center justify-center space-y-6">
+                                <h3 class="text-xl font-semibold dashboard-text-light mb-2">All Music Tracks</h3>
+                                <div class="w-full max-w-xl">
+                                    <h4 class="text-lg font-semibold dashboard-text-light mb-2">Album: The Fated Sky</h4>
+                                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/3RyjFxsU9hcmg14vqzUUMy?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                                </div>
+
+                                <div class="w-full max-w-xl">
+                                    <h4 class="text-lg font-semibold dashboard-text-light mb-2">Track: No Reason</h4>
+                                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/2kdQY3b6dDRGonyIzcWljc?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                                </div>
+
+                                <div class="w-full max-w-xl">
+                                    <h4 class="text-lg font-semibold dashboard-text-light mb-2">Track: Space Song</h4>
+                                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/6Xe9wT5xeZETPwtaP2ynUz?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                                </div>
+                            </div>
+
+                            <div id="musicPlaylistsContent" class="hidden">
+                                <h3 class="text-xl font-semibold dashboard-text-light mb-4">Your Music Playlists</h3>
+                                <ul class="list-disc list-inside dashboard-muted-text space-y-2">
+                                    <li>Fruitful Focus Playlist</li>
+                                    <li>Deep Work Rhythms</li>
+                                    <li>Relax & Grow Collection</li>
+                                </ul>
+                            </div>
+
+                            <div id="artistsContent" class="hidden">
+                                <h3 class="text-xl font-semibold dashboard-text-light mb-4">Featured Artists</h3>
+                                <ul class="list-disc list-inside dashboard-muted-text space-y-2">
+                                    <li>Artist A - Genre: Ambient</li>
+                                    <li>Artist B - Genre: Lo-Fi</li>
+                                    <li>Artist C - Genre: Classical</li>
+                                </ul>
+                            </div>
+                        </section>
+
+                        <section id="ai-gemini" class="hidden mb-8 dashboard-card">
+                            <h2 class="text-3xl font-bold dashboard-primary-text mb-6">AI Gemini Integration</h2>
+                            <p class="dashboard-muted-text mb-4">Interact with the Gemini AI model directly from your dashboard.</p>
+
+                            <div class="api-key-warning mb-4">
+                                <strong>Security Alert!</strong> For production, never expose your API key directly in client-side code. Use a backend server to proxy your AI requests.
+                            </div>
+
+                            <!-- General Gemini Prompt -->
+                            <div class="mb-8">
+                                <h3 class="text-xl font-semibold dashboard-text-light mb-3">General Query ✨</h3>
+                                <textarea id="geminiPrompt" rows="4" class="w-full p-3 rounded-lg bg-gray-700 border dashboard-border-dark dashboard-text-light placeholder-dashboard-muted-text focus:outline-none focus:ring-2 focus:ring-primary-color" placeholder="Enter your prompt for Gemini AI here... (e.g., 'Explain how AI works in a few words', 'Write a short poem about fruit.')"></textarea>
+                                <button id="sendGeminiPrompt" class="px-6 py-3 bg-primary-color text-white font-semibold rounded-lg hover:bg-green-600 transition duration-200 mt-4 self-end">
+                                    Send to Gemini
+                                </button>
+                                <div class="mt-4 p-4 bg-gray-700 rounded-lg border dashboard-border-dark">
+                                    <h4 class="text-lg font-semibold dashboard-text-light mb-2">Gemini AI Response:</h4>
+                                    <div id="geminiResponse" class="dashboard-text-light whitespace-pre-wrap">
+                                        Type a general prompt and click "Send to Gemini" to get a response.
+                                    </div>
+                                    <div id="geminiError" class="text-red-400 mt-2 hidden"></div>
+                                </div>
+                            </div>
+
+                            <!-- Coding Partner Feature -->
+                            <div class="mb-8">
+                                <h3 class="text-xl font-semibold dashboard-text-light mb-3">Coding Partner ✨</h3>
+                                <p class="dashboard-muted-text mb-3">Get explanations for code, generate snippets, or debug issues.</p>
+                                <textarea id="codingPrompt" rows="6" class="w-full p-3 rounded-lg bg-gray-700 border dashboard-border-dark dashboard-text-light placeholder-dashboard-muted-text focus:outline-none focus:ring-2 focus:ring-secondary-color" placeholder="e.g., 'Explain this Python code: def factorial(n): ...', or 'Write a JavaScript function to sort an array.'"></textarea>
+                                <button id="sendCodingPrompt" class="px-6 py-3 bg-secondary-color text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-200 mt-4 self-end">
+                                    Ask Coding Partner
+                                </button>
+                                <div class="mt-4 p-4 bg-gray-700 rounded-lg border dashboard-border-dark">
+                                    <h4 class="text-lg font-semibold dashboard-text-light mb-2">Coding Partner Response:</h4>
+                                    <div id="codingResponse" class="dashboard-text-light whitespace-pre-wrap">
+                                        Ask your coding question here.
+                                    </div>
+                                    <div id="codingError" class="text-red-400 mt-2 hidden"></div>
+                                </div>
+                            </div>
+
+                            <!-- Career Guide Feature -->
+                            <div>
+                                <h3 class="text-xl font-semibold dashboard-text-light mb-3">Career Guide ✨</h3>
+                                <p class="dashboard-muted-text mb-3">Receive advice on career paths, resume building, or interview preparation.</p>
+                                <textarea id="careerPrompt" rows="4" class="w-full p-3 rounded-lg bg-gray-700 border dashboard-border-dark dashboard-text-light placeholder-dashboard-muted-text focus:outline-none focus:ring-2 focus:ring-teal-400" placeholder="e.g., 'What are key skills for a data scientist?', or 'Give me tips for a software engineering interview.'"></textarea>
+                                <button id="sendCareerPrompt" class="px-6 py-3 bg-teal-500 text-white font-semibold rounded-lg hover:bg-teal-600 transition duration-200 mt-4 self-end">
+                                    Get Career Advice
+                                </button>
+                                <div class="mt-4 p-4 bg-gray-700 rounded-lg border dashboard-border-dark">
+                                    <h4 class="text-lg font-semibold dashboard-text-light mb-2">Career Guide Response:</h4>
+                                    <div id="careerResponse" class="dashboard-text-light whitespace-pre-wrap">
+                                        Ask your career question here.
+                                    </div>
+                                    <div id="careerError" class="text-red-400 mt-2 hidden"></div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section id="maps" class="hidden mb-8 dashboard-card">
+                            <h2 class="text-3xl font-bold dashboard-primary-text mb-6">Interactive Maps</h2>
+                            <p class="dashboard-muted-text mb-4">Explore different mapping integrations for your dashboard.</p>
+
+                            <div class="space-y-8">
+                                <div class="dashboard-card p-4 rounded-lg border dashboard-border-dark">
+                                    <h3 class="text-2xl font-semibold dashboard-secondary-text mb-3">Google Maps (Advanced Marker)</h3>
+                                    <p class="dashboard-muted-text mb-3">An interactive map powered by Google Maps Platform, featuring advanced markers. Requires an API key.</p>
+                                    <gmp-map center="40.12150192260742,-100.45039367675781" zoom="4" map-id="DEMO_MAP_ID">
+                                        <gmp-advanced-marker position="40.12150192260742,-100.45039367675781" title="My location"></gmp-advanced-marker>
+                                    </gmp-map>
+                                    <div class="api-key-warning mt-4">
+                                        <strong>IMPORTANT:</strong> The Google Maps API key is embedded in the script tag in `showDashboardSection` function. For production, **never expose your API key directly in client-side code.** Consider using a backend proxy.
+                                        <br>
+                                        If you are getting an `InvalidKeyMapError`, ensure `AIzaSyBPG8dG29cl0TvYRGyLozejGed5Wj5Ab80` is valid and has "Maps JavaScript API" enabled in your Google Cloud Console, along with correct application restrictions.
+                                    </div>
+                                </div>
+
+                                <div class="dashboard-card p-4 rounded-lg border dashboard-border-dark">
+                                    <h3 class="text-2xl font-semibold dashboard-secondary-text mb-3">Leaflet.js with OpenStreetMap</h3>
+                                    <p class="dashboard-muted-text mb-3">A free and open-source interactive map solution using OpenStreetMap data. No API key needed for basic use.</p>
+                                    <div id="leaflet-map-container"></div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section id="meeting-minutes" class="hidden mb-8 dashboard-card">
+                            <h2 class="text-3xl font-bold dashboard-primary-text mb-6">Meeting Minutes: Fruitful Dashboard Development</h2>
+                            <p class="text-lg dashboard-muted-text mb-4">A quick recap of our discussions regarding API integrations and future features.</p>
+
+                            <div class="space-y-8">
+                                <div>
+                                    <h3 class="text-2xl font-semibold dashboard-text-light mb-3">Meeting Details:</h3>
+                                    <ul class="list-disc list-inside ml-4 dashboard-text-light space-y-1">
+                                        <li><strong>Date:</strong> June 23, 2025</li>
+                                        <li><strong>Time:</strong> 18:45 SAST (6:45 PM, Silver Lakes Golf Estate, Gauteng, South Africa)</li>
+                                        <li><strong>Attendees:</strong> Fruitful Dashboard Development Team (represented by user and Gemini AI)</li>
+                                    </ul>
+                                </div>
+
+                                <div>
+                                    <h3 class="text-2xl font-semibold dashboard-text-light mb-3">1. Review of Previous API Discussions:</h3>
+                                    <div class="space-y-4 ml-4">
+                                        <div class="dashboard-card p-4 rounded-lg border dashboard-border-dark">
+                                            <h4 class="text-xl font-medium dashboard-secondary-text mb-2">Design Styling API Key:</h4>
+                                            <p class="dashboard-muted-text"><strong>Conclusion:</strong> No single "API key" for generic styling. Styling handled primarily by CSS (e.g., Tailwind CSS). Specific design services (e.g., Google Fonts, mapping APIs with custom styles) *would* require their own API keys.</p>
+                                            <p class="dashboard-muted-text mt-1"><strong>Action:</strong> Continue using Tailwind CSS. Explore specific API-driven styling if a particular design service is integrated.</p>
+                                        </div>
+                                        <div class="dashboard-card p-4 rounded-lg border dashboard-border-dark">
+                                            <h4 class="text-xl font-medium dashboard-secondary-text mb-2">Language Toggler:</h4>
+                                            <p class="dashboard-muted-text"><strong>Conclusion:</strong> Achieved via JavaScript logic and `data-key` attributes for translatable text. No external API key strictly necessary for the toggler if translations are stored locally.</p>
+                                            <p class="dashboard-muted-text mt-1"><strong>Action:</strong> Current implementation is good. For complex internationalization, consider dedicated I18n JavaScript libraries or a translation API if dynamic, on-the-fly translation is required.</p>
+                                        </div>
+                                        <div class="dashboard-card p-4 rounded-lg border dashboard-border-dark">
+                                            <h4 class="text-xl font-medium dashboard-secondary-text mb-2">Selector to Change All Text in HTML with Script:</h4>
+                                            <p class="dashboard-muted-text"><strong>Conclusion:</strong> `document.querySelectorAll()` with specific tag names or custom attributes is the best method for targeted text manipulation. Use `document.querySelectorAll('*')` with extreme caution.</p>
+                                            <p class="dashboard-muted-text mt-1"><strong>Action:</strong> Continue using specific selectors for controlled text modification.</p>
+                                        </div>
+                                        <div class="dashboard-card p-4 rounded-lg border dashboard-border-dark">
+                                            <h4 class="text-xl font-medium dashboard-secondary-text mb-2">General Helpful API Categories (Recap):</h4>
+                                            <ul class="list-disc list-inside ml-4 dashboard-muted-text space-y-1">
+                                                <li>**Mapping & Location:** Google Maps Platform (requires key).</li>
+                                                <li>**Data & Information:** OpenWeatherMap (key), REST Countries (often no key), News API (key), Free Dictionary (no key).</li>
+                                                <li>**Authentication & User Management:** Firebase Auth, Auth0.</li>
+                                                <li>**Payment Processing:** Stripe (key), PayPal (credentials).</li>
+                                                <li>**AI/ML:** OpenAI (key), Hugging Face Inference API (key), **Gemini API (key - our current focus!)**.</li>
+                                                <li>**Image/Media:** Pexels API / Unsplash API (keys).</li>
+                                                <li>**Utility:** Bitly API (key), SendGrid API / Mailgun API (keys).</li>
+                                            </ul>
+                                            <p class="api-key-warning mt-3">
+                                                <strong>CRITICAL SECURITY NOTE:</strong> Never expose API keys directly in client-side code. Use a backend server or strict restrictions.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h3 class="text-2xl font-semibold dashboard-text-light mb-3">2. Gemini API Integration (Current Progress & Understanding):</h3>
+                                    <div class="space-y-4 ml-4">
+                                        <div class="dashboard-card p-4 rounded-lg border dashboard-border-dark">
+                                            <h4 class="text-xl font-medium dashboard-secondary-text mb-2">What does a Gemini API Key do? (for "Baby Staff"):</h4>
+                                            <p class="dashboard-text-light mb-2">Imagine the Gemini AI as a super-smart robot brain that lives far away in a Google data center. This robot brain can do amazing things like talk like a human, understand pictures, summarize long texts, and write code.</p>
+                                            <p class="dashboard-text-light mb-2">**Your Gemini API Key is like a special secret VIP pass** that allows your Fruitful Dashboard to "talk" to this super-smart robot brain. It tells Google it's *our* dashboard asking, keeps track of usage, and ensures safe communication.</p>
+                                            <p class="dashboard-text-light">**Crucial Point for "Baby Staff":** This API key is a **secret!** Never show it to anyone who shouldn't have access, and never put it directly into code that everyone can see (like the HTML if it's on a public website). It's like your house key – keep it safe!</p>
+                                        </div>
+                                        <div class="dashboard-card p-4 rounded-lg border dashboard-border-dark">
+                                            <h4 class="text-xl font-medium dashboard-secondary-text mb-2">Key Acquisition:</h4>
+                                            <p class="dashboard-muted-text">API keys are obtained via <a href="https://aistudio.google.com/" target="_blank" class="dashboard-secondary-text hover:underline">Google AI Studio</a>.</p>
+                                        </div>
+                                        <div class="dashboard-card p-4 rounded-lg border dashboard-border-dark">
+                                            <h4 class="text-xl font-medium dashboard-secondary-text mb-2">Current Dashboard Implementation:</h4>
+                                            <p class="dashboard-muted-text">A new "AI Gemini" section has been added with a general prompt area, plus new specialized "Coding Partner" and "Career Guide" features, all powered by Gemini AI. The API key for Gemini is now explicitly set using the key you provided (`AIzaSyBGSDZATtITv5iIoB3rgKHBpWx9MrufxXE`).</p>
+                                            <p class="api-key-warning mt-2">
+                                                <strong>ACTION REQUIRED for PRODUCTION:</strong> While the key is now in the code, for any production deployment, move this API call to a secure backend server to protect your key.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h3 class="text-2xl font-semibold dashboard-text-light mb-3">3. Discussion of New API-related Features for Fruitful Dashboard:</h3>
+                                    <div class="space-y-6 ml-4">
+                                        <div class="dashboard-card p-4 rounded-lg border dashboard-border-dark">
+                                            <h4 class="text-xl font-medium dashboard-secondary-text mb-2"><i class="fas fa-code"></i> Coding Partner Integration:</h4>
+                                            <p class="dashboard-muted-text"><strong>Concept:</strong> Use Gemini AI's code generation and explanation capabilities.</p>
+                                            <p class="dashboard-muted-text"><strong>API(s) to explore:</strong> Gemini API (already integrated).</p>
+                                            <p class="dashboard-muted-text"><strong>Implementation Idea:</strong> Integrated into "AI Gemini" section with dedicated input/output.</p>
+                                        </div>
+                                        <div class="dashboard-card p-4 rounded-lg border dashboard-border-dark">
+                                            <h4 class="text-xl font-medium dashboard-secondary-text mb-2"><i class="fas fa-graduation-cap"></i> Career Guide Integration:</h4>
+                                            <p class="dashboard-muted-text"><strong>Concept:</strong> Leverage AI to provide career advice, resume tips, interview prep, or learning paths.</p>
+                                            <p class="dashboard-muted-text"><strong>API(s) to explore:</strong> Gemini API (primary), potentially specialized career APIs for structured data.</p>
+                                            <p class="dashboard-muted-text"><strong>Implementation Idea:</strong> New "Career Insights" section where users input goals/questions for AI-generated guidance.</p>
+                                        </div>
+                                        <div class="dashboard-card p-4 rounded-lg border dashboard-border-dark">
+                                            <h4 class="text-xl font-medium dashboard-secondary-text mb-2"><i class="fas fa-mobile-alt"></i> "🦊 Foxed Has Mobiles™" - Product Data/Inventory Integration:</h4>
+                                            <p class="dashboard-muted-text"><strong>Concept:</strong> Pull mobile product data (names, specs, prices, stock) from a dedicated system.</p>
+                                            <p class="dashboard-muted-text"><strong>API(s) to explore:</strong> Likely a **custom API** from "Foxed Has Mobiles™" or a third-party e-commerce platform API (Shopify, WooCommerce).</p>
+                                            <p class="dashboard-muted-text"><strong>Action:</strong> Contact "Foxed Has Mobiles™" for API documentation and keys.</p>
+                                        </div>
+                                        <div class="dashboard-card p-4 rounded-lg border dashboard-border-dark">
+                                            <h4 class="text-xl font-medium dashboard-secondary-text mb-2"><i class="fas fa-shield-alt"></i> "🌳 Baobab Security Network™" - Security Monitoring:</h4>
+                                            <p class="dashboard-muted-text"><strong>Concept:</strong> Display security alerts, network status, or security logs.</p>
+                                            <p class="dashboard-muted-text"><strong>API(s) to explore:</strong> Likely a **custom API** from "Baobab Security Network™".</p>
+                                            <p class="dashboard-muted-text"><strong>Action:</strong> Obtain API documentation and credentials from "Baobab Security Network™".</p>
+                                        </div>
+                                        <div class="dashboard-card p-4 rounded-lg border dashboard-border-dark">
+                                            <h4 class="text-xl font-medium dashboard-secondary-text mb-2"><i class="fas fa-shopping-cart"></i> "🌱Global_Complete_purchase" & "🌱Global_checkout_success" - E-commerce Analytics:</h4>
+                                            <p class="dashboard-muted-text"><strong>Concept:</strong> Track successful purchases and checkout completions.</p>
+                                            <p class="dashboard-muted-text"><strong>API(s) to explore:</strong> Google Analytics Data API, Custom E-commerce Platform API, CRM/ERP APIs.</p>
+                                            <p class="dashboard-muted-text"><strong>Implementation Idea:</strong> New charts/metrics in "Data Analytics" showing conversion rates, successful purchases, checkout funnel performance.</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h3 class="text-2xl font-semibold dashboard-text-light mb-3">4. Live Demos (for Visual Learners / "Baby Staff"):</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div class="dashboard-card p-4 rounded-lg shadow-md border dashboard-border-dark flex flex-col items-center">
+                                            <h4 class="text-xl font-medium dashboard-secondary-text mb-2">Live Google Map</h4>
+                                            <p class="dashboard-muted-text mb-3">A real-time map, demonstrating location services. (Replace with your actual embed!)</p>
+                                            <div class="w-full h-64 bg-gray-800 rounded-lg overflow-hidden flex items-center justify-center">
+                                                <iframe src="YOUR_GOOGLE_MAP_EMBED_CODE" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                                                <span class="dashboard-muted-text absolute text-center">**PLACEHOLDER MAP**<br>Get your embed code from Google Maps.</span>
+                                            </div>
+                                        </div>
+                                        <div class="dashboard-card p-4 rounded-lg shadow-md border dashboard-border-dark flex flex-col items-center">
+                                            <h4 class="text-xl font-medium dashboard-secondary-text mb-2">Live YouTube Video</h4>
+                                            <p class="dashboard-muted-text mb-3">An embedded video, showing media integration. (Replace with your actual embed!)</p>
+                                            <div class="w-full h-64 bg-gray-800 rounded-lg overflow-hidden flex items-center justify-center">
+                                                <iframe width="100%" height="100%" src="YOUR_YOUTUBE_EMBED_CODE" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                                <span class="dashboard-muted-text absolute text-center">**PLACEHOLDER VIDEO**<br>Get your embed code from YouTube.</span>
+                                            </div>
+                                        </div>
+                                        <div class="dashboard-card p-4 rounded-lg shadow-md border dashboard-border-dark flex flex-col items-center">
+                                            <h4 class="text-xl font-medium dashboard-secondary-text mb-2">Live Spotify Music</h4>
+                                            <p class="dashboard-muted-text mb-3">Interactive Spotify embeds for albums/tracks.</p>
+                                            <div class="w-full h-64 bg-gray-800 rounded-lg overflow-hidden flex flex-col items-center justify-center space-y-2 p-2">
+                                                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/album/3RyjFxsU9hcmg14vqzUUMy?utm_source=generator" width="90%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                                                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/2kdQY3b6dDRGonyIzcWljc?utm_source=generator" width="90%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                                                <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/6Xe9wT5xeZETPwtaP2ynUz?utm_source=generator" width="90%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                                            </div>
+                                        </div>
+                                        <div class="dashboard-card p-4 rounded-lg shadow-md border dashboard-border-dark flex flex-col items-center">
+                                            <h4 class="text-xl font-medium dashboard-secondary-text mb-2">Gemini AI Test (re-iterated)</h4>
+                                            <p class="dashboard-muted-text mb-3">See our core AI integration in action.</p>
+                                            <div class="w-full h-64 bg-gray-800 rounded-lg p-4 overflow-auto text-sm dashboard-text-light">
+                                                <p>This is where our Gemini AI interacts. You can test it in the "AI Gemini" section!</p>
+                                                <p class="mt-2 dashboard-muted-text">Example: Ask the AI "What is the capital of France?"</p>
+                                                <p class="mt-2 text-red-400">**Remember to add your actual API Key!**</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h3 class="text-2xl font-semibold dashboard-text-light mb-3">5. Action Items for the Team:</h3>
+                                    <ul class="list-disc list-inside ml-4 dashboard-text-light space-y-2">
+                                        <li>**IMMEDIATE & CRITICAL:** Replace `YOUR_GEMINI_API_KEY` in the JavaScript with your actual key from Google AI Studio.</li>
+                                        <li>**SECURITY:** Begin planning for secure backend proxying of all API calls for production deployment.</li>
+                                        <li>**API ACQUISITION:** Contact "Foxed Has Mobiles™" and "Baobab Security Network™" for their API documentation and access credentials.</li>
+                                        <li>**ANALYTICS:** Investigate Google Analytics Data API or e-commerce platform APIs for detailed purchase/checkout event tracking.</li>
+                                        <li>**UI/UX:** Brainstorm and design user interfaces for "Coding Partner" and "Career Guide" functionalities.</li>
+                                        <li>**EMBED CODES:** Generate actual embed codes for the live demos (Google Maps, YouTube, Spotify) to make this section truly "live" for the team.</li>
+                                        <li>**CONTINUOUS LEARNING:** Encourage "baby staff" to review API documentation for any integrated service to understand capabilities and limitations.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Banimal Landing Page Content -->
+    <section id="banimal-landing-page" class="hidden content-section">
+        <canvas id="banimal-canvas"></canvas>
+        <div class="banimal-hero-content">
+            <h1>Banimal™: <br> <span>🐑Kind Creatures. Global Impact.</span></h1>
+            <p>
+                Discover Banimal's world of thoughtful baby essentials & innovative lighting. For every purchase, we deliver the same item to a child in need, identified by the Baobab Security Network's data-driven insights.
+            </p>
+            <div class="button-container flex flex-wrap justify-center gap-4 mt-6">
+                <a href="global_brands.html" class="cta-button">
+                    Explore Banimal's World <i class="fas fa-arrow-right"></i>
+                </a>
+                <a href="https://www.banimal.co.za/" target="_blank" class="cta-button shop-now-button">
+                    Shop Now <i class="fas fa-external-link-alt"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-8 px-6 md:px-12 text-center">
+        © 2025 FAA™ Treaty System™. All Rights Reserved. Powered by 🦍 glyphs + Vault API. Synced with Seedwave™.
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+    <script>
+        // --- Global Variables and Initial Setup ---
+        let googleMapScriptLoaded = false;
+        let leafletMapInstance = null; // Store Leaflet map instance
+        let activeDashboardSubSection = 'overview'; // Default active dashboard section
+        let activeMusicSubSection = 'allMusic'; // Default active music sub-section
+        let banimalAnimationFrameId; // Store Banimal canvas animation frame ID
+
+        // Gemini API Key from your original dashboard file
+        const GEMINI_API_KEY = "AIzaSyBGSDZATtITv5iIoB3rgKHBpWx9MrufxXE";
+        // Google Maps API Key from your original dashboard file
+        const GOOGLE_MAPS_API_KEY = "AIzaSyBPG8dG29cl0TvYRGyLozejGed5Wj5Ab80";
+
+
+        // --- Landing Page Specific Functions ---
+
+        // Function to toggle main landing page sections and the dashboard
+        function showMainSection(sectionIdToShow) {
+            // Stop any active canvas animations
+            if (banimalAnimationFrameId) {
+                cancelAnimationFrame(banimalAnimationFrameId);
+                banimalAnimationFrameId = null;
+            }
+
+            // Hide all landing page sections
+            document.querySelectorAll('.landing-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            // Hide the dashboard wrapper
+            document.getElementById('fruitful-dashboard-wrapper').classList.add('hidden');
+            document.getElementById('fruitful-dashboard-wrapper').classList.remove('flex'); // Ensure flex is removed when hidden
+
+            // Show the selected section
+            const sectionToShow = document.getElementById(sectionIdToShow);
+            if (sectionToShow) {
+                sectionToShow.classList.remove('hidden');
+            }
+
+            // Update active state for main header navigation links
+            document.querySelectorAll('.header-nav-item').forEach(link => {
+                link.classList.remove('header-nav-active');
+            });
+            const clickedLink = document.querySelector(`.header-nav-item[onclick*="${sectionIdToShow}"]`);
+            if (clickedLink) {
+                clickedLink.classList.add('header-nav-active');
+            }
+
+            // Special handling for dashboard display
+            if (sectionIdToShow === 'fruitful-dashboard-wrapper') {
+                sectionToShow.classList.add('flex'); // Ensure dashboard wrapper uses flex for layout
+                showDashboardSection(activeDashboardSubSection); // Show the default dashboard sub-section
+            } else {
+                // Ensure main dashboard sections are hidden when not viewing dashboard
+                document.querySelectorAll('#fruitful-dashboard-wrapper main section').forEach(section => {
+                    section.classList.add('hidden');
+                });
+                // Hide music sub-sidebar if moving away from dashboard
+                document.getElementById('musicSubSidebar').classList.add('hidden');
+            }
+
+            // Special handling for Banimal page to start canvas animation
+            if (sectionIdToShow === 'banimal-landing-page') {
+                initBanimalParticles(); // Re-initialize particles to avoid artifacts
+                animateBanimalCanvas();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top of the new section
+        }
+
+        // Function to load terminal content into the iframe (from landing page)
+        function loadTerminal(url) {
+            document.getElementById('vault-frame').src = url;
+            // Remove ring from all buttons and add to the clicked one
+            document.querySelectorAll('.terminal-btn').forEach(btn => btn.classList.remove('ring', 'ring-blue-500'));
+            // Use event.currentTarget to ensure the clicked button is targeted
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('ring', 'ring-blue-500');
+            }
+            console.log("🧬 Terminal loaded:", url);
+        }
+
+        // Script for Share Signal (mock price update from landing page)
+        function updateSharePrice() {
+            const mockPrice = (80 + Math.random() * 10).toFixed(2);
+            document.getElementById('price').innerText = `$${mockPrice}`;
+            document.getElementById('timestamp').innerText = new Date().toLocaleTimeString();
+        }
+
+        // Chart.js for Seedwave Growth (from landing page)
+        function initializeBrandChart() {
+            const ctx = document.getElementById('brandChart')?.getContext('2d');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+                        datasets: [{
+                            label: 'Treaty Brands Activated',
+                            data: [3, 7, 13, 21],
+                            borderWidth: 2,
+                            borderColor: '#00e393',
+                            tension: 0.4,
+                            fill: true,
+                            backgroundColor: 'rgba(0, 227, 147, 0.15)',
+                            pointRadius: 4,
+                            pointBackgroundColor: '#00e393',
+                            pointBorderColor: '#1a1b20',
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    color: '#a0aec0'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    color: '#a0aec0'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false,
+                                labels: {
+                                    color: '#e2e8f0'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Mock API data for demonstration (from admin-portal on landing page)
+        const mockSectorData = {
+            "ai-logic": { brands: ["OmniAI", "GridSync"], nodes: ["AI Core", "Neural Net", "Data Mesh"] },
+            "creative": { brands: ["PixelFlow", "SonicWave"], nodes: ["Render Engine", "Audio Synth"] },
+            "logistics": { brands: ["FreightFast", "RouteOptima"], nodes: ["GPS Tracker", "Fleet Manager"] },
+            "education-ip": { brands: ["LearnSphere", "IPGuard"], nodes: ["Curriculum Builder", "License Tracker"] },
+            "fashion": { brands: ["StyleSync", "FabricFlow"], nodes: ["Design Studio", "Material Trace"] },
+            "gaming": { brands: ["GameForge", "SimulateX"], nodes: ["Physics Engine", "Render Farm"] },
+            "health": { brands: ["BioPulse", "MediFlow"], nodes: ["Diagnostic AI", "Patient Portal"] },
+            "housing": { brands: ["EcoBuild", "SmartHomeOS"], nodes: ["Modular Design", "Energy Monitor"] },
+            "justice": { brands: ["LawLedger", "EthicShield"], nodes: ["Case Tracker", "Compliance Bot"] },
+            "knowledge": { brands: ["InfoVault", "ArchiveFlow"], nodes: ["Knowledge Graph", "Document Index"] },
+            "micromesh": { brands: ["MicroLogix", "NanoRoute"], nodes: ["Tiny Package", "Drone Delivery"] },
+            "media": { brands: ["VisualPulse", "SonicScape"], nodes: ["Video Editor", "Audio Mixer"] },
+            "nutrition": { brands: ["NutriFlow", "FarmTrack"], nodes: ["Recipe Optimizer", "Crop Monitor"] },
+            "packaging": { brands: ["PackSmart", "EcoWrap"], nodes: ["Material Optimizer", "Recycle Trace"] },
+            "quantum": { brands: ["QuantumLink", "EntangleOS"], nodes: ["Qubit Manager", "Secure Comm"] },
+            "ritual": { brands: ["AuraFlow", "SpiritWeave"], nodes: ["Ceremony Guide", "Community Hub"] },
+            "saas": { brands: ["CloudFlow", "AppStack"], nodes: ["Subscription Manager", "API Gateway"] },
+            "trade": { brands: ["TradeLink", "MarketPulse"], nodes: ["Supply Chain", "Demand Predictor"] },
+            "utilities": { brands: ["PowerGrid", "WaterFlow"], nodes: ["Smart Meter", "Resource Opt"] },
+            "voice": { brands: ["VoiceSynth", "AudioSense"], nodes: ["Speech Rec", "Sound Analysis"] },
+            "webless": { brands: ["MeshNode", "OffGridLink"], nodes: ["Decentral Node", "Secure Tunnel"] },
+            "nft": { brands: ["ArtChain", "TokenForge"], nodes: ["Minting Platform", "Royalty Engine"] },
+            "education-youth": { brands: ["KidGenius", "FutureLearn"], nodes: ["Interactive Lessons", "Skill Tracker"] },
+            "zerowaste": { brands: ["RecycleFlow", "CompostGen"], nodes: ["Waste Sorter", "Bio-Digester"] },
+            "professional": { brands: ["ProServe", "ConsultHub"], nodes: ["Client Manager", "Project Tracker"] },
+            "payroll-mining": { brands: ["MinePay", "CryptoLedger"], nodes: ["Payroll Automator", "Mining Pool"] },
+            "wildlife": { brands: ["WildGuard", "EcoSense"], nodes: ["Animal Tracker", "Habitat Monitor"] }
+        };
+
+        const mockScrollProfiles = {
+            "media": {
+                "VisualPulse": {
+                    title: "VisualPulse™ Media Scroll",
+                    intro: "Advanced visual content orchestration with real-time rendering.",
+                    features: ["4K Streaming", "AI-driven Editing", "Dynamic Watermarking"],
+                    pricing: ["Tier 1: $50/month", "Tier 2: $150/month"],
+                    metadata: { id: "VP-001", vault: "MediaVault", layer: "Visual", bg: "bg-blue-900", height: "700px", width: "2770px" }
+                },
+                "SonicScape": {
+                    title: "SonicScape™ Audio Scroll",
+                    intro: "Immersive audio experience with spatial sound design.",
+                    features: ["3D Audio Engine", "Adaptive Soundtracks", "Noise Cancellation"],
+                    pricing: ["Basic: $30/month", "Premium: $90/month"],
+                    metadata: { id: "SS-001", vault: "MediaVault", layer: "Audio", bg: "bg-purple-900", height: "700px", width: "2770px" }
+                }
+            }
+            // Add more mock scroll profiles for other sectors as needed
+        };
+
+        const sectorList = {
+            "ai-logic": "🧠 AI, Logic & Grid",
+            "creative": "🖋️ Creative Tech",
+            "logistics": "📦 Logistics & Packaging",
+            "education-ip": "📘 Education & IP",
+            "fashion": "✂️ Fashion & Identity",
+            "gaming": "🎮 Gaming & Simulation",
+            "health": "🧠 Health & Hygiene",
+            "housing": "🏗️ Housing & Infrastructure",
+            "justice": "⚖ Justice & Ethics",
+            "knowledge": "📖 Knowledge & Archives",
+            "micromesh": "☰ Micro-Mesh Logistics",
+            "media": "🎬 Motion, Media & Sonic",
+            "nutrition": "✿ Nutrition & Food Chain",
+            "packaging": "📦 Packaging & Materials",
+            "quantum": "✴️ Quantum Protocols",
+            "ritual": "☯ Ritual & Culture",
+            "saas": "🔑 SaaS & Licensing",
+            "trade": "🧺 Trade Systems",
+            "utilities": "🔋 Utilities & Energy",
+            "voice": "🎙️ Voice & Audio",
+            "webless": "📡 Webless Tech & Nodes",
+            "nft": "🔁 NFT & Ownership",
+            "education-youth": "🎓 Education & Youth",
+            "zerowaste": "♻️ Zero Waste",
+            "professional": "🧾 Professional Services",
+            "payroll-mining": "🪙 Payroll Mining & Accounting",
+            "wildlife": "🦁 Wildlife & Habitat"
+        };
+
+
+        // UNIVERSAL PANEL TOGGLER SCRIPT for Sector Scrolls
+        function showSectorPanel(panelId) {
+            // Hide all sector and embedded panels
+            document.querySelectorAll('[id^="embedded-"]').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.sector-link').forEach(link => link.classList.remove('active')); // Remove active class from all links
+
+            const el = document.getElementById(panelId);
+            if (el) {
+                el.classList.remove('hidden');
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Add active class to the clicked link
+                const clickedLink = document.querySelector(`.glyph[onclick*="${panelId}"]`);
+                if (clickedLink) {
+                    clickedLink.classList.add('active');
+                }
+                // If it's the media sector, load its scroll profiles
+                if (panelId === 'embedded-media-snapshot') {
+                    loadScrollProfile('media');
+                }
+            } else {
+                console.warn('[FAA] Panel not found:', panelId);
+            }
+        }
+
+        async function loadScrollProfile(sector) {
+            try {
+                // Mock fetching scroll profile data
+                const data = mockScrollProfiles[sector] || {};
+
+                const container = document.getElementById(`${sector}-snapshot`)?.querySelector('.scroll-cards');
+                if (!container) {
+                    console.warn(`Scroll profile container not found for sector: ${sector}`);
+                    return;
+                }
+                container.innerHTML = ""; // Clear existing content
+
+                if (Object.keys(data).length === 0) {
+                    container.innerHTML = `<p class="text-gray-400">No scroll profiles available for this sector.</p>`;
+                    return;
+                }
+
+                Object.entries(data).forEach(([brand, profile]) => {
+                    const wrapper = document.createElement("div");
+                    wrapper.className = `w-full flex-shrink-0 dashboard-sub-card p-6 shadow rounded-lg dashboard-text-light ${profile.metadata.bg || ""}`;
+                    wrapper.style.minHeight = profile.metadata.height || "300px";
+                    wrapper.style.minWidth = profile.metadata.width || "400px";
+
+                    wrapper.innerHTML = `
+                        <div class="flex flex-col md:flex-row justify-between gap-6 h-full">
+                            <div class="w-full md:w-1/2 space-y-3">
+                                <h2 class="text-xl font-bold text-purple-300">${profile.title}</h2>
+                                <p class="text-sm text-gray-300">${profile.intro}</p>
+                                <div>
+                                    <h4 class="font-semibold text-gray-200">🎛 Features</h4>
+                                    <ul class="list-disc list-inside ml-4 text-sm text-gray-300">
+                                        ${profile.features.map(f => `<li>${f}</li>`).join("")}
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-200">💳 Pricing</h4>
+                                    <ul class="list-disc list-inside ml-4 text-sm text-gray-300">
+                                        ${profile.pricing.map(p => `<li>${p}</li>`).join("")}
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-1/2 space-y-3">
+                                <h4 class="font-semibold text-purple-300">📎 FAA Metadata</h4>
+                                <ul class="list-disc list-inside ml-4 text-sm text-gray-300">
+                                    <li><strong>ID:</strong> ${profile.metadata.id}</li>
+                                    <li><strong>Vault:</strong> ${profile.metadata.vault}</li>
+                                    <li><strong>Layer:</strong> ${profile.metadata.layer}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(wrapper);
+                });
+            } catch (err) {
+                console.error("ScrollProfile load failed:", err);
+            }
+        }
+
+
+        // --- Dashboard Specific Functions ---
+
+        // This function initializes the Leaflet map (from dashboard)
+        function initLeafletMap() {
+            const mapContainer = document.getElementById("leaflet-map-container");
+            if (!mapContainer || leafletMapInstance) return; // Prevent re-initialization
+
+            // Initialize the map and set its view to chosen geographical coordinates and a zoom level (London)
+            leafletMapInstance = L.map(mapContainer).setView([51.505, -0.09], 13);
+
+            // Add an OpenStreetMap tile layer to the map
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(leafletMapInstance);
+
+            // Add a marker to the map
+            const marker = L.marker([51.5, -0.09]).addTo(leafletMapInstance);
+
+            // Add a popup to the marker
+            marker.bindPopup("<b>Hello world!</b><br>I am a popup.").openPopup();
+        }
+
+        function showDashboardSection(sectionId) {
+            activeDashboardSubSection = sectionId; // Update the active sub-section for dashboard
+
+            // Hide all dashboard sections
+            document.querySelectorAll('#fruitful-dashboard-wrapper main section').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Show the selected dashboard section
+            const activeSection = document.getElementById(sectionId);
+            if (activeSection) {
+                activeSection.classList.remove('hidden');
+            }
+
+            // Update active state for dashboard sidebar links
+            document.querySelectorAll('.dashboard-sidebar-nav-item').forEach(link => {
+                link.classList.remove('dashboard-active-nav-item');
+            });
+            const clickedLink = document.querySelector(`.dashboard-sidebar-nav-item[onclick*="${sectionId}"]`);
+            if (clickedLink) {
+                clickedLink.classList.add('dashboard-active-nav-item');
+            }
+
+            // Handle visibility of music sub-sidebar
+            const musicSubSidebar = document.getElementById('musicSubSidebar');
+            if (sectionId === 'music') {
+                musicSubSidebar.classList.remove('hidden');
+                musicSubSidebar.classList.add('flex'); // Use flex to make it visible and take space
+                showMusicSubSection(activeMusicSubSection); // Show the default music sub-section
+            } else {
+                musicSubSidebar.classList.add('hidden');
+                musicSubSidebar.classList.remove('flex');
+            }
+
+            // Special handling for maps section to load Google Maps script and initialize Leaflet
+            if (sectionId === 'maps') {
+                // Load Google Maps script only once if not already loaded
+                if (!googleMapScriptLoaded && document.getElementById('google-maps-api-script') === null) {
+                    const script = document.createElement('script');
+                    script.id = 'google-maps-api-script'; // Give it a unique ID
+                    script.async = true;
+                    script.defer = true;
+                    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&callback=console.debug&libraries=maps,marker&v=beta`;
+                    document.body.appendChild(script);
+                    googleMapScriptLoaded = true; // Mark as loaded or loading
+                }
+                // Initialize Leaflet map when the section is shown
+                initLeafletMap();
+            }
+        }
+
+        function showMusicSubSection(subSectionId) {
+            activeMusicSubSection = subSectionId; // Update the active sub-section
+
+            // Hide all music sub-sections
+            document.querySelectorAll('#music > div').forEach(subSection => {
+                subSection.classList.add('hidden');
+            });
+
+            // Show the selected music sub-section
+            const activeSubSectionContent = document.getElementById(subSectionId + 'Content');
+            if (activeSubSectionContent) {
+                activeSubSectionContent.classList.remove('hidden');
+            }
+
+            // Update active state for music sub-sidebar links
+            document.querySelectorAll('#musicSubSidebar .dashboard-sidebar-nav-item').forEach(link => {
+                link.classList.remove('dashboard-active-nav-item');
+            });
+            const clickedSubLink = document.querySelector(`#musicSubSidebar .dashboard-sidebar-nav-item[onclick*="${subSectionId}"]`);
+            if (clickedSubLink) {
+                clickedSubLink.classList.add('dashboard-active-nav-item');
+            }
+        }
+
+        // Helper function for making API calls to Gemini
+        async function callGeminiAPI(prompt, responseDiv, errorDiv) {
+            responseDiv.textContent = 'Generating response...';
+            errorDiv.classList.add('hidden'); // Hide previous errors
+
+            if (!prompt) {
+                responseDiv.textContent = 'Please enter a prompt.';
+                return;
+            }
+
+            if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY') {
+                responseDiv.textContent = '';
+                errorDiv.textContent = 'Error: Gemini API Key is missing or invalid. Please ensure it\'s set correctly.';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: prompt
+                            }]
+                        }]
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`API Error: ${response.status} ${response.statusText} - ${errorData.error.message || 'Unknown error'}`);
+                }
+
+                const data = await response.json();
+                const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response from AI.';
+                responseDiv.textContent = aiResponse;
+
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                responseDiv.textContent = ''; // Clear "Generating response..."
+                errorDiv.textContent = `Failed to get AI response: ${error.message}. Check your Gemini API key and network.`;
+                errorDiv.classList.remove('hidden');
+            }
+        }
+
+        // Event listener for General Query (Dashboard)
+        document.addEventListener('click', async (event) => {
+            if (event.target && event.target.id === 'sendGeminiPrompt') {
+                const promptText = document.getElementById('geminiPrompt').value.trim();
+                const responseDiv = document.getElementById('geminiResponse');
+                const errorDiv = document.getElementById('geminiError');
+                callGeminiAPI(promptText, responseDiv, errorDiv);
+            }
+        });
+
+        // Event listener for Coding Partner (Dashboard)
+        document.addEventListener('click', async (event) => {
+            if (event.target && event.target.id === 'sendCodingPrompt') {
+                const codingPromptText = document.getElementById('codingPrompt').value.trim();
+                const responseDiv = document.getElementById('codingResponse');
+                const errorDiv = document.getElementById('codingError');
+                const fullPrompt = `Act as a coding assistant. ${codingPromptText}`;
+                callGeminiAPI(fullPrompt, responseDiv, errorDiv);
+            }
+        });
+
+        // Event listener for Career Guide (Dashboard)
+        document.addEventListener('click', async (event) => {
+            if (event.target && event.target.id === 'sendCareerPrompt') {
+                const careerPromptText = document.getElementById('careerPrompt').value.trim();
+                const responseDiv = document.getElementById('careerResponse');
+                const errorDiv = document.getElementById('careerError');
+                const fullPrompt = `Act as a career guide. ${careerPromptText}`;
+                callGeminiAPI(fullPrompt, responseDiv, errorDiv);
+            }
+        });
+
+        // Event listener for Admin Assistant (Dashboard)
+        document.addEventListener('click', async (event) => {
+            if (event.target && event.target.id === 'sendAdminAIPrompt') {
+                const adminPromptText = document.getElementById('adminAIPrompt').value.trim();
+                const responseDiv = document.getElementById('adminAIResponse');
+                const errorDiv = document.getElementById('adminAIError');
+                const fullPrompt = `Act as an admin assistant for a dashboard. ${adminPromptText}`;
+                callGeminiAPI(fullPrompt, responseDiv, errorDiv);
+            }
+        });
+
+        // --- Banimal Canvas Animation Functions ---
+        let banimalCanvas = null;
+        let banimalCtx = null;
+        let banimalParticles = [];
+        const numBanimalParticles = 150;
+
+        class BanimalParticle {
+            constructor() {
+                this.x = Math.random() * banimalCanvas.width;
+                this.y = Math.random() * banimalCanvas.height;
+                this.radius = Math.random() * 1.5 + 0.5;
+                this.alpha = 0;
+                this.speed = Math.random() * 0.3 + 0.05;
+                this.directionX = Math.random() * 2 - 1;
+                this.directionY = Math.random() * 2 - 1;
+                const randomColorIndex = Math.floor(Math.random() * 2);
+                const colors = ['rgba(255, 240, 237, ', 'rgba(248, 220, 220, ']; // banimal-soft-peach, banimal-soft-pink
+                this.baseColor = colors[randomColorIndex];
+            }
+
+            update() {
+                this.x += this.directionX * this.speed;
+                this.y += this.directionY * this.speed;
+
+                if (this.alpha < 0.7 && this.speed > 0) {
+                    this.alpha += 0.003;
+                } else if (this.alpha > 0) {
+                    this.alpha -= 0.001;
+                } else {
+                    this.x = Math.random() * banimalCanvas.width;
+                    this.y = Math.random() * banimalCanvas.height;
+                    this.alpha = 0;
+                    this.speed = Math.random() * 0.3 + 0.05;
+                    this.directionX = Math.random() * 2 - 1;
+                    this.directionY = Math.random() * 2 - 1;
+                }
+
+                if (this.x < -this.radius || this.x > banimalCanvas.width + this.radius || this.y < -this.radius || this.y > banimalCanvas.height + this.radius) {
+                    this.x = Math.random() * banimalCanvas.width;
+                    this.y = Math.random() * banimalCanvas.height;
+                    this.alpha = 0;
+                }
+            }
+
+            draw() {
+                banimalCtx.beginPath();
+                banimalCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                banimalCtx.fillStyle = this.baseColor + this.alpha + ')';
+                banimalCtx.shadowBlur = 5;
+                banimalCtx.shadowColor = this.baseColor + (this.alpha * 0.8) + ')';
+                banimalCtx.fill();
+                banimalCtx.shadowBlur = 0;
+            }
+        }
+
+        function resizeBanimalCanvas() {
+            if (banimalCanvas) {
+                banimalCanvas.width = window.innerWidth;
+                banimalCanvas.height = window.innerHeight;
+            }
+        }
+
+        function initBanimalParticles() {
+            banimalCanvas = document.getElementById('banimal-canvas');
+            if (!banimalCanvas) return; // Exit if canvas is not available
+
+            banimalCtx = banimalCanvas.getContext('2d');
+            resizeBanimalCanvas();
+            window.removeEventListener('resize', resizeBanimalCanvas); // Prevent duplicate listeners
+            window.addEventListener('resize', resizeBanimalCanvas);
+
+            banimalParticles = []; // Clear existing particles
+            for (let i = 0; i < numBanimalParticles; i++) {
+                banimalParticles.push(new BanimalParticle());
+            }
+        }
+
+        function animateBanimalCanvas() {
+            if (!banimalCtx) return; // Exit if context is not available
+
+            banimalCtx.fillStyle = 'rgba(255, 255, 255, 0.02)';
+            banimalCtx.fillRect(0, 0, banimalCanvas.width, banimalCanvas.height);
+
+            for (let i = 0; i < banimalParticles.length; i++) {
+                banimalParticles[i].update();
+                banimalParticles[i].draw();
+            }
+            banimalAnimationFrameId = requestAnimationFrame(animateBanimalCanvas);
+        }
+
+        // --- Initial Load Functions ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize landing page features
+            updateSharePrice();
+            setInterval(updateSharePrice, 9000); // Update share price every 9 seconds
+            initializeBrandChart();
+
+            // Set default active section for landing page
+            showMainSection('hero-section'); // Show landing page home by default
+            // Ensure the initial active state for Home is correctly applied
+            const homeLink = document.querySelector(`.header-nav-item[onclick*="hero-section"]`);
+            if (homeLink) {
+                homeLink.classList.add('header-nav-active');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1401,40 +1401,31 @@
         <main class="main-content-wrapper">
             <section id="scrollmap-feature" class="content-section active">
                 <div class="max-w-6xl mx-auto py-12 px-4">
-                    <h2 class="text-5xl font-extrabold text-center mb-4">🗺️ FAA.Zone Sector Grid Overview</h2>
-                    <p class="text-xl text-gray-600 text-center mb-12">Dynamic Sector Mesh · Lifecycle Signal Allocation</p>
+                    <h2 class="text-5xl font-extrabold text-center mb-4">🗺️ FAA.Zone ScrollMap Overview</h2>
+                    <p class="text-xl text-gray-600 text-center mb-12">Real-Time Scroll Pathing · Clause Zones · Sector Access Visual</p>
 
-                    <!-- CHART SECTION -->
+                    <!-- MAIN MAP SECTION -->
                     <div class="bg-white p-6 rounded-xl shadow-2xl mb-8 border border-gray-200">
-                        <h3 class="text-3xl font-bold text-gray-800 mb-4">📉 Sector Performance Monitor</h3>
-                        <p class="text-lg text-gray-500 mb-6">Sector load variance across core economic nodes.</p>
-                        <div class="h-96">
-                            <canvas id="pulseChart" class="w-full h-full"></canvas>
+                        <h3 class="text-3xl font-bold text-gray-800 mb-4">📍 Active Scroll Zones</h3>
+                        <p class="text-lg text-gray-500 mb-6">Overlay of clause-bound regions and active access zones within the ScrollMesh.</p>
+                        <div class="h-96 w-full">
+                            <canvas id="scrollMapChart" class="w-full h-full"></canvas>
                         </div>
                     </div>
 
-                    <!-- METRICS GRID -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-7 gap-6">
+                    <!-- ZONE STATS GRID -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                         <a href="#" class="bg-white p-5 rounded-lg shadow-xl text-center hover:bg-blue-50 transition-transform duration-200 ease-in-out hover:-translate-y-1 hover:scale-105 border border-gray-200">
-                            <h4 class="text-md font-bold text-gray-700">🌿 Top Active Sector</h4><p class="text-blue-600 font-semibold text-lg">Health & Hygiene</p>
+                            <h4 class="text-md font-bold text-gray-700">🧭 Scroll Zones Indexed</h4><p class="text-blue-600 font-semibold text-lg">24 Regions</p>
                         </a>
                         <a href="#" class="bg-white p-5 rounded-lg shadow-xl text-center hover:bg-blue-50 transition-transform duration-200 ease-in-out hover:-translate-y-1 hover:scale-105 border border-gray-200">
-                            <h4 class="text-md font-bold text-gray-700">📦 Load Distribution Index</h4><p class="text-blue-600 font-semibold text-lg">72.3%</p>
+                            <h4 class="text-md font-bold text-gray-700">📂 Clause Routes</h4><p class="text-blue-600 font-semibold text-lg">312 Paths</p>
                         </a>
                         <a href="#" class="bg-white p-5 rounded-lg shadow-xl text-center hover:bg-blue-50 transition-transform duration-200 ease-in-out hover:-translate-y-1 hover:scale-105 border border-gray-200">
-                            <h4 class="text-md font-bold text-gray-700">🔍 Sector Drift</h4><p class="text-blue-600 font-semibold text-lg">2 nodes</p>
+                            <h4 class="text-md font-bold text-gray-700">🛰️ Active Mesh Sync</h4><p class="text-blue-600 font-semibold text-lg">98.7%</p>
                         </a>
                         <a href="#" class="bg-white p-5 rounded-lg shadow-xl text-center hover:bg-blue-50 transition-transform duration-200 ease-in-out hover:-translate-y-1 hover:scale-105 border border-gray-200">
-                            <h4 class="text-md font-bold text-gray-700">🏁 Active Sector Grid</h4><p class="text-blue-600 font-semibold text-lg">26 Regions</p>
-                        </a>
-                        <a href="#" class="bg-white p-5 rounded-lg shadow-xl text-center hover:bg-blue-50 transition-transform duration-200 ease-in-out hover:-translate-y-1 hover:scale-105 border border-gray-200">
-                            <h4 class="text-md font-bold text-gray-700">🧬 ScrollMap Zones</h4><p class="text-blue-600 font-semibold text-lg">13 Indexed</p>
-                        </a>
-                        <a href="#" class="bg-white p-5 rounded-lg shadow-xl text-center hover:bg-blue-50 transition-transform duration-200 ease-in-out hover:-translate-y-1 hover:scale-105 border border-gray-200">
-                            <h4 class="text-md font-bold text-gray-700">📊 Mean Throughput</h4><p class="text-blue-600 font-semibold text-lg">7,811 cycles</p>
-                        </a>
-                        <a href="#" class="bg-white p-5 rounded-lg shadow-xl text-center hover:bg-blue-50 transition-transform duration-200 ease-in-out hover:-translate-y-1 hover:scale-105 border border-gray-200">
-                            <h4 class="text-md font-bold text-gray-700">📥 Sector Logs</h4><p class="text-blue-600 font-semibold text-lg">1,204 Updates</p>
+                            <h4 class="text-md font-bold text-gray-700">🛡️ Enforced Scroll Anchors</h4><p class="text-blue-600 font-semibold text-lg">61 Anchors</p>
                         </a>
                     </div>
                 </div>
@@ -1549,7 +1540,7 @@
                 },
                 techStack: {
                     'tech-vercel': {
-                        title: 'Vercel: Frontend & Serverless', icon: '🚀',
+                        title: 'Vercel: Frontend & Serverless', icon: '�',
                         details: 'Vercel is the primary Continuous Deployment platform, connecting to GitHub to build and deploy all FAA.zone web projects. It handles static frontend assets and dynamic Node.js serverless functions, enabling rapid, scalable, and automated deployments.',
                         features: ['Automatic Deployments from Git', 'Scalable Serverless Functions', 'Custom Domain Management', 'Secure Environment Variables', 'Instant Preview Deployments']
                     },
@@ -1660,6 +1651,7 @@
 
         // --- Chart.js Instances Storage ---
         let initializedCharts = {}; // Stores all Chart.js instances across the portal
+        let chartIntervals = {}; // Stores all setInterval IDs for charts
 
         // --- Functions to manage main content views ---
         function showMainContentView(viewId) {
@@ -1728,11 +1720,15 @@
 
 
         function renderChartsForView(viewId) {
-            // Destroy all existing charts before rendering new ones
+            // Destroy all existing charts and clear their intervals before rendering new ones
             for (const chartId in initializedCharts) {
                 if (initializedCharts[chartId]) {
                     initializedCharts[chartId].destroy();
                     initializedCharts[chartId] = null;
+                }
+                if (chartIntervals[chartId]) {
+                    clearInterval(chartIntervals[chartId]);
+                    chartIntervals[chartId] = null;
                 }
             }
 
@@ -1783,7 +1779,7 @@
                     // The pulseChart is inside this section, render it here.
                     const adminPulseCtx = document.getElementById('pulseChart')?.getContext('2d');
                     if (adminPulseCtx) {
-                        initializedCharts.adminPulseChart = new Chart(adminPulseCtx, {
+                        const chart = new Chart(adminPulseCtx, {
                             type: 'line',
                             data: appData.admin.pulseChartData,
                             options: {
@@ -1795,6 +1791,8 @@
                                 }
                             }
                         });
+                        initializedCharts.adminPulseChart = chart;
+                        // No setInterval needed for this specific chart in admin-quick-view based on previous code.
                     }
                     // Also ensure these are populated/loaded when admin-quick-view is active
                     populateAdminSectorSelect();
@@ -1893,25 +1891,25 @@
                     displayEcosystemSectorInfo(document.getElementById('sector-filter')?.value || Object.keys(appData.admin.sectors)[0]);
                     updateSovereignScrollsProgressBar();
                     break;
-                case 'scrollmap-feature': // Specific to scrollmap.html (now contains Sector Grid content)
-                    const sectorGridChartCtx = document.getElementById('pulseChart')?.getContext('2d');
-                    if (sectorGridChartCtx) {
+                case 'signal-sync-feature': // Specific to signal-sync.html
+                    const signalSyncChartCtx = document.getElementById('pulseChart')?.getContext('2d');
+                    if (signalSyncChartCtx) {
                         const labels = [];
-                        const sectors = ['Agriculture', 'Finance', 'Health', 'Housing', 'Media', 'Ritual', 'AI Systems'];
+                        const sectors = ['Uplink East', 'Relay Mesh Alpha', 'Signal Core', 'Drift Monitor', 'Carrier Beta', 'Grid Echo', 'Latency Zone 4'];
 
                         const data = {
                             labels,
                             datasets: sectors.map((label, i) => ({
                                 label,
                                 data: [],
-                                borderColor: `hsl(${i * 50}, 70%, 50%)`,
+                                borderColor: `hsl(${i * 40}, 70%, 50%)`,
                                 borderWidth: 2,
                                 fill: false,
                                 tension: 0.3
                             }))
                         };
 
-                        const chart = new Chart(sectorGridChartCtx, {
+                        const chart = new Chart(signalSyncChartCtx, {
                             type: 'line',
                             data,
                             options: {
@@ -1923,16 +1921,16 @@
                                         min: 1500,
                                         max: 5000,
                                         ticks: {
-                                            callback: v => v + ' load',
-                                            color: 'var(--muted-text-light)' // Ensure tick color matches theme
+                                            callback: v => v + ' signals',
+                                            color: 'var(--muted-text-light)'
                                         },
                                         grid: {
-                                            color: 'var(--border-color-light)' // Ensure grid color matches theme
+                                            color: 'var(--border-color-light)'
                                         }
                                     },
                                     x: {
                                         ticks: {
-                                            color: 'var(--muted-text-light)' // Ensure tick color matches theme
+                                            color: 'var(--muted-text-light)'
                                         },
                                         grid: {
                                             display: false
@@ -1943,30 +1941,164 @@
                                     legend: { 
                                         position: 'bottom',
                                         labels: {
-                                            color: 'var(--muted-text-light)' // Ensure legend color matches theme
+                                            color: 'var(--muted-text-light)'
                                         }
                                     } 
                                 }
                             }
                         });
 
-                        function pushData() {
-                            const time = new Date().toLocaleTimeString();
-                            if (labels.length > 30) {
-                                labels.shift();
-                                data.datasets.forEach(ds => ds.data.shift());
+                        function pushSignalData() {
+                            if (initializedCharts.signalSyncChart) { // Ensure chart exists
+                                const time = new Date().toLocaleTimeString();
+                                if (labels.length > 30) {
+                                    labels.shift();
+                                    data.datasets.forEach(ds => ds.data.shift());
+                                }
+                                labels.push(time);
+                                data.datasets.forEach((ds, i) => {
+                                    const base = 2000 + i * 400;
+                                    ds.data.push(base + Math.random() * 300 - 150);
+                                });
+                                initializedCharts.signalSyncChart.update();
                             }
-                            labels.push(time);
-                            data.datasets.forEach((ds, i) => {
-                                const base = 2000 + i * 350;
-                                ds.data.push(base + Math.random() * 400 - 200);
-                            });
-                            chart.update();
                         }
 
-                        pushData();
-                        setInterval(pushData, 4000);
-                        initializedCharts.sectorGridChart = chart; // Store the chart instance
+                        if (chartIntervals.signalSyncChartInterval) {
+                            clearInterval(chartIntervals.signalSyncChartInterval);
+                        }
+                        chartIntervals.signalSyncChartInterval = setInterval(pushSignalData, 4000);
+                        initializedCharts.signalSyncChart = chart;
+                        pushSignalData(); // Initial call
+                    }
+                    break;
+                case 'scrollmap-feature': // This is the actual ScrollMap page now
+                    const scrollMapChartCtx = document.getElementById('scrollMapChart')?.getContext('2d');
+                    if (scrollMapChartCtx) {
+                        initializedCharts.scrollMapChart = new Chart(scrollMapChartCtx, {
+                            type: 'radar',
+                            data: {
+                                labels: ['Agriculture', 'Finance', 'Media', 'AI', 'Housing', 'Justice', 'Trade', 'Quantum', 'Voice', 'Packaging'],
+                                datasets: [
+                                    {
+                                        label: 'Zone Access Strength',
+                                        data: [92, 81, 74, 89, 67, 78, 69, 85, 72, 80],
+                                        backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                                        borderColor: 'rgba(99, 102, 241, 1)',
+                                        borderWidth: 2
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: { 
+                                        position: 'bottom',
+                                        labels: {
+                                            color: 'var(--muted-text-light)' // Ensure legend color matches theme
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    r: {
+                                        angleLines: { display: true, color: 'var(--border-color-light)' }, // Ensure color matches theme
+                                        suggestedMin: 0,
+                                        suggestedMax: 100,
+                                        ticks: {
+                                            callback: val => val + '%',
+                                            color: 'var(--muted-text-light)' // Ensure tick color matches theme
+                                        },
+                                        pointLabels: {
+                                            color: 'var(--text-color-light)' // Ensure point label color matches theme
+                                        },
+                                        grid: {
+                                            color: 'var(--border-color-light)' // Ensure grid color matches theme
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    break;
+                case 'node-index-feature': // New case for Node Index page
+                    const nodeIndexChartCtx = document.getElementById('pulseChart')?.getContext('2d');
+                    if (nodeIndexChartCtx) {
+                        const labels = [];
+                        const sectors = ['Node Core', 'Edge Relay', 'Low Latency Ring', 'Border Mesh', 'Uptime Band', 'Zone Echo'];
+
+                        const data = {
+                            labels,
+                            datasets: sectors.map((label, i) => ({
+                                label,
+                                data: [],
+                                borderColor: `hsl(${i * 40}, 70%, 50%)`,
+                                borderWidth: 2,
+                                fill: false,
+                                tension: 0.3
+                            }))
+                        };
+
+                        const chart = new Chart(nodeIndexChartCtx, {
+                            type: 'line',
+                            data,
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                animation: false,
+                                scales: {
+                                    y: {
+                                        min: 1500,
+                                        max: 5000,
+                                        ticks: {
+                                            callback: v => v + ' pings',
+                                            color: 'var(--muted-text-light)'
+                                        },
+                                        grid: {
+                                            color: 'var(--border-color-light)'
+                                        }
+                                    },
+                                    x: {
+                                        ticks: {
+                                            color: 'var(--muted-text-light)'
+                                        },
+                                        grid: {
+                                            display: false
+                                        }
+                                    }
+                                },
+                                plugins: { 
+                                    legend: { 
+                                        position: 'bottom',
+                                        labels: {
+                                            color: 'var(--muted-text-light)'
+                                        }
+                                    } 
+                                }
+                            }
+                        });
+
+                        function pushNodeData() {
+                            if (initializedCharts.nodeIndexChart) { // Ensure chart exists
+                                const time = new Date().toLocaleTimeString();
+                                if (labels.length > 30) {
+                                    labels.shift();
+                                    data.datasets.forEach(ds => ds.data.shift());
+                                }
+                                labels.push(time);
+                                data.datasets.forEach((ds, i) => {
+                                    const base = 2000 + i * 400;
+                                    ds.data.push(base + Math.random() * 300 - 150);
+                                });
+                                initializedCharts.nodeIndexChart.update();
+                            }
+                        }
+
+                        if (chartIntervals.nodeIndexChartInterval) {
+                            clearInterval(chartIntervals.nodeIndexChartInterval);
+                        }
+                        chartIntervals.nodeIndexChartInterval = setInterval(pushNodeData, 4000);
+                        initializedCharts.nodeIndexChart = chart;
+                        pushNodeData(); // Initial call
                     }
                     break;
                 default:
@@ -2604,7 +2736,7 @@
             setTheme(savedTheme);
 
             // Activate the current section for this page
-            const currentPageSection = document.getElementById('scrollmap-feature'); // This ID now refers to the Sector Grid content
+            const currentPageSection = document.getElementById('scrollmap-feature'); // This ID now refers to the ScrollMap content
             if (currentPageSection) {
                 currentPageSection.classList.add('active');
                 currentPageSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -2654,3 +2786,4 @@
     </script>
 </body>
 </html>
+�

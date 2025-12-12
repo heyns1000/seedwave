@@ -159,6 +159,8 @@ The Gorilla Mountain Fox stands tall,
 };
 
 // CommonJS export for Node.js compatibility
+// Note: Mixed export pattern intentionally used for maximum compatibility
+// ES6 export for modern JavaScript, CommonJS for Node.js environments
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = { NOODLE_BAD_BOYS_PROTOCOL };
 }

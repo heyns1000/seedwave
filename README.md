@@ -1,3 +1,58 @@
+# Seedwave
+
+**Central admin portal & serverless backend — Fruitful™ / FAA ecosystem**
+`heyns1000/seedwave` · JavaScript (Node/Express) · HTML · Python
+
+> The narrative below ("The Epic Journey of Noodle Mountain") is the project's
+> original creative README and is preserved as-is. This factual header was
+> added on 13 June 2026, with numbers verified against live GitHub via the
+> `fruitful-ecosystem-auditor` skill.
+
+## What this repo actually is
+
+Seedwave is the central admin portal and backend-functions layer for the
+Fruitful™ / FAA ecosystem:
+
+- **`server/server.js`** + **`api/index.js`** — Express / Vercel serverless
+  backend (the deployable app; `vercel.json` at root).
+- **`public/`** — ~40 admin and dashboard pages (admin panels, license
+  ledger, ecosystem dashboard, sector grid, global brand index, checkout
+  flows, auth pages).
+- **`my_payfast_app/`** — a small Python/Flask PayFast payment sub-app.
+- Integrations: PayPal, Zoho, PayFast. Deployed via Vercel.
+
+## Repository facts (verified)
+
+| Metric | Value |
+|---|---|
+| Default branch | `main` |
+| Branches | 5 |
+| Files on `main` (incl. `node_modules`) | 4,803 |
+| Project source files (excl. `node_modules`) | ~66 |
+| Primary languages | JavaScript, HTML, Python |
+
+> **On file counts:** the tree shows ~4,800 entries, but ~4,737 are committed
+> `node_modules/` (vendored dependencies). The real project source is roughly
+> **66 files** — quote that figure, not the dependency-inflated total.
+
+## Housekeeping (recommended)
+
+- **`node_modules/` is committed** — add to `.gitignore` and remove from the
+  tree; it inflates the file count ~70×.
+- **`.env.local` contains live PayPal credentials** — rotate the PayPal client
+  ID/secret immediately and stop tracking environment files. Keys in a public
+  repo are compromised the moment they are pushed.
+- **Licence mismatch** — `package.json` says `Apache-2.0`; the `LICENSE` file
+  is the Fruitful Shops Proprietary licence. Reconcile the two.
+
+## For agents (Claude, Perplexity, or otherwise)
+
+Verify before you repeat. Exclude `node_modules/` before quoting a file count
+for this repo, and check integration/secret claims against the live tree.
+
+---
+---
+
 
  
 ![Your Seedwave Image](assets/seedwave.png)

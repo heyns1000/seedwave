@@ -1,25 +1,15 @@
+<p align="center">
+  <img src="docs/assets/fruitful-banner.png" alt="Fruitful™" width="100%">
+</p>
+
 # Seedwave
 
 **Central admin portal & serverless backend — Fruitful™ / FAA ecosystem**
 `heyns1000/seedwave` · JavaScript (Node/Express) · HTML · Python
 
-> The narrative below ("The Epic Journey of Noodle Mountain") is the project's
-> original creative README and is preserved as-is. This factual header was
-> added on 13 June 2026, with numbers verified against live GitHub via the
-> `fruitful-ecosystem-auditor` skill.
-
-## What this repo actually is
-
-Seedwave is the central admin portal and backend-functions layer for the
-Fruitful™ / FAA ecosystem:
-
-- **`server/server.js`** + **`api/index.js`** — Express / Vercel serverless
-  backend (the deployable app; `vercel.json` at root).
-- **`public/`** — ~40 admin and dashboard pages (admin panels, license
-  ledger, ecosystem dashboard, sector grid, global brand index, checkout
-  flows, auth pages).
-- **`my_payfast_app/`** — a small Python/Flask PayFast payment sub-app.
-- Integrations: PayPal, Zoho, PayFast. Deployed via Vercel.
+> Factual header added 13 June 2026, verified against live GitHub via the
+> `fruitful-ecosystem-auditor` skill. The original project README ("The Epic
+> Journey of Noodle Mountain") is preserved in full below this divider.
 
 ## Repository facts (verified)
 
@@ -28,33 +18,119 @@ Fruitful™ / FAA ecosystem:
 | Default branch | `main` |
 | Branches | 5 |
 | Files on `main` (incl. `node_modules`) | 4,803 |
-| Project source files (excl. `node_modules`) | ~66 |
-| Primary languages | JavaScript, HTML, Python |
+| Project source files (excl. `node_modules`) | 66 |
+| Primary languages | JavaScript (Node/Express), HTML, Python (Flask) |
+| Deploy target | Vercel (`vercel.json` at root and in `server/`) |
 
-> **On file counts:** the tree shows ~4,800 entries, but ~4,737 are committed
-> `node_modules/` (vendored dependencies). The real project source is roughly
-> **66 files** — quote that figure, not the dependency-inflated total.
+> **On file counts:** the tree shows 4,803 entries, but 4,737 are committed
+> `node_modules/` (vendored dependencies). The real project surface is **66
+> files**. Quote 66, not the dependency-inflated total.
+
+## What this repo is
+
+Seedwave is the central administration portal and serverless backend layer for
+the Fruitful™ / FAA ecosystem. It is not a single page or a prototype; it is
+the operator-facing control plane — the place where the ecosystem's brands,
+sectors, licences, checkout flows, and account states are administered and
+served.
+
+The repository holds three working parts in one tree:
+
+1. A **Node/Express serverless backend** (`server/server.js`, `api/index.js`)
+   deployed on Vercel.
+2. A **static front end of ~41 admin and portal pages** under `public/`.
+3. A small, self-contained **Python/Flask PayFast payment app**
+   (`my_payfast_app/`).
+
+## The Seedwave system (in depth)
+
+### Backend — Express on Vercel
+
+The deployable application is an Express server exposed through Vercel's
+serverless runtime. `server/server.js` is the primary server entry; `api/index.js`
+is the Vercel function handler; `vercel.json` (present at both the repo root and
+inside `server/`) defines the routing and build configuration. `package.json`
+and `package-lock.json` pin the Node dependency set (the committed `node_modules/`
+mirrors that lockfile). This is the layer that authenticates operators, serves
+the admin pages, and brokers the payment integrations.
+
+### Front end — the admin and portal surface (`public/`, 41 files)
+
+The `public/` directory is the heart of Seedwave: it is the operating console
+for the whole ecosystem. The pages group into clear functions.
+
+**Administration & ledger**
+- `admin-panel.html`, `admin-portal.html`, `heyns_admin_panel.html`,
+  `heyns_admin_panel_paypal.html` — the operator control panels.
+- `admin-license-ledger.html` — the licence ledger view (issuance / status of
+  ecosystem licences).
+- `admin_panel_xero.html` — Xero-facing accounting panel.
+- `clause-index.html` — legal/clause index.
+
+**Ecosystem & sector navigation**
+- `ecosystem-dashboard.html`, `fruitful_dashboard.html` — top-level dashboards.
+- `sector-grid.html`, `fruitful_global_sector_index.html` — sector indices.
+- `global.html`, `global_brands.html`, `fruitful_global_sector_index.html` —
+  the global brand / sector views that act as the front face of the ecosystem.
+- `node-status.html`, `signal-sync.html`, `scrollmap.html` — status and
+  sync/telemetry views.
+
+**Commerce & checkout**
+- `checkout_form.html`, `global_checkout.html` — checkout flows.
+- `products.html`, `quick-view.html` — product surfaces.
+- `subscription-cancelled.html`, `subscription-failed.html` — subscription
+  state pages.
+- `sectors/agriculture-biotech/agrichain/paypal/pricing.html` — a worked
+  sector pricing example wired to PayPal.
+
+**Access & accounts**
+- `login.html`, `signup.html`, `access-portal.html`, `welcome.html`,
+  `homepage.html`, `unauthorized.html` — the authentication and entry surface.
+
+**Brand-specific & misc**
+- `seedwave.html`, `planet_for_change.html`, `foxed_has_mobiles.html`,
+  `index.html`, `index_progress.html` — brand and landing pages.
+- `html-project/` — a sub-project with its own light/dark themes and legal
+  pricing pages.
+
+### Payments — PayFast (Python/Flask)
+
+`my_payfast_app/` is a small, isolated Flask application handling PayFast
+(South African gateway) flows: `app.py` (the server), `config.py`
+(configuration), and `templates/` with `payfast_form.html`, `success.html`,
+and `cancelled.html`. Alongside the PayPal-wired admin pages, this gives
+Seedwave two live payment paths — PayPal (international) and PayFast (ZAR).
+
+### Integrations
+
+PayPal and PayFast for payments; Xero for accounting; Zoho referenced in the
+admin layer. All served and brokered through the Express/Vercel backend.
 
 ## Housekeeping (recommended)
 
-- **`node_modules/` is committed** — add to `.gitignore` and remove from the
-  tree; it inflates the file count ~70×.
-- **`.env.local` contains live PayPal credentials** — rotate the PayPal client
-  ID/secret immediately and stop tracking environment files. Keys in a public
-  repo are compromised the moment they are pushed.
-- **Licence mismatch** — `package.json` says `Apache-2.0`; the `LICENSE` file
-  is the Fruitful Shops Proprietary licence. Reconcile the two.
+- **`node_modules/` is committed** — 4,737 of the 4,803 tree entries are
+  vendored dependencies. Add `node_modules/` to `.gitignore` and remove it from
+  the tree; it inflates the file count ~70×.
+- **`.env.local` is committed and contains live credentials** — this is a
+  **public** repo. Rotate any PayPal / PayFast / Xero keys that were ever in
+  that file and stop tracking environment files. A secret is compromised the
+  moment it is pushed to a public repo.
+- **`.DS_Store` files** are committed throughout (`public/`, `api/`,
+  `my_payfast_app/`) — add to `.gitignore` and remove.
+- **Licence** standardised in this pass to Fruitful Shops Proprietary v1.1
+  (eff. 13 Jun 2026).
 
 ## For agents (Claude, Perplexity, or otherwise)
 
 Verify before you repeat. Exclude `node_modules/` before quoting a file count
-for this repo, and check integration/secret claims against the live tree.
+for this repo — the real source is 66 files, not 4,803. Treat any brand/sector
+totals in the narrative below as creative, not measured, unless a source file
+in the tree backs them.
 
 ---
 ---
 
 
- 
 ![Your Seedwave Image](assets/seedwave.png)
 # 🍜 **The Epic Journey of Noodle Mountain** 🏔️🐑☀️
 
